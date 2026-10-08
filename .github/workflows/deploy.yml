@@ -1,20 +1,28 @@
-name: CI/CD Auto Deploy to Self-Hosted Server
+name: CI/CD Auto Deploy on PR Merge to Server
 
+# 1. Chỉ lắng nghe sự kiện khi Pull Request vào nhánh 'server' bị đóng (closed)
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
-      - main
-      - master
-  workflow_dispatch:
+      - server
+  workflow_dispatch: # Cho phép bấm nút "Run workflow" thủ công trên web GitHub khi cần
 
 jobs:
   deploy:
+    # 2. ĐIỀU KIỆN QUAN TRỌNG: Chỉ chạy khi PR thực sự được MERGE (merged == true)
+    # Nếu ai đó bấm Close/Hủy PR mà không merge thì workflow sẽ BỎ QUA (không chạy)
+    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
+    
     name: Build & Deploy on Home Server
     runs-on: self-hosted
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: 📥 Checkout Repository (Nhánh server)
         uses: actions/checkout@v4
+        with:
+          ref: server
 
       - name: ⚙️ Setup Environment Files
         run: |
