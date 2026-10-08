@@ -32,6 +32,7 @@ jobs:
         shell: powershell
         run: |
           try { docker compose down --remove-orphans } catch { Write-Host "No active containers to stop." }
+          try { docker rm -f fintracker-postgres fintracker-backend fintracker-frontend } catch {}
           docker compose up -d --build --remove-orphans
 
       - name: 🧹 Cleanup Old Dangling Docker Images

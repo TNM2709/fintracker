@@ -1,3 +1,5 @@
+name: fintracker
+
 services:
   # 1. Cơ sở dữ liệu PostgreSQL 16
   postgres:
