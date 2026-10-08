@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi, CandlestickData, Time } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 import type { Asset } from '../types';
 import { fetchCandles } from '../services/api';
 
@@ -50,26 +50,26 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       width: container.clientWidth,
       height: 480,
       layout: {
-        background: { color: 'transparent' },
-        textColor: '#94a3b8',
+        background: { color: '#18181B' },
+        textColor: '#A1A1AA',
         fontSize: 12,
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Inter', sans-serif",
       },
       grid: {
-        vertLines: { color: 'rgba(255, 255, 255, 0.04)' },
-        horzLines: { color: 'rgba(255, 255, 255, 0.04)' },
+        vertLines: { color: 'rgba(63, 63, 70, 0.3)' },
+        horzLines: { color: 'rgba(63, 63, 70, 0.3)' },
       },
       crosshair: {
-        vertLine: { color: 'rgba(99, 102, 241, 0.4)', width: 1, style: 1 },
-        horzLine: { color: 'rgba(99, 102, 241, 0.4)', width: 1, style: 1 },
+        vertLine: { color: '#00E5FF', width: 1, style: 1 },
+        horzLine: { color: '#00E5FF', width: 1, style: 1 },
       },
       timeScale: {
-        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: '#3F3F46',
         timeVisible: true,
         secondsVisible: false,
       },
       rightPriceScale: {
-        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: '#3F3F46',
         autoScale: true,
       },
     });
@@ -78,20 +78,32 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
     // Candlestick series with lightweight-charts v5
     const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#10b981',
-      downColor: '#f43f5e',
-      borderUpColor: '#10b981',
-      borderDownColor: '#f43f5e',
-      wickUpColor: '#10b981',
-      wickDownColor: '#f43f5e',
+      upColor: '#10B981',
+      downColor: '#EF4444',
+      borderUpColor: '#10B981',
+      borderDownColor: '#EF4444',
+      wickUpColor: '#10B981',
+      wickDownColor: '#EF4444',
+      priceFormat: {
+        type: 'custom',
+        formatter: (price: number) => {
+          if (price >= 1000000) {
+            return (price / 1000000).toFixed(2) + ' tr';
+          }
+          if (price >= 1000) {
+            return price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+          }
+          return price.toFixed(2);
+        },
+      },
     });
     candleSeriesRef.current = candleSeries;
 
     // Volume Histogram series
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#3b82f6',
+      color: '#3F3F46',
       priceFormat: { type: 'volume' },
-      priceScaleId: '', // overlay
+      priceScaleId: '',
     });
     volumeSeries.priceScale().applyOptions({
       scaleMargins: { top: 0.8, bottom: 0 },
@@ -100,19 +112,27 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
     // MA20 Line series
     const ma20Series = chart.addSeries(LineSeries, {
-      color: '#f59e0b',
+      color: '#FAFAFA',
       lineWidth: 2,
       title: 'MA20',
       priceScaleId: 'right',
+      priceFormat: {
+        type: 'custom',
+        formatter: (price: number) => price >= 1000000 ? (price / 1000000).toFixed(2) + ' tr' : price.toLocaleString('en-US'),
+      },
     });
     ma20SeriesRef.current = ma20Series;
 
     // MA50 Line series
     const ma50Series = chart.addSeries(LineSeries, {
-      color: '#06b6d4',
+      color: '#00E5FF',
       lineWidth: 2,
       title: 'MA50',
       priceScaleId: 'right',
+      priceFormat: {
+        type: 'custom',
+        formatter: (price: number) => price >= 1000000 ? (price / 1000000).toFixed(2) + ' tr' : price.toLocaleString('en-US'),
+      },
     });
     ma50SeriesRef.current = ma50Series;
 
@@ -141,65 +161,70 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       }
     });
 
-    const handleResize = () => {
-      if (container && chart) {
-        chart.applyOptions({ width: container.clientWidth });
-      }
-    };
-    window.addEventListener('resize', handleResize);
+    // Resize Observer
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries.length === 0 || !entries[0].contentRect) return;
+      const { width } = entries[0].contentRect;
+      chart.applyOptions({ width });
+    });
+    resizeObserver.observe(container);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chart.remove();
       chartInstanceRef.current = null;
     };
   }, []);
 
-  // 2. Fetch & Populate Data when Asset / Timeframe changes
+  // 2. Fetch and populate candle data
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
 
     fetchCandles(selectedAssetId, timeframe)
       .then((candles) => {
-        if (!isMounted || !candleSeriesRef.current || candles.length === 0) return;
+        if (!isMounted) return;
 
-        const formattedCandles: CandlestickData<Time>[] = candles.map((c) => ({
+        const sorted = [...candles].sort((a, b) => (a.time as number) - (b.time as number));
+
+        const candleData = sorted.map((c) => ({
           time: c.time as Time,
           open: c.open,
           high: c.high,
           low: c.low,
           close: c.close,
         }));
+        candleSeriesRef.current?.setData(candleData);
 
-        const formattedVolumes = candles.map((c) => ({
+        // Volume data
+        const volumeData = sorted.map((c) => ({
           time: c.time as Time,
-          value: c.volume,
-          color: c.close >= c.open ? 'rgba(16, 185, 129, 0.3)' : 'rgba(244, 63, 94, 0.3)',
+          value: c.volume || 1000,
+          color: c.close >= c.open ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)',
         }));
+        volumeSeriesRef.current?.setData(volumeData);
 
-        candleSeriesRef.current.setData(formattedCandles);
-        if (volumeSeriesRef.current) {
-          volumeSeriesRef.current.setData(formattedVolumes);
-        }
-
-        // MA20
+        // Calculate MA20
         if (ma20SeriesRef.current) {
           const ma20Data: { time: Time; value: number }[] = [];
           for (let i = 19; i < candles.length; i++) {
             let sum = 0;
-            for (let j = i - 19; j <= i; j++) sum += candles[j].close;
+            for (let j = 0; j < 20; j++) {
+              sum += candles[i - j].close;
+            }
             ma20Data.push({ time: candles[i].time as Time, value: sum / 20 });
           }
           ma20SeriesRef.current.setData(showMA20 ? ma20Data : []);
         }
 
-        // MA50
+        // Calculate MA50
         if (ma50SeriesRef.current) {
           const ma50Data: { time: Time; value: number }[] = [];
           for (let i = 49; i < candles.length; i++) {
             let sum = 0;
-            for (let j = i - 49; j <= i; j++) sum += candles[j].close;
+            for (let j = 0; j < 50; j++) {
+              sum += candles[i - j].close;
+            }
             ma50Data.push({ time: candles[i].time as Time, value: sum / 50 });
           }
           ma50SeriesRef.current.setData(showMA50 ? ma50Data : []);
@@ -221,19 +246,29 @@ export const ChartTab: React.FC<ChartTabProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Chart Control Toolbar */}
-      <div className="glass-panel" style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+      <div style={{
+        padding: '16px 24px',
+        backgroundColor: '#18181B',
+        border: '1px solid #27272A',
+        borderRadius: 12,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 16,
+      }}>
         {/* Asset Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
             padding: '6px 12px',
             borderRadius: 8,
-            background: currentAsset?.id.includes('XAU') ? 'rgba(245, 158, 11, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-            border: `1px solid ${currentAsset?.id.includes('XAU') ? 'var(--border-gold)' : 'var(--border-glow)'}`,
+            backgroundColor: '#09090B',
+            border: '1px solid #3F3F46',
           }}>
             <span style={{
-              fontWeight: 800,
-              fontSize: '1rem',
-              color: currentAsset?.id.includes('XAU') ? 'var(--accent-gold)' : '#fff',
+              fontWeight: 600,
+              fontSize: '14px',
+              color: '#00E5FF',
             }}>
               {currentAsset?.symbol}
             </span>
@@ -243,15 +278,22 @@ export const ChartTab: React.FC<ChartTabProps> = ({
             value={selectedAssetId}
             onChange={(e) => onSelectAsset(e.target.value)}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-main)',
+              backgroundColor: '#09090B',
+              border: '1px solid #3F3F46',
+              color: '#FAFAFA',
               borderRadius: 8,
-              padding: '8px 14px',
-              fontSize: '0.85rem',
-              fontWeight: 600,
+              padding: '10px 14px',
+              fontSize: '14px',
+              fontWeight: 500,
               cursor: 'pointer',
               outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid #00E5FF';
+              e.currentTarget.style.outlineOffset = '-1px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
             }}
           >
             <optgroup label="Vàng (Gold)">
@@ -278,114 +320,134 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
         {/* Timeframe & Indicators Switchers */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.04)', borderRadius: 8, padding: 2 }}>
-            {['1D', '1W', '1M', 'ALL'].map((tf) => (
-              <button
-                key={tf}
-                onClick={() => setTimeframe(tf)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  border: 'none',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  background: timeframe === tf ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                  color: timeframe === tf ? '#fff' : 'var(--text-dim)',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {tf}
-              </button>
-            ))}
+          <div style={{ display: 'flex', backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: 2, gap: 2 }}>
+            {['1D', '1W', '1M', 'ALL'].map((tf) => {
+              const isSelected = timeframe === tf;
+              return (
+                <button
+                  key={tf}
+                  onClick={() => setTimeframe(tf)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: 6,
+                    border: 'none',
+                    fontSize: '12px',
+                    fontWeight: isSelected ? 600 : 500,
+                    cursor: 'pointer',
+                    backgroundColor: isSelected ? '#27272A' : 'transparent',
+                    color: isSelected ? '#FAFAFA' : '#A1A1AA',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {tf}
+                </button>
+              );
+            })}
           </div>
 
           <button
             onClick={() => setShowMA20(!showMA20)}
             style={{
-              padding: '6px 10px',
-              borderRadius: 6,
-              fontSize: '0.75rem',
-              fontWeight: 700,
+              padding: '6px 12px',
+              borderRadius: 8,
+              fontSize: '12px',
+              fontWeight: 500,
               cursor: 'pointer',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              background: showMA20 ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-              color: showMA20 ? 'var(--accent-gold)' : 'var(--text-dim)',
+              border: '1px solid #3F3F46',
+              backgroundColor: showMA20 ? 'rgba(250, 250, 250, 0.12)' : 'transparent',
+              color: showMA20 ? '#FAFAFA' : '#71717A',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease',
             }}
           >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA20 ? '#FAFAFA' : '#71717A' }} />
             MA 20
           </button>
 
           <button
             onClick={() => setShowMA50(!showMA50)}
             style={{
-              padding: '6px 10px',
-              borderRadius: 6,
-              fontSize: '0.75rem',
-              fontWeight: 700,
+              padding: '6px 12px',
+              borderRadius: 8,
+              fontSize: '12px',
+              fontWeight: 500,
               cursor: 'pointer',
-              border: '1px solid rgba(6, 182, 212, 0.4)',
-              background: showMA50 ? 'rgba(6, 182, 212, 0.15)' : 'transparent',
-              color: showMA50 ? 'var(--accent-cyan)' : 'var(--text-dim)',
+              border: '1px solid #3F3F46',
+              backgroundColor: showMA50 ? 'rgba(0, 229, 255, 0.12)' : 'transparent',
+              color: showMA50 ? '#00E5FF' : '#71717A',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease',
             }}
           >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA50 ? '#00E5FF' : '#71717A' }} />
             MA 50
           </button>
         </div>
       </div>
 
       {/* Main Chart Canvas Panel */}
-      <div className="glass-panel" style={{ padding: '16px 20px', position: 'relative' }}>
+      <div style={{
+        padding: 24,
+        backgroundColor: '#18181B',
+        border: '1px solid #27272A',
+        borderRadius: 12,
+        position: 'relative',
+      }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 10,
-          fontSize: '0.82rem',
+          marginBottom: 16,
+          fontSize: '14px',
           flexWrap: 'wrap',
-          gap: 10,
+          gap: 12,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span style={{ fontWeight: 700, color: '#fff' }}>{currentAsset?.name}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontWeight: 600, color: '#FAFAFA' }}>{currentAsset?.name}</span>
             {hoverData ? (
-              <div className="num-mono" style={{ display: 'flex', gap: 12, color: 'var(--text-muted)' }}>
-                <span>O: <strong style={{ color: '#fff' }}>{hoverData.open.toLocaleString()}</strong></span>
-                <span>H: <strong style={{ color: 'var(--accent-green)' }}>{hoverData.high.toLocaleString()}</strong></span>
-                <span>L: <strong style={{ color: 'var(--accent-red)' }}>{hoverData.low.toLocaleString()}</strong></span>
-                <span>C: <strong style={{ color: '#fff' }}>{hoverData.close.toLocaleString()}</strong></span>
-                <span style={{ color: 'var(--text-dim)' }}>[{hoverData.time}]</span>
+              <div style={{ display: 'flex', gap: 12, color: '#A1A1AA', fontFamily: 'monospace', fontSize: '13px' }}>
+                <span>O: <strong style={{ color: '#FAFAFA' }}>{hoverData.open.toLocaleString()}</strong></span>
+                <span>H: <strong style={{ color: '#10B981' }}>{hoverData.high.toLocaleString()}</strong></span>
+                <span>L: <strong style={{ color: '#EF4444' }}>{hoverData.low.toLocaleString()}</strong></span>
+                <span>C: <strong style={{ color: '#FAFAFA' }}>{hoverData.close.toLocaleString()}</strong></span>
+                <span style={{ color: '#71717A' }}>[{hoverData.time}]</span>
               </div>
             ) : (
-              <div className="num-mono" style={{ display: 'flex', gap: 10 }}>
-                <span style={{ color: 'var(--text-dim)' }}>Giá hiện tại:</span>
-                <strong style={{ color: '#fff', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', gap: 8, fontFamily: 'monospace', fontSize: '13px' }}>
+                <span style={{ color: '#A1A1AA' }}>Giá hiện tại:</span>
+                <strong style={{ color: '#00E5FF', fontSize: '14px' }}>
                   {currentAsset?.current_price.toLocaleString()} {currentAsset?.currency}
                 </strong>
               </div>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {showMA20 && <span style={{ color: 'var(--accent-gold)', fontSize: '0.75rem', fontWeight: 600 }}>● MA20</span>}
-            {showMA50 && <span style={{ color: 'var(--accent-cyan)', fontSize: '0.75rem', fontWeight: 600 }}>● MA50</span>}
-            <span style={{ color: '#3b82f6', fontSize: '0.75rem', fontWeight: 600 }}>■ Volume</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {showMA20 && <span style={{ color: '#FAFAFA', fontSize: '12px', fontWeight: 500 }}>● MA20</span>}
+            {showMA50 && <span style={{ color: '#00E5FF', fontSize: '12px', fontWeight: 500 }}>● MA50</span>}
+            <span style={{ color: '#71717A', fontSize: '12px', fontWeight: 500 }}>■ Volume</span>
           </div>
         </div>
 
         {isLoading && (
           <div style={{
             position: 'absolute',
-            top: 50,
+            top: 60,
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'rgba(7, 10, 19, 0.6)',
+            backgroundColor: 'rgba(9, 9, 11, 0.7)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
+            borderRadius: 12,
           }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Đang tải chuỗi nến OHLCV...</span>
+            <span style={{ color: '#A1A1AA', fontSize: '14px' }}>Đang tải chuỗi nến OHLCV...</span>
           </div>
         )}
 

@@ -56,6 +56,7 @@ type Candle struct {
 // Transaction represents a buy/sell or dividend action
 type Transaction struct {
 	ID              string    `json:"id"`
+	UserID          string    `json:"user_id,omitempty"`
 	PortfolioID     string    `json:"portfolio_id"`
 	AssetID         string    `json:"asset_id"`
 	AssetSymbol     string    `json:"asset_symbol"`
@@ -90,6 +91,8 @@ type Holding struct {
 
 // PortfolioSummary represents the complete net worth & allocation
 type PortfolioSummary struct {
+	IsGuest            bool               `json:"is_guest,omitempty"`
+	UserID             string             `json:"user_id,omitempty"`
 	TotalNetWorth      float64            `json:"total_net_worth"`       // Tổng tài sản ròng (quy đổi VND)
 	TotalCostBasis     float64            `json:"total_cost_basis"`      // Tổng giá vốn đầu tư
 	TotalUnrealizedPnL float64            `json:"total_unrealized_pnl"`  // Lãi/lỗ ròng
@@ -145,6 +148,7 @@ type MarketSummary struct {
 // PriceAlert represents a user alert condition for an asset
 type PriceAlert struct {
 	ID          string    `json:"id"`
+	UserID      string    `json:"user_id,omitempty"`
 	AssetID     string    `json:"asset_id"`
 	Symbol      string    `json:"symbol"`
 	TargetPrice float64   `json:"target_price"`
@@ -184,3 +188,102 @@ type BenchmarkSeries struct {
 	Points    []BenchmarkPoint `json:"points"`
 }
 
+// ==================== USER MANAGEMENT & AUTH TYPES ====================
+
+// User represents public user information
+type User struct {
+	ID        string    `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	FullName  string    `json:"full_name"`
+	Role      string    `json:"role"` // "admin" | "user"
+	Avatar    string    `json:"avatar"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// RegisterRequest holds registration payload
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	FullName string `json:"full_name"`
+}
+
+// LoginRequest holds login payload
+type LoginRequest struct {
+	UsernameOrEmail string `json:"username_or_email"`
+	Password        string `json:"password"`
+}
+
+// AuthResponse holds JWT token and user info
+type AuthResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
+
+// UpdateProfileRequest holds profile update payload
+type UpdateProfileRequest struct {
+	FullName string `json:"full_name"`
+	Avatar   string `json:"avatar"`
+	Password string `json:"password,omitempty"` // Tùy chọn đổi mật khẩu mới
+}
+
+// UpdateRoleRequest holds admin role change payload
+type UpdateRoleRequest struct {
+	Role string `json:"role"` // "admin" | "user"
+}
+
+// AdminUserSummary represents user with statistics for admin dashboard
+type AdminUserSummary struct {
+	User             User      `json:"user"`
+	TransactionCount int64     `json:"transaction_count"`
+	AlertCount       int64     `json:"alert_count"`
+	LastActive       time.Time `json:"last_active"`
+}
+
+// AdminStats represents system overview stats
+type AdminStats struct {
+	TotalUsers        int64     `json:"total_users"`
+	TotalAdmins       int64     `json:"total_admins"`
+	TotalRegularUsers int64     `json:"total_regular_users"`
+	TotalTransactions int64     `json:"total_transactions"`
+	TotalPriceAlerts  int64     `json:"total_price_alerts"`
+	DatabaseDriver    string    `json:"database_driver"`
+	ServerTime        time.Time `json:"server_time"`
+}
+
+// ==================== NOTIFICATION TYPES ====================
+
+// Notification represents an in-app notification delivered to a user
+type Notification struct {
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	Title     string    `json:"title"`
+	Message   string    `json:"message"`
+	Type      string    `json:"type"` // "PRICE_ALERT" | "VOLATILITY" | "TRANSACTION" | "SYSTEM"
+	Data      string    `json:"data,omitempty"`
+	IsRead    bool      `json:"is_read"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// NotificationSettings represents customer preferences for notifications
+type NotificationSettings struct {
+	UserID                  string    `json:"user_id"`
+	EnablePriceAlerts       bool      `json:"enable_price_alerts"`
+	EnableVolatilityAlerts  bool      `json:"enable_volatility_alerts"`
+	EnableTransactionAlerts bool      `json:"enable_transaction_alerts"`
+	EnableSound             bool      `json:"enable_sound"`
+	MinChangePercent        float64   `json:"min_change_percent"`
+	WatchedAssets           string    `json:"watched_assets"`
+	UpdatedAt               time.Time `json:"updated_at"`
+}
+
+// UpdateNotificationSettingsRequest holds settings update payload
+type UpdateNotificationSettingsRequest struct {
+	EnablePriceAlerts       *bool    `json:"enable_price_alerts,omitempty"`
+	EnableVolatilityAlerts  *bool    `json:"enable_volatility_alerts,omitempty"`
+	EnableTransactionAlerts *bool    `json:"enable_transaction_alerts,omitempty"`
+	EnableSound             *bool    `json:"enable_sound,omitempty"`
+	MinChangePercent        *float64 `json:"min_change_percent,omitempty"`
+	WatchedAssets           *string  `json:"watched_assets,omitempty"`
+}

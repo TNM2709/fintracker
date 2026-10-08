@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import type { MarketSummary, PortfolioSummary, Transaction, PriceAlert } from './types';
+import React, { useState, useEffect, useMemo } from 'react';
+import type { MarketSummary, PortfolioSummary, Transaction, PriceAlert, NotificationItem } from './types';
 import {
   fetchMarketSummary,
   fetchPortfolioSummary,
+  fetchNotifications,
   addTransaction,
   deleteTransaction,
   resetPortfolio,
@@ -16,25 +17,47 @@ import { ChartTab } from './components/ChartTab';
 import { ForecastTab } from './components/ForecastTab';
 import { TransactionModal } from './components/TransactionModal';
 import { PriceAlertModal } from './components/PriceAlertModal';
+import { AuthModal } from './components/AuthModal';
+import { UserProfileModal } from './components/UserProfileModal';
+import { NotificationModal } from './components/NotificationModal';
+import { AdminModal } from './components/AdminModal';
 import { MobileNav } from './components/MobileNav';
 import { CurrencyProvider, useCurrency } from './context/CurrencyContext';
-import { Bell, X } from 'lucide-react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { X, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { setUsdVndRate } = useCurrency();
+  const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('portfolio');
   const [selectedAssetId, setSelectedAssetId] = useState<string>('XAU-SJC');
   const [isMobilePreview, setIsMobilePreview] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [isNotifModalOpen, setIsNotifModalOpen] = useState<boolean>(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
 
   const [marketSummary, setMarketSummary] = useState<MarketSummary | null>(null);
   const [portfolioSummary, setPortfolioSummary] = useState<PortfolioSummary | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [activeToast, setActiveToast] = useState<PriceAlert | null>(null);
+  const [unreadNotifCount, setUnreadNotifCount] = useState<number>(0);
+  const [activeToast, setActiveToast] = useState<{
+    title: string;
+    message: string;
+    type?: string;
+  } | null>(null);
 
-  // Initialize Data & WebSocket Connection
+  // Load initial market & portfolio
   useEffect(() => {
     fetchMarketSummary()
       .then((data) => {
@@ -42,13 +65,27 @@ const MainApp: React.FC = () => {
         if (data.usd_vnd_exchange) setUsdVndRate(data.usd_vnd_exchange);
       })
       .catch((err) => console.error('Initial market fetch error:', err));
+  }, [setUsdVndRate]);
 
+  // Load portfolio & notification count whenever user state changes (login, logout, switch)
+  useEffect(() => {
     fetchPortfolioSummary()
       .then((data) => setPortfolioSummary(data))
       .catch((err) => console.error('Initial portfolio fetch error:', err));
 
-    // Realtime WebSocket Stream from Go Backend
+    if (isAuthenticated) {
+      fetchNotifications(10)
+        .then((res) => setUnreadNotifCount(res.unread_count || 0))
+        .catch(() => {});
+    } else {
+      setUnreadNotifCount(0);
+    }
+  }, [isAuthenticated, user?.id]);
+
+  // Realtime WebSocket Stream from Go Backend
+  useEffect(() => {
     const client = new RealtimeTickerClient();
+
     const unsubTicker = client.onUpdate((summary) => {
       setMarketSummary(summary);
       if (summary.usd_vnd_exchange) setUsdVndRate(summary.usd_vnd_exchange);
@@ -56,9 +93,25 @@ const MainApp: React.FC = () => {
     });
 
     // Lắng nghe cảnh báo giá chạm ngưỡng realtime
-    const unsubAlert = client.onAlertTrigger((alert) => {
-      setActiveToast(alert);
-      setTimeout(() => setActiveToast(null), 8000); // Ẩn sau 8 giây
+    const unsubAlert = client.onAlertTrigger((alert: PriceAlert) => {
+      setActiveToast({
+        title: `CẢNH BÁO GIÁ: ${alert.symbol}`,
+        message: `Đã chạm ngưỡng ${alert.condition === 'ABOVE' ? '≥' : '≤'} ${alert.target_price.toLocaleString()}!`,
+        type: 'PRICE_ALERT',
+      });
+      setUnreadNotifCount((c) => c + 1);
+      setTimeout(() => setActiveToast(null), 8000);
+    });
+
+    // Lắng nghe thông báo hệ thống & biến động realtime
+    const unsubNotification = client.onNotification((notif: NotificationItem) => {
+      setActiveToast({
+        title: notif.title,
+        message: notif.message,
+        type: notif.type,
+      });
+      setUnreadNotifCount((c) => c + 1);
+      setTimeout(() => setActiveToast(null), 8000);
     });
 
     const checkInterval = setInterval(() => {
@@ -68,15 +121,20 @@ const MainApp: React.FC = () => {
     return () => {
       unsubTicker();
       unsubAlert();
+      unsubNotification();
       clearInterval(checkInterval);
     };
-  }, []);
+  }, [setUsdVndRate]);
 
   const handleRefresh = async () => {
     try {
       const [m, p] = await Promise.all([fetchMarketSummary(), fetchPortfolioSummary()]);
       setMarketSummary(m);
       setPortfolioSummary(p);
+      if (isAuthenticated) {
+        const notifs = await fetchNotifications(10);
+        setUnreadNotifCount(notifs.unread_count || 0);
+      }
     } catch (e) {
       console.error('Refresh error:', e);
     }
@@ -86,8 +144,11 @@ const MainApp: React.FC = () => {
     try {
       const updated = await addTransaction(tx);
       setPortfolioSummary(updated);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Add transaction error:', e);
+      if (e instanceof Error) {
+        alert(e.message);
+      }
     }
   };
 
@@ -125,53 +186,77 @@ const MainApp: React.FC = () => {
   }, [marketSummary, searchQuery]);
 
   return (
-    <div className="app-container" style={{
-      maxWidth: isMobilePreview ? 430 : '100%',
-      margin: isMobilePreview ? '20px auto' : '0 auto',
-      border: isMobilePreview ? '8px solid #1e293b' : 'none',
-      borderRadius: isMobilePreview ? 40 : 0,
-      boxShadow: isMobilePreview ? '0 25px 60px -15px rgba(0, 0, 0, 0.9)' : 'none',
-      minHeight: isMobilePreview ? 860 : '100vh',
-      overflow: 'hidden',
-      background: 'var(--bg-primary)',
-      position: 'relative',
-    }}>
-      {/* Toast Notification Khi Cảnh Báo Giá Chạm Ngưỡng */}
+    <div
+      className="app-container"
+      style={{
+        maxWidth: isMobilePreview ? 430 : '100%',
+        margin: isMobilePreview ? '24px auto' : '0 auto',
+        border: isMobilePreview ? '2px solid #3F3F46' : 'none',
+        borderRadius: isMobilePreview ? 16 : 0,
+        minHeight: isMobilePreview ? 860 : '100vh',
+        overflow: 'hidden',
+        backgroundColor: '#09090B',
+        position: 'relative',
+      }}
+    >
+      {/* Active Toast Notification */}
       {activeToast && (
-        <div style={{
-          position: 'fixed',
-          top: 24,
-          right: 24,
-          zIndex: 2000,
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.95) 100%)',
-          color: '#070a13',
-          padding: '14px 20px',
-          borderRadius: 12,
-          boxShadow: '0 10px 30px rgba(245, 158, 11, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          animation: 'fadeIn 0.3s ease',
-        }}>
-          <Bell size={20} color="#070a13" />
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>
-              CẢNH BÁO GIÁ: {activeToast.symbol}
+        <div
+          style={{
+            position: 'fixed',
+            top: 24,
+            right: 24,
+            zIndex: 2000,
+            backgroundColor: '#18181B',
+            border: `1px solid ${
+              activeToast.type === 'VOLATILITY'
+                ? '#F59E0B'
+                : activeToast.type === 'TRANSACTION'
+                ? '#10B981'
+                : '#00E5FF'
+            }`,
+            padding: '16px 20px',
+            borderRadius: 12,
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            maxWidth: 380,
+            animation: 'fadeIn 0.2s ease',
+          }}
+        >
+          {activeToast.type === 'VOLATILITY' ? (
+            <AlertCircle size={22} color="#F59E0B" />
+          ) : activeToast.type === 'TRANSACTION' ? (
+            <DollarSign size={22} color="#10B981" />
+          ) : (
+            <TrendingUp size={22} color="#00E5FF" />
+          )}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: '14px', color: '#FAFAFA' }}>
+              {activeToast.title}
             </div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>
-              Đã chạm ngưỡng {activeToast.condition === 'ABOVE' ? '≥' : '≤'} {activeToast.target_price.toLocaleString()}!
+            <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2, lineHeight: 1.4 }}>
+              {activeToast.message}
             </div>
           </div>
           <button
             onClick={() => setActiveToast(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: 8 }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              marginLeft: 8,
+              color: '#A1A1AA',
+              padding: 4,
+            }}
           >
-            <X size={16} color="#070a13" />
+            <X size={16} />
           </button>
         </div>
       )}
 
-      {/* 1. Header */}
+      {/* 1. Header with Auth & Notification support */}
       <Header
         isConnected={isConnected}
         searchQuery={searchQuery}
@@ -183,6 +268,10 @@ const MainApp: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onRefresh={handleRefresh}
+        unreadNotifCount={unreadNotifCount}
+        onOpenNotifModal={() => setIsNotifModalOpen(true)}
+        onOpenAdminModal={() => setIsAdminModalOpen(true)}
+        onOpenProfileModal={() => setIsProfileModalOpen(true)}
       />
 
       {/* 2. Realtime Ticker Ribbon */}
@@ -225,7 +314,9 @@ const MainApp: React.FC = () => {
       </main>
 
       {/* 4. Mobile Bottom Navigation */}
-      <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {(isMobile || isMobilePreview) && (
+        <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
 
       {/* 5. Modals */}
       <TransactionModal
@@ -240,6 +331,28 @@ const MainApp: React.FC = () => {
         onClose={() => setIsAlertModalOpen(false)}
         allAssets={marketSummary?.all_assets || []}
       />
+
+      <AuthModal
+        onSuccess={() => {
+          handleRefresh();
+        }}
+      />
+
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      <NotificationModal
+        isOpen={isNotifModalOpen}
+        onClose={() => setIsNotifModalOpen(false)}
+        onUnreadCountChange={setUnreadNotifCount}
+      />
+
+      <AdminModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
     </div>
   );
 };
@@ -247,10 +360,11 @@ const MainApp: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <CurrencyProvider>
-      <MainApp />
+      <AuthProvider>
+        <MainApp />
+      </AuthProvider>
     </CurrencyProvider>
   );
 };
 
 export default App;
-

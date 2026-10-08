@@ -1,6 +1,6 @@
 import React from 'react';
 import type { PortfolioAnalytics } from '../types';
-import { ShieldCheck, AlertTriangle, Lightbulb, Activity, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, Lightbulb, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
 
 interface PortfolioAnalyticsCardProps {
   analytics: PortfolioAnalytics | null;
@@ -13,166 +13,325 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
 }) => {
   if (!analytics) return null;
 
-  const scoreColor =
-    analytics.health_score >= 80 ? 'var(--accent-green)' : analytics.health_score >= 65 ? 'var(--accent-gold)' : 'var(--accent-red)';
+  const score = analytics.health_score;
+  const scoreColor = score >= 80 ? '#10B981' : score >= 65 ? '#00E5FF' : '#EF4444';
+
+  // SVG Gauge calculation (circumference for radius 38)
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius; // ~238.76
+  const strokeDashoffset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="glass-panel" style={{ padding: 24, background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(99, 102, 241, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Activity size={20} color="#818cf8" />
+    <div style={{
+      backgroundColor: '#18181B',
+      border: '1px solid #27272A',
+      borderRadius: 12,
+      padding: 24,
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Subtle top cyan line highlight */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: '10%',
+        right: '10%',
+        height: 1,
+        background: 'linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.4), transparent)',
+      }} />
+
+      {/* Header bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: 8,
+            backgroundColor: '#27272A',
+            border: '1px solid #3F3F46',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 12px rgba(0, 229, 255, 0.15)',
+          }}>
+            <Sparkles size={18} color="#00E5FF" />
           </div>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Đánh Giá Sức Khỏe Danh Mục & Khuyến Nghị AI</h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-              Phân tích chỉ số đa dạng hóa HHI, Sharpe Ratio và mức độ chịu rủi ro
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
+                Đánh Giá Sức Khỏe Danh Mục & Khuyến Nghị AI
+              </h3>
+              <span style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                color: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.25)',
+                padding: '2px 8px',
+                borderRadius: 4,
+              }}>
+                HHI & Sharpe
+              </span>
+            </div>
+            <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '3px 0 0 0' }}>
+              Phân tích định lượng mức độ phân tán rủi ro và khuyến nghị tái cân bằng tự động
             </p>
           </div>
         </div>
 
         <button
           onClick={onOpenDCAModal}
-          className="btn-primary"
-          style={{ padding: '8px 14px', fontSize: '0.82rem' }}
+          style={{
+            backgroundColor: '#00E5FF',
+            color: '#09090B',
+            fontWeight: 600,
+            fontSize: '13px',
+            borderRadius: 8,
+            padding: '9px 18px',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.2s ease',
+            boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#00B8CC';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#00E5FF';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
-          📈 Kế Hoạch Tích Sản Lãi Kép (DCA)
+          <TrendingUp size={15} />
+          <span>Kế Hoạch Tích Sản Lãi Kép (DCA)</span>
         </button>
       </div>
 
-      {/* Grid điểm số & hồ sơ */}
+      {/* Grid 3 Stat Highlights with Circular HUD Gauge */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: 14,
-        marginBottom: 20,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: 16,
+        marginBottom: 24,
       }}>
-        {/* Điểm sức khỏe */}
+        {/* Modern Circular Progress Health Meter */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          borderRadius: 12,
-          padding: 16,
-          border: '1px solid var(--border-subtle)',
+          backgroundColor: '#09090B',
+          borderRadius: 8,
+          padding: '16px 20px',
+          border: '1px solid #3F3F46',
           display: 'flex',
           alignItems: 'center',
-          gap: 16,
+          gap: 18,
         }}>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700 }}>ĐIỂM SỨC KHỎE</div>
-            <div className="num-mono" style={{ fontSize: '2.2rem', fontWeight: 900, color: scoreColor, lineHeight: 1 }}>
-              {analytics.health_score}
-              <span style={{ fontSize: '1rem', color: 'var(--text-dim)', fontWeight: 500 }}>/100</span>
+          {/* SVG Gauge */}
+          <div style={{ position: 'relative', width: 84, height: 84, flexShrink: 0 }}>
+            <svg width="84" height="84" viewBox="0 0 92 92" style={{ transform: 'rotate(-90deg)' }}>
+              {/* Background Track */}
+              <circle
+                cx="46"
+                cy="46"
+                r={radius}
+                stroke="#27272A"
+                strokeWidth="7"
+                fill="none"
+              />
+              {/* Progress Ring */}
+              <circle
+                cx="46"
+                cy="46"
+                r={radius}
+                stroke={scoreColor}
+                strokeWidth="7"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                fill="none"
+                style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+              />
+            </svg>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: '20px', fontWeight: 700, color: '#FAFAFA', fontFamily: 'monospace', lineHeight: 1 }}>
+                {score}
+              </span>
+              <span style={{ fontSize: '10px', color: '#71717A', fontWeight: 500, marginTop: 2 }}>/100</span>
             </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {analytics.health_score >= 80 ? 'Danh mục rất lành mạnh' : 'Cần tối ưu tỷ trọng'}
+
+          <div>
+            <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              ĐIỂM SỨC KHỎE
+            </div>
+            <div style={{ fontSize: '15px', fontWeight: 600, color: scoreColor, marginTop: 4 }}>
+              {score >= 80 ? 'Rất lành mạnh' : score >= 60 ? 'Tương đối tốt' : 'Cần tối ưu tỷ trọng'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#71717A', marginTop: 2 }}>
+              Đo lường rủi ro tập trung vốn
+            </div>
           </div>
         </div>
 
-        {/* Khẩu vị rủi ro */}
+        {/* Khau vi rui ro */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          borderRadius: 12,
-          padding: 16,
-          border: '1px solid var(--border-subtle)',
+          backgroundColor: '#09090B',
+          borderRadius: 8,
+          padding: '16px 20px',
+          border: '1px solid #3F3F46',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, marginBottom: 4 }}>
-            KHẨU VỊ RỦI RO
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              KHẨU VỊ RỦI RO
+            </span>
+            <span style={{
+              fontSize: '11px',
+              padding: '2px 8px',
+              borderRadius: 4,
+              backgroundColor: 'rgba(0, 229, 255, 0.1)',
+              border: '1px solid rgba(0, 229, 255, 0.25)',
+              color: '#00E5FF',
+              fontWeight: 600,
+            }}>
+              {analytics.diversification_grade}
+            </span>
           </div>
-          <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>
+          <div style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAFA' }}>
             {analytics.risk_profile}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 4 }}>
-            Độ phân tán: {analytics.diversification_grade}
+          <div style={{ fontSize: '12px', color: '#71717A', marginTop: 4 }}>
+            Chỉ số tập trung tài sản HHI tối ưu
           </div>
         </div>
 
         {/* Sharpe Ratio */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.03)',
-          borderRadius: 12,
-          padding: 16,
-          border: '1px solid var(--border-subtle)',
+          backgroundColor: '#09090B',
+          borderRadius: 8,
+          padding: '16px 20px',
+          border: '1px solid #3F3F46',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, marginBottom: 4 }}>
+          <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
             SHARPE RATIO ƯỚC TÍNH
           </div>
-          <div className="num-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-purple)' }}>
-            {analytics.estimated_sharpe_ratio}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: '24px', fontWeight: 600, color: '#00E5FF', fontFamily: 'monospace' }}>
+              {analytics.estimated_sharpe_ratio}
+            </span>
+            <span style={{ fontSize: '12px', color: '#10B981', fontWeight: 500 }}>
+              (Vượt chuẩn &gt; 1.5)
+            </span>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 2 }}>
-            Hiệu suất bù trừ rủi ro vượt trội (&gt;1.5)
+          <div style={{ fontSize: '12px', color: '#71717A', marginTop: 4 }}>
+            Tỷ suất bù đắp rủi ro so với lãi suất phi rủi ro
           </div>
         </div>
       </div>
 
-      {/* 2 Cột: Điểm Mạnh & Khuyến Nghị Tái Cân Bằng */}
+      {/* 2 Cot: Diem Manh & Khuyen Nghi Rebalancing */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
         gap: 16,
       }}>
-        {/* Điểm mạnh & Rủi ro */}
+        {/* Cot 1: Diem Manh & Luu Y */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.02)',
-          borderRadius: 12,
-          padding: 16,
-          border: '1px solid var(--border-subtle)',
+          backgroundColor: '#09090B',
+          borderRadius: 8,
+          padding: 20,
+          border: '1px solid #3F3F46',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-green)', marginBottom: 12 }}>
-            <ShieldCheck size={16} /> Điểm Mạnh Danh Mục
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#10B981', marginBottom: 14 }}>
+            <ShieldCheck size={16} />
+            <span>Điểm Mạnh Danh Mục</span>
           </div>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: '#A1A1AA' }}>
             {analytics.strength_points?.map((pt, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <CheckCircle2 size={14} color="var(--accent-green)" style={{ marginTop: 2, flexShrink: 0 }} />
-                <span>{pt}</span>
+              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <CheckCircle2 size={15} color="#10B981" style={{ marginTop: 2, flexShrink: 0 }} />
+                <span style={{ color: '#FAFAFA' }}>{pt}</span>
               </li>
             ))}
           </ul>
 
           {analytics.risk_warnings?.length > 0 && (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', marginTop: 14, marginBottom: 8 }}>
-                <AlertTriangle size={15} /> Điểm Cần Lưu Ý
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#EF4444', marginTop: 18, marginBottom: 10 }}>
+                <AlertTriangle size={15} />
+                <span>Điểm Cần Lưu Ý</span>
               </div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.82rem', color: 'var(--text-dim)' }}>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: '13px', color: '#A1A1AA' }}>
                 {analytics.risk_warnings.map((w, i) => (
-                  <li key={i}>⚠️ {w}</li>
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <span style={{ color: '#EF4444', fontWeight: 700 }}>•</span>
+                    <span>{w}</span>
+                  </li>
                 ))}
               </ul>
             </>
           )}
         </div>
 
-        {/* Khuyến nghị tái cân bằng */}
+        {/* Cot 2: Khuyen Nghi Tai Can Bang */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.02)',
-          borderRadius: 12,
-          padding: 16,
-          border: '1px solid var(--border-subtle)',
+          backgroundColor: '#09090B',
+          borderRadius: 8,
+          padding: 20,
+          border: '1px solid #3F3F46',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-gold)', marginBottom: 12 }}>
-            <Lightbulb size={16} /> Khuyến Nghị Hành Động (Rebalancing)
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#00E5FF', marginBottom: 14 }}>
+            <Lightbulb size={16} />
+            <span>Khuyến Nghị Hành Động (AI Rebalancing)</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {analytics.rebalance_tips?.map((tip, i) => (
               <div
                 key={i}
                 style={{
-                  background: 'rgba(245, 158, 11, 0.06)',
-                  border: '1px solid rgba(245, 158, 11, 0.2)',
+                  backgroundColor: '#18181B',
+                  border: '1px solid #27272A',
                   borderRadius: 8,
-                  padding: '10px 12px',
-                  fontSize: '0.82rem',
-                  color: 'var(--text-main)',
+                  padding: '12px 14px',
+                  fontSize: '13px',
+                  color: '#FAFAFA',
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: 8,
+                  gap: 12,
+                  transition: 'border-color 0.2s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#3F3F46')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#27272A')}
               >
-                <span style={{ color: 'var(--accent-gold)', fontWeight: 800 }}>#{i + 1}</span>
-                <span>{tip}</span>
+                <span style={{
+                  color: '#00E5FF',
+                  fontWeight: 700,
+                  fontSize: '11px',
+                  backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                  padding: '2px 6px',
+                  borderRadius: 4,
+                  flexShrink: 0,
+                  marginTop: 1,
+                }}>
+                  TIP #{i + 1}
+                </span>
+                <span style={{ color: '#FAFAFA', lineHeight: 1.4 }}>{tip}</span>
               </div>
             ))}
           </div>

@@ -95,6 +95,9 @@ func InitGORM() (*gorm.DB, string, error) {
 
 	log.Printf("[GORM] 🔄 Running GORM AutoMigrate for entity tracking & schema sync...")
 	if err := db.AutoMigrate(
+		&model.UserEntity{},
+		&model.UserNotificationSettingsEntity{},
+		&model.NotificationEntity{},
 		&model.TransactionEntity{},
 		&model.PriceAlertEntity{},
 		&model.LiveAssetEntity{},
@@ -104,7 +107,7 @@ func InitGORM() (*gorm.DB, string, error) {
 		return db, driver, err
 	}
 
-	log.Printf("[GORM] ✅ All Entity schemas synchronized automatically (Transactions, Alerts, Assets, Candles)!")
+	log.Printf("[GORM] ✅ All Entity schemas synchronized automatically (Users, Notifications, Transactions, Alerts, Assets, Candles)!")
 	return db, driver, nil
 }
 

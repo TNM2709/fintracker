@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { ForecastResult, Asset } from '../types';
 import { fetchForecast } from '../services/api';
-import { TrendingUp, Target, ShieldAlert, Cpu, Activity, Compass } from 'lucide-react';
+import { TrendingUp, Target, ShieldAlert, Cpu, Compass, Layers } from 'lucide-react';
 
 interface ForecastTabProps {
   selectedAssetId: string;
@@ -44,13 +44,61 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
   const getSignalBadge = (sig: string) => {
     switch (sig) {
       case 'STRONG_BUY':
-        return <span className="badge-gain" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>MUA MẠNH (STRONG BUY)</span>;
+        return (
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: 6,
+            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            color: '#10B981',
+          }}>
+            MUA MẠNH (STRONG BUY)
+          </span>
+        );
       case 'BUY':
-        return <span className="badge-gain" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>TÍCH LŨY (BUY)</span>;
+        return (
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: 6,
+            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            color: '#10B981',
+          }}>
+            TÍCH LŨY (BUY)
+          </span>
+        );
       case 'SELL':
-        return <span className="badge-loss" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>BÁN / HẠ TỶ TRỌNG (SELL)</span>;
+        return (
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: 6,
+            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+            border: '1px solid rgba(239, 68, 68, 0.35)',
+            color: '#EF4444',
+          }}>
+            BÁN / HẠ TỶ TRỌNG (SELL)
+          </span>
+        );
       default:
-        return <span className="badge-gold" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>THEO DÕI (NEUTRAL)</span>;
+        return (
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: 6,
+            backgroundColor: 'rgba(0, 229, 255, 0.15)',
+            border: '1px solid rgba(0, 229, 255, 0.35)',
+            color: '#00E5FF',
+          }}>
+            THEO DÕI (NEUTRAL)
+          </span>
+        );
     }
   };
 
@@ -63,18 +111,51 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Top Selector & Meta */}
-      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+      {/* Top Selector & Horizon Bar */}
+      <div style={{
+        padding: '16px 24px',
+        backgroundColor: '#18181B',
+        border: '1px solid #27272A',
+        borderRadius: 12,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 16,
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Cpu size={20} color="#fff" />
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: 8,
+            backgroundColor: '#27272A',
+            border: '1px solid #3F3F46',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 12px rgba(0, 229, 255, 0.15)',
+          }}>
+            <Cpu size={20} color="#00E5FF" />
           </div>
           <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>
-              Động Cơ Dự Đoán Định Lượng & Monte Carlo Song Song
-            </h2>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-              Tính toán 5,000 kịch bản ngẫu nhiên đa nhân xử lý trực tiếp trên Go Backend
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
+                Động Cơ Dự Đoán Định Lượng & Monte Carlo Song Song
+              </h2>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                color: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.25)',
+                padding: '1px 6px',
+                borderRadius: 4,
+              }}>
+                5,000 Iterations
+              </span>
+            </div>
+            <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '3px 0 0 0' }}>
+              Mô phỏng chuỗi thời gian ngẫu nhiên đa nhân xử lý trực tiếp trên Go Backend
             </p>
           </div>
         </div>
@@ -85,13 +166,13 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             value={selectedAssetId}
             onChange={(e) => onSelectAsset(e.target.value)}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-main)',
+              backgroundColor: '#09090B',
+              border: '1px solid #3F3F46',
+              color: '#FAFAFA',
               borderRadius: 8,
               padding: '8px 12px',
-              fontSize: '0.85rem',
-              fontWeight: 600,
+              fontSize: '13px',
+              fontWeight: 500,
               cursor: 'pointer',
               outline: 'none',
             }}
@@ -107,159 +188,256 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             <option value="CRYPTO-BTC">Bitcoin (BTC)</option>
           </select>
 
-          <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.04)', borderRadius: 8, padding: 2 }}>
-            <button
-              onClick={() => setHorizon(7)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                background: horizon === 7 ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                color: horizon === 7 ? '#fff' : 'var(--text-dim)',
-              }}
-            >
-              7 Ngày Tới
-            </button>
-            <button
-              onClick={() => setHorizon(30)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                background: horizon === 30 ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                color: horizon === 30 ? '#fff' : 'var(--text-dim)',
-              }}
-            >
-              30 Ngày Tới
-            </button>
+          {/* Segmented Control for Horizon */}
+          <div style={{
+            display: 'flex',
+            backgroundColor: '#09090B',
+            border: '1px solid #27272A',
+            borderRadius: 8,
+            padding: 2,
+            gap: 2,
+          }}>
+            {[
+              { days: 7, label: '7 Ngày' },
+              { days: 14, label: '14 Ngày' },
+              { days: 30, label: '30 Ngày' },
+              { days: 90, label: '90 Ngày' },
+            ].map((h) => (
+              <button
+                key={h.days}
+                onClick={() => setHorizon(h.days)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: horizon === h.days ? 600 : 500,
+                  cursor: 'pointer',
+                  backgroundColor: horizon === h.days ? '#27272A' : 'transparent',
+                  color: horizon === h.days ? '#FAFAFA' : '#A1A1AA',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {h.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="glass-panel" style={{ padding: 60, textAlign: 'center' }}>
-          <Activity className="pulse-dot" size={24} style={{ color: 'var(--accent-cyan)', marginBottom: 16 }} />
-          <p style={{ color: 'var(--text-muted)' }}>
+        <div style={{
+          padding: 60,
+          textAlign: 'center',
+          backgroundColor: '#18181B',
+          border: '1px solid #27272A',
+          borderRadius: 12,
+        }}>
+          <div className="pulse-dot" style={{ backgroundColor: '#00E5FF', margin: '0 auto 16px auto', display: 'block' }} />
+          <p style={{ color: '#FAFAFA', fontSize: '15px', fontWeight: 500 }}>
             Đang chạy mô phỏng 5,000 chuỗi thời gian Monte Carlo song song trên Go...
+          </p>
+          <p style={{ color: '#A1A1AA', fontSize: '13px', marginTop: 4 }}>
+            Thuật toán Geometric Brownian Motion (GBM) phân tích rủi ro & dải tin cậy
           </p>
         </div>
       ) : forecast ? (
         <>
-          {/* 1. Kịch bản 3 Cột (Bear, Base, Bull) */}
+          {/* 1. Quantitative Parameters HUD Ribbon */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 12,
+            marginBottom: 16,
+          }}>
+            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>ĐỘ BIẾN ĐỘNG (VOLATILITY σ)</div>
+              <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: '#FAFAFA', marginTop: 4 }}>
+                {forecast.annual_volatility.toFixed(1)}% / năm
+              </div>
+            </div>
+            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>TỶ SUẤT KỲ VỌNG (DRIFT μ)</div>
+              <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: forecast.expected_drift >= 0 ? '#10B981' : '#EF4444', marginTop: 4 }}>
+                {forecast.expected_drift >= 0 ? '+' : ''}{forecast.expected_drift.toFixed(1)}% / năm
+              </div>
+            </div>
+            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>VALUE AT RISK (VaR 95%)</div>
+              <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: '#EF4444', marginTop: 4 }}>
+                {(((forecast.confidence_low_95 - forecast.current_price) / forecast.current_price) * 100).toFixed(1)}%
+              </div>
+            </div>
+            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>KHOẢNG TIN CẬY 95%</div>
+              <div className="num-mono" style={{ fontSize: '13px', fontWeight: 600, color: '#00E5FF', marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                [{formatPrice(forecast.confidence_low_95)} - {formatPrice(forecast.confidence_high_95)}]
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Kich ban 3 Cot (Bear, Base, Bull) with glowing accent headers */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: 16,
           }}>
             {/* Bearish Target */}
-            <div className="glass-panel" style={{ padding: 22, borderTop: '3px solid var(--accent-red)' }}>
+            <div style={{
+              padding: 24,
+              backgroundColor: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: 12,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '10%',
+                right: '10%',
+                height: 1,
+                background: 'linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.4), transparent)',
+              }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-red)' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   KỊCH BẢN PHÒNG THỦ (BEAR CASE)
                 </span>
-                <ShieldAlert size={18} color="var(--accent-red)" />
+                <ShieldAlert size={16} color="#EF4444" />
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 10 }}>
+              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
                 Xác suất 10th Percentile (Bi quan)
               </div>
-              <div className="num-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f87171', marginBottom: 6 }}>
+              <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#EF4444', marginBottom: 6 }}>
                 {formatPrice(forecast.bear_target)}
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--accent-red)' }}>
+              <div style={{ fontSize: '12px', color: '#EF4444', fontWeight: 500 }}>
                 {(((forecast.bear_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: 'var(--text-dim)', marginLeft: 6 }}>so với giá hiện tại</span>
+                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>so với giá hiện tại</span>
               </div>
             </div>
 
             {/* Base Target */}
-            <div className="glass-panel" style={{ padding: 22, borderTop: '3px solid var(--accent-gold)' }}>
+            <div style={{
+              padding: 24,
+              backgroundColor: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: 12,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '10%',
+                right: '10%',
+                height: 1,
+                background: 'linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.4), transparent)',
+              }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#00E5FF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   KỊCH BẢN CƠ SỞ (BASE / MEDIAN)
                 </span>
-                <Target size={18} color="var(--accent-gold)" />
+                <Target size={16} color="#00E5FF" />
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 10 }}>
+              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
                 Kỳ vọng trung bình 50th Percentile
               </div>
-              <div className="num-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-gold-light)', marginBottom: 6 }}>
+              <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#00E5FF', marginBottom: 6 }}>
                 {formatPrice(forecast.base_target)}
               </div>
-              <div style={{ fontSize: '0.8rem', color: forecast.base_target >= forecast.current_price ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+              <div style={{ fontSize: '12px', color: forecast.base_target >= forecast.current_price ? '#10B981' : '#EF4444', fontWeight: 500 }}>
                 {forecast.base_target >= forecast.current_price ? '+' : ''}
                 {(((forecast.base_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: 'var(--text-dim)', marginLeft: 6 }}>kỳ vọng sau {forecast.horizon_days} ngày</span>
+                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>kỳ vọng sau {forecast.horizon_days} ngày</span>
               </div>
             </div>
 
             {/* Bullish Target */}
-            <div className="glass-panel" style={{ padding: 22, borderTop: '3px solid var(--accent-green)' }}>
+            <div style={{
+              padding: 24,
+              backgroundColor: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: 12,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '10%',
+                right: '10%',
+                height: 1,
+                background: 'linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent)',
+              }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-green)' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   KỊCH BẢN LẠC QUAN (BULL CASE)
                 </span>
-                <TrendingUp size={18} color="var(--accent-green)" />
+                <TrendingUp size={16} color="#10B981" />
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 10 }}>
+              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
                 Xác suất 90th Percentile (Lạc quan)
               </div>
-              <div className="num-mono" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#4ade80', marginBottom: 6 }}>
+              <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#10B981', marginBottom: 6 }}>
                 {formatPrice(forecast.bull_target)}
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--accent-green)' }}>
+              <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 500 }}>
                 +{(((forecast.bull_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: 'var(--text-dim)', marginLeft: 6 }}>tiềm năng bứt phá</span>
+                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>tiềm năng bứt phá</span>
               </div>
             </div>
           </div>
 
-          {/* 2. Biểu đồ Visual Monte Carlo Simulation Cone */}
-          <div className="glass-panel" style={{ padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          {/* 2. Simulation Cone Card */}
+          <div style={{
+            padding: 24,
+            backgroundColor: '#18181B',
+            border: '1px solid #27272A',
+            borderRadius: 12,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>
-                  Dải Nón Xác Suất Giá Mô Phỏng Monte Carlo (Geometric Brownian Motion)
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
+                  Dải Xác Suất Biến Động (Geometric Brownian Motion Simulation Cone)
                 </h3>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                  Khoảng tin cậy 95%: [{formatPrice(forecast.confidence_low_95)} — {formatPrice(forecast.confidence_high_95)}]
+                <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
+                  Khoảng tin cậy 80% & 95% thể hiện độ rủi ro và biên độ giao động kỳ vọng
                 </p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem' }}>
-                <span style={{ display: 'inline-block', width: 12, height: 2, backgroundColor: '#4ade80' }} /> Bull 90%
-                <span style={{ display: 'inline-block', width: 12, height: 2, backgroundColor: '#f59e0b' }} /> Base 50%
-                <span style={{ display: 'inline-block', width: 12, height: 2, backgroundColor: '#f87171' }} /> Bear 10%
+              <div style={{ display: 'flex', gap: 16, fontSize: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 3, backgroundColor: '#00E5FF' }} />
+                  <span style={{ color: '#A1A1AA' }}>95% Confidence Band</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 12, height: 2, backgroundColor: '#FAFAFA' }} />
+                  <span style={{ color: '#A1A1AA' }}>Đường trung đạo (Median)</span>
+                </div>
               </div>
             </div>
 
-            {/* SVG Visual Simulation Chart */}
-            <div style={{ width: '100%', height: 240, position: 'relative' }}>
+            {/* SVG Visualizer */}
+            <div style={{ width: '100%', height: 260, backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: '16px 20px', position: 'relative' }}>
               <svg width="100%" height="100%" viewBox="0 0 800 240" preserveAspectRatio="none">
-                {/* Background Grid */}
-                <line x1="0" y1="60" x2="800" y2="60" stroke="rgba(255,255,255,0.05)" />
-                <line x1="0" y1="120" x2="800" y2="120" stroke="rgba(255,255,255,0.05)" />
-                <line x1="0" y1="180" x2="800" y2="180" stroke="rgba(255,255,255,0.05)" />
-
-                {/* Shaded Monte Carlo Cone */}
+                {/* 95% Confidence Area */}
                 <polygon
-                  points="40,120 760,40 760,200"
-                  fill="url(#monteCarloGradient)"
-                  opacity="0.25"
+                  points="40,120 760,20 760,220"
+                  fill="rgba(0, 229, 255, 0.04)"
+                  stroke="#3F3F46"
+                  strokeWidth="1"
+                  strokeDasharray="4 4"
                 />
 
-                <defs>
-                  <linearGradient id="monteCarloGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.05" />
-                  </linearGradient>
-                </defs>
+                {/* 80% Confidence Area */}
+                <polygon
+                  points="40,120 760,50 760,190"
+                  fill="rgba(0, 229, 255, 0.07)"
+                  stroke="rgba(0, 229, 255, 0.25)"
+                  strokeWidth="1"
+                />
 
-                {/* Sample Simulation Paths */}
+                {/* Sample simulation paths */}
                 {forecast.simulation_sample_cone &&
                   forecast.simulation_sample_cone.map((path, idx) => {
                     if (!path || path.length < 2) return null;
@@ -276,11 +454,10 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
                       .join(' ');
 
                     const colors = [
-                      'rgba(56, 189, 248, 0.4)',
-                      'rgba(168, 85, 247, 0.4)',
-                      'rgba(244, 63, 94, 0.3)',
-                      'rgba(16, 185, 129, 0.4)',
-                      'rgba(245, 158, 11, 0.4)',
+                      'rgba(0, 229, 255, 0.35)',
+                      'rgba(16, 185, 129, 0.35)',
+                      'rgba(239, 68, 68, 0.25)',
+                      'rgba(161, 161, 170, 0.3)',
                     ];
 
                     return (
@@ -295,133 +472,148 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
                   })}
 
                 {/* Base Case Central Trendline */}
-                <line x1="40" y1="120" x2="760" y2="105" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 4" />
+                <line x1="40" y1="120" x2="760" y2="105" stroke="#FAFAFA" strokeWidth="2" strokeDasharray="4 4" />
 
                 {/* Current Price Marker */}
-                <circle cx="40" cy="120" r="5" fill="#6366f1" />
-                <text x="45" y="140" fill="#cbd5e1" fontSize="12" fontFamily="JetBrains Mono">
+                <circle cx="40" cy="120" r="5" fill="#00E5FF" />
+                <text x="45" y="145" fill="#FAFAFA" fontSize="12" fontFamily="monospace">
                   Hiện tại: {formatPrice(forecast.current_price)}
                 </text>
               </svg>
             </div>
           </div>
 
-          {/* 3. Phân Tích Kỹ Thuật & Kháng Cự - Hỗ Trợ */}
+          {/* 3. Phan Tich Ky Thuat & Khang Cu - Ho Tro */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
             gap: 16,
           }}>
-            {/* Tín hiệu & Điểm số */}
-            <div className="glass-panel" style={{ padding: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Compass size={18} color="var(--accent-purple)" />
-                  <h4 style={{ fontWeight: 700 }}>Đánh Giá Tín Hiệu & Xu Hướng</h4>
+            {/* Tin hieu & Diem so */}
+            <div style={{
+              padding: 24,
+              backgroundColor: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: 12,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Compass size={18} color="#00E5FF" />
+                  <h4 style={{ fontWeight: 600, fontSize: '16px', color: '#FAFAFA', margin: 0 }}>
+                    Đánh Giá Tín Hiệu & Xu Hướng
+                  </h4>
                 </div>
                 {getSignalBadge(forecast.trend_signal)}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>ĐIỂM KỸ THUẬT (0 - 100)</div>
-                  <div className="num-mono" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>
+                  <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>ĐIỂM KỸ THUẬT</div>
+                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#00E5FF', fontFamily: 'monospace' }}>
                     {forecast.technical_score}
-                    <span style={{ fontSize: '1rem', color: 'var(--text-dim)' }}>/100</span>
+                    <span style={{ fontSize: '13px', color: '#71717A', fontWeight: 400 }}>/100</span>
                   </div>
                 </div>
 
                 <div style={{ flex: 1 }}>
-                  <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: 8, borderRadius: 4, backgroundColor: '#09090B', border: '1px solid #27272A', overflow: 'hidden' }}>
                     <div
                       style={{
                         height: '100%',
                         width: `${forecast.technical_score}%`,
-                        background: 'linear-gradient(90deg, #3b82f6 0%, #10b981 100%)',
+                        backgroundColor: '#00E5FF',
+                        transition: 'width 0.6s ease',
                       }}
                     />
                   </div>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Chỉ số RSI (14 ngày):</span>
-                  <span className="num-mono" style={{ fontWeight: 700, color: forecast.rsi_14 > 70 ? 'var(--accent-red)' : forecast.rsi_14 < 30 ? 'var(--accent-green)' : '#fff' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #27272A' }}>
+                  <span style={{ color: '#A1A1AA' }}>Chỉ số RSI (14 ngày):</span>
+                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: forecast.rsi_14 > 70 ? '#EF4444' : forecast.rsi_14 < 30 ? '#10B981' : '#FAFAFA' }}>
                     {forecast.rsi_14} ({forecast.rsi_14 > 70 ? 'Quá Mua' : forecast.rsi_14 < 30 ? 'Quá Bán' : 'Cân Bằng'})
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Tín hiệu MACD (12, 26, 9):</span>
-                  <span style={{ fontWeight: 700, color: forecast.macd_signal.includes('BULLISH') ? 'var(--accent-green)' : 'var(--text-main)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #27272A' }}>
+                  <span style={{ color: '#A1A1AA' }}>Tín hiệu MACD:</span>
+                  <span style={{ fontWeight: 600, color: forecast.macd_signal.includes('BULLISH') ? '#10B981' : '#FAFAFA' }}>
                     {forecast.macd_signal}
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Độ biến động năm (Volatility):</span>
-                  <span className="num-mono" style={{ fontWeight: 700 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                  <span style={{ color: '#A1A1AA' }}>Độ biến động năm:</span>
+                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: '#FAFAFA' }}>
                     {forecast.annual_volatility.toFixed(1)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Vùng Kháng cự & Hỗ trợ */}
-            <div className="glass-panel" style={{ padding: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <Target size={18} color="var(--accent-gold)" />
-                <h4 style={{ fontWeight: 700 }}>Vùng Cung Cầu: Kháng Cự & Hỗ Trợ</h4>
+            {/* Vung Khang cu & Ho tro */}
+            <div style={{
+              padding: 24,
+              backgroundColor: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: 12,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                <Layers size={18} color="#00E5FF" />
+                <h4 style={{ fontWeight: 600, fontSize: '16px', color: '#FAFAFA', margin: 0 }}>
+                  Vùng Cung Cầu: Kháng Cự & Hỗ Trợ
+                </h4>
               </div>
 
-              {/* Resistances */}
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent-red)', fontWeight: 700, marginBottom: 6 }}>
-                  VÙNG KHÁNG CỰ (RESISTANCE LEVELS)
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#EF4444', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+                    VÙNG KHÁNG CỰ (RESISTANCE LEVELS)
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {forecast.resistance_levels.map((res, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          color: '#EF4444',
+                          padding: '6px 12px',
+                          borderRadius: 6,
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          fontFamily: 'monospace',
+                        }}
+                      >
+                        R{i + 1}: {formatPrice(res)}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {forecast.resistance_levels?.map((res, i) => (
-                    <span
-                      key={i}
-                      className="num-mono"
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        background: 'rgba(244, 63, 94, 0.12)',
-                        border: '1px solid rgba(244, 63, 94, 0.25)',
-                        color: '#f87171',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      R{i + 1}: {formatPrice(res)}
-                    </span>
-                  ))}
-                </div>
-              </div>
 
-              {/* Supports */}
-              <div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--accent-green)', fontWeight: 700, marginBottom: 6 }}>
-                  VÙNG HỖ TRỢ (SUPPORT LEVELS)
-                </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {forecast.support_levels?.map((sup, i) => (
-                    <span
-                      key={i}
-                      className="num-mono"
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        background: 'rgba(16, 185, 129, 0.12)',
-                        border: '1px solid rgba(16, 185, 129, 0.25)',
-                        color: '#4ade80',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      S{i + 1}: {formatPrice(sup)}
-                    </span>
-                  ))}
+                <div>
+                  <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+                    VÙNG HỖ TRỢ (SUPPORT LEVELS)
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {forecast.support_levels.map((sup, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          color: '#10B981',
+                          padding: '6px 12px',
+                          borderRadius: 6,
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          fontFamily: 'monospace',
+                        }}
+                      >
+                        S{i + 1}: {formatPrice(sup)}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

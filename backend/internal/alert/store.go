@@ -1,6 +1,7 @@
 package alert
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -21,13 +22,13 @@ func NewAlertStore(repo *database.Repository) *AlertStore {
 		alerts: []model.PriceAlert{},
 	}
 
-	// Đọc cảnh báo thực tế từ SQLite database
+	// Đọc cảnh báo thực tế từ Database
 	if repo != nil {
 		if loaded, err := repo.GetAlerts(); err == nil {
 			store.alerts = loaded
-			log.Printf("[AlertStore] Loaded %d real price alerts from SQLite database", len(loaded))
+			log.Printf("[AlertStore] Loaded %d real price alerts from Database", len(loaded))
 		} else {
-			log.Printf("[AlertStore] Error loading alerts from SQLite: %v", err)
+			log.Printf("[AlertStore] Error loading alerts: %v", err)
 		}
 	}
 
@@ -35,10 +36,25 @@ func NewAlertStore(repo *database.Repository) *AlertStore {
 }
 
 func (s *AlertStore) GetAll() []model.PriceAlert {
+	return s.GetByUser("")
+}
+
+func (s *AlertStore) GetByUser(userID string) []model.PriceAlert {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	res := make([]model.PriceAlert, len(s.alerts))
-	copy(res, s.alerts)
+
+	if userID == "" {
+		res := make([]model.PriceAlert, len(s.alerts))
+		copy(res, s.alerts)
+		return res
+	}
+
+	var res []model.PriceAlert
+	for _, a := range s.alerts {
+		if a.UserID == userID || a.UserID == "" {
+			res = append(res, a)
+		}
+	}
 	return res
 }
 
@@ -47,7 +63,7 @@ func (s *AlertStore) AddAlert(alt model.PriceAlert) model.PriceAlert {
 	defer s.mu.Unlock()
 
 	if alt.ID == "" {
-		alt.ID = "alt-" + time.Now().Format("20060102150405111")
+		alt.ID = fmt.Sprintf("alt-%d", time.Now().UnixNano())
 	}
 	alt.CreatedAt = time.Now()
 	alt.IsActive = true
@@ -55,7 +71,7 @@ func (s *AlertStore) AddAlert(alt model.PriceAlert) model.PriceAlert {
 
 	if s.repo != nil {
 		if err := s.repo.InsertAlert(&alt); err != nil {
-			log.Printf("[AlertStore] SQLite InsertAlert error: %v", err)
+			log.Printf("[AlertStore] InsertAlert error: %v", err)
 		}
 	}
 
@@ -64,17 +80,22 @@ func (s *AlertStore) AddAlert(alt model.PriceAlert) model.PriceAlert {
 }
 
 func (s *AlertStore) DeleteAlert(id string) bool {
+	return s.DeleteAlertForUser(id, "")
+}
+
+func (s *AlertStore) DeleteAlertForUser(id string, userID string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.repo != nil {
-		if err := s.repo.DeleteAlert(id); err != nil {
-			log.Printf("[AlertStore] SQLite DeleteAlert error: %v", err)
+		if err := s.repo.DeleteAlertForUser(id, userID); err != nil {
+			log.Printf("[AlertStore] DeleteAlertForUser error: %v", err)
+			return false
 		}
 	}
 
 	for i, a := range s.alerts {
-		if a.ID == id {
+		if a.ID == id && (userID == "" || a.UserID == userID || a.UserID == "") {
 			s.alerts = append(s.alerts[:i], s.alerts[i+1:]...)
 			return true
 		}

@@ -1,54 +1,123 @@
-name: CI/CD Auto Deploy on PR Merge to Server
+name: CI/CD Auto Deploy to Home Server
 
-# 1. Chỉ lắng nghe sự kiện khi Pull Request vào nhánh 'server' bị đóng (closed)
+# 1. Kích hoạt khi có code mới được MERGE hoặc PUSH vào nhánh 'server'
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - server
   workflow_dispatch: # Cho phép bấm nút "Run workflow" thủ công trên web GitHub khi cần
 
 jobs:
   deploy:
-    # 2. ĐIỀU KIỆN QUAN TRỌNG: Chỉ chạy khi PR thực sự được MERGE (merged == true)
-    # Nếu ai đó bấm Close/Hủy PR mà không merge thì workflow sẽ BỎ QUA (không chạy)
-    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
-    
     name: Build & Deploy on Home Server
     runs-on: self-hosted
 
     steps:
       - name: 📥 Checkout Repository (Nhánh server)
         uses: actions/checkout@v4
-        with:
-          ref: server
 
       - name: ⚙️ Setup Environment Files
+        shell: powershell
         run: |
-          if [ ! -f backend/.env ]; then
-            echo "Copying backend/.env.example to backend/.env"
-            cp backend/.env.example backend/.env
-          fi
-          if [ ! -f frontend/.env ]; then
-            echo "Copying frontend/.env.example to frontend/.env"
-            cp frontend/.env.example frontend/.env
-          fi
-        shell: bash
+          if (-not (Test-Path "backend/.env")) {
+            Write-Host "Copying backend/.env.example to backend/.env"
+            Copy-Item "backend/.env.example" "backend/.env"
+          }
+          if (-not (Test-Path "frontend/.env")) {
+            Write-Host "Copying frontend/.env.example to frontend/.env"
+            Copy-Item "frontend/.env.example" "frontend/.env"
+          }
 
       - name: 🐳 Deploy Containers with Docker Compose
+        shell: powershell
         run: |
-          docker compose down || true
+          try { docker compose down --remove-orphans } catch { Write-Host "No active containers to stop." }
+          try { docker rm -f fintracker-postgres fintracker-backend fintracker-frontend } catch {}
           docker compose up -d --build --remove-orphans
-        shell: bash
 
       - name: 🧹 Cleanup Old Dangling Docker Images
+        shell: powershell
         run: |
-          docker image prune -f
-        shell: bash
+          try { docker image prune -f } catch {}
 
       - name: 🩺 Verify Healthcheck
+        shell: powershell
         run: |
-          sleep 5
+          Start-Sleep -Seconds 5
           docker compose ps
-        shell: bash
+
+      # ==================== DISCORD NOTIFICATIONS ====================
+      - name: 📢 Notify Discord on Success
+        if: success()
+        shell: powershell
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          $webhook = if ($env:DISCORD_WEBHOOK) { $env:DISCORD_WEBHOOK } else { "https://discord.com/api/webhooks/1557693587209060452/3pSWz8wzVXtoXem3TApx9CmEOhtj8H53sa6Ic6gf_L6sM7YeuFGnpffzZJV3NJ6PwOiB" }
+          $shortSha = if ("${{ github.sha }}".Length -ge 7) { "${{ github.sha }}".Substring(0, 7) } else { "${{ github.sha }}" }
+          $body = @{
+            username = "FinTracker Deploy Bot"
+            avatar_url = "https://cdn-icons-png.flaticon.com/512/2534/2534204.png"
+            embeds = @(
+              @{
+                title = ":rocket: FinTracker Deploy Thanh Cong!"
+                description = "He thong FinTracker da duoc build va trien khai container thanh cong tren Home Server."
+                color = 3066993
+                fields = @(
+                  @{ name = ":package: Kho Ma Nguon"; value = "${{ github.repository }}"; inline = $true },
+                  @{ name = ":herb: Nhanh / Commit"; value = "${{ github.ref_name }} (`$shortSha`)"; inline = $true },
+                  @{ name = ":bust_in_silhouette: Nguoi Kich Hoat"; value = "${{ github.actor }}"; inline = $true },
+                  @{ name = ":gear: Trang Thai"; value = ":white_check_mark: **DEPLOY SUCCESS (Hoat dong)**"; inline = $true },
+                  @{ name = ":globe_with_meridians: Dich Vu"; value = "• Frontend Nginx (Port 7173)`n• Go Backend (Port 8080)`n• PostgreSQL 16 (Port 5432)"; inline = $false },
+                  @{ name = ":link: Chi Tiet CI/CD"; value = "[Xem GitHub Actions Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"; inline = $false }
+                )
+                footer = @{ text = "FinTracker CI/CD Pipeline - Windows Home Server" }
+                timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+              }
+            )
+          } | ConvertTo-Json -Depth 6
+
+          try {
+            $utf8 = [System.Text.Encoding]::UTF8.GetBytes($body)
+            Invoke-RestMethod -Uri $webhook -Method Post -Body $utf8 -ContentType "application/json; charset=utf-8"
+            Write-Host "Da gui thong bao thanh cong den Discord!"
+          } catch {
+            Write-Warning "Khong the gui thong bao den Discord: $_"
+          }
+
+      - name: 🚨 Notify Discord on Failure
+        if: failure()
+        shell: powershell
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          $webhook = if ($env:DISCORD_WEBHOOK) { $env:DISCORD_WEBHOOK } else { "https://discord.com/api/webhooks/1557693587209060452/3pSWz8wzVXtoXem3TApx9CmEOhtj8H53sa6Ic6gf_L6sM7YeuFGnpffzZJV3NJ6PwOiB" }
+          $shortSha = if ("${{ github.sha }}".Length -ge 7) { "${{ github.sha }}".Substring(0, 7) } else { "${{ github.sha }}" }
+          $body = @{
+            username = "FinTracker Deploy Bot"
+            avatar_url = "https://cdn-icons-png.flaticon.com/512/2534/2534204.png"
+            embeds = @(
+              @{
+                title = ":rotating_light: FinTracker Deploy That Bai!"
+                description = "Qua trinh build hoac trien khai FinTracker gap loi tren Home Server."
+                color = 15158332
+                fields = @(
+                  @{ name = ":package: Kho Ma Nguon"; value = "${{ github.repository }}"; inline = $true },
+                  @{ name = ":herb: Nhanh / Commit"; value = "${{ github.ref_name }} (`$shortSha`)"; inline = $true },
+                  @{ name = ":bust_in_silhouette: Nguoi Kich Hoat"; value = "${{ github.actor }}"; inline = $true },
+                  @{ name = ":gear: Trang Thai"; value = ":x: **DEPLOY FAILED (Gap loi)**"; inline = $true },
+                  @{ name = ":link: Xem Chi Tiet Loi"; value = "[Nhan vao day de xem log tren GitHub](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"; inline = $false }
+                )
+                footer = @{ text = "FinTracker CI/CD Pipeline - Windows Home Server" }
+                timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+              }
+            )
+          } | ConvertTo-Json -Depth 6
+
+          try {
+            $utf8 = [System.Text.Encoding]::UTF8.GetBytes($body)
+            Invoke-RestMethod -Uri $webhook -Method Post -Body $utf8 -ContentType "application/json; charset=utf-8"
+            Write-Host "Da gui thong bao loi den Discord!"
+          } catch {
+            Write-Warning "Khong the gui thong bao den Discord: $_"
+          }

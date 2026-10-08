@@ -81,7 +81,7 @@ func main() {
 			}
 			fmt.Printf("| %-6s | %-34s | %-10s | %-23s |\n", item.Version, item.Name, statusStr, appliedAtStr)
 		}
-		fmt.Println("+--------+------------------------------------+------------+-------------------------+\n")
+		fmt.Println("+--------+------------------------------------+------------+-------------------------+")
 
 	default:
 		log.Printf("❌ Unknown command: %s", command)
