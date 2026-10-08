@@ -15,22 +15,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) 
   ];
 
   return (
-    <div
-      className="mobile-only"
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: 'rgba(7, 10, 19, 0.95)',
-        backdropFilter: 'blur(20px)',
-        borderTop: '1px solid var(--border-subtle)',
-        display: 'flex',
-        justifyContent: 'space-around',
-        padding: '10px 12px 14px 12px',
-        zIndex: 100,
-      }}
-    >
+    <nav className="mobile-nav-bar">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
@@ -45,19 +30,19 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) 
               flexDirection: 'column',
               alignItems: 'center',
               gap: 4,
-              color: isActive ? 'var(--accent-gold)' : 'var(--text-dim)',
+              color: isActive ? '#00E5FF' : '#A1A1AA',
               cursor: 'pointer',
               flex: 1,
-              transition: 'all 0.2s',
+              transition: 'color 0.2s ease',
             }}
           >
-            <Icon size={20} color={isActive ? 'var(--accent-gold)' : 'var(--text-dim)'} />
-            <span style={{ fontSize: '0.72rem', fontWeight: isActive ? 700 : 500 }}>
+            <Icon size={20} color={isActive ? '#00E5FF' : '#A1A1AA'} />
+            <span style={{ fontSize: '12px', fontWeight: isActive ? 600 : 400 }}>
               {tab.label}
             </span>
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 };

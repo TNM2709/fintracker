@@ -38,6 +38,7 @@ export interface Candle {
 
 export interface Transaction {
   id: string;
+  user_id?: string;
   portfolio_id: string;
   asset_id: string;
   asset_symbol: string;
@@ -70,6 +71,8 @@ export interface Holding {
 }
 
 export interface PortfolioSummary {
+  is_guest?: boolean;
+  user_id?: string;
   total_net_worth: number;
   total_cost_basis: number;
   total_unrealized_pnl: number;
@@ -122,6 +125,7 @@ export interface MarketSummary {
 
 export interface PriceAlert {
   id: string;
+  user_id?: string;
   asset_id: string;
   symbol: string;
   target_price: number;
@@ -203,4 +207,71 @@ export interface DCASimulationResult {
   final_bank_value: number;
   outperformance: number;
   yearly_points: DCAPoint[];
+}
+
+// ==================== USER MANAGEMENT & AUTH ====================
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  full_name: string;
+  role: 'admin' | 'user';
+  avatar?: string;
+  created_at: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface AdminUserSummary {
+  user: User;
+  transaction_count: number;
+  alert_count: number;
+  last_active: string;
+}
+
+export interface AdminStats {
+  total_users: number;
+  total_admins: number;
+  total_regular_users: number;
+  total_transactions: number;
+  total_price_alerts: number;
+  database_driver: string;
+  server_time: string;
+}
+
+// ==================== NOTIFICATIONS ====================
+
+export interface NotificationItem {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  type: 'PRICE_ALERT' | 'VOLATILITY' | 'TRANSACTION' | 'SYSTEM';
+  data?: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationSettings {
+  user_id: string;
+  enable_price_alerts: boolean;
+  enable_volatility_alerts: boolean;
+  enable_transaction_alerts: boolean;
+  enable_sound: boolean;
+  min_change_percent: number;
+  watched_assets: string;
+  updated_at: string;
+}
+
+export interface UpdateNotificationSettingsPayload {
+  enable_price_alerts?: boolean;
+  enable_volatility_alerts?: boolean;
+  enable_transaction_alerts?: boolean;
+  enable_sound?: boolean;
+  min_change_percent?: number;
+  watched_assets?: string;
 }

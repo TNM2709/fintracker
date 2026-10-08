@@ -18,6 +18,35 @@ type MigrationStatus struct {
 	AppliedAt *time.Time
 }
 
+// ConnectDB connects to database and returns *sql.DB for raw migration CLI
+func ConnectDB() (*sql.DB, string, error) {
+	dbGorm, driver, err := ConnectGORM()
+	if err != nil {
+		return nil, "", err
+	}
+	sqlDB, err := dbGorm.DB()
+	if err != nil {
+		return nil, "", err
+	}
+	return sqlDB, driver, nil
+}
+
+// LocateMigrationsDir locates the migrations directory across working directories
+func LocateMigrationsDir() string {
+	candidates := []string{
+		"migrations",
+		"backend/migrations",
+		"../migrations",
+		"../../migrations",
+	}
+	for _, dir := range candidates {
+		if stat, err := os.Stat(dir); err == nil && stat.IsDir() {
+			return dir
+		}
+	}
+	return "migrations"
+}
+
 // ensureMigrationTable creates the schema_migrations table if not exists
 func ensureMigrationTable(db *sql.DB) error {
 	query := `

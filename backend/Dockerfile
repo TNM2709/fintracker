@@ -1,7 +1,7 @@
 # ========================================================
 # Stage 1: Build binary với Golang Alpine tối ưu
 # ========================================================
-FROM golang:1.24-alpine AS builder
+FROM golang:alpine AS builder
 
 WORKDIR /build
 
@@ -16,7 +16,8 @@ RUN go mod download
 COPY . .
 
 # Biên dịch tĩnh siêu nhẹ không phụ thuộc thư viện C bên ngoài
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server ./cmd/server \
+    && CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/migrate ./cmd/migrate
 
 # ========================================================
 # Stage 2: Runtime image siêu nhỏ gọn (~20MB)
@@ -31,6 +32,7 @@ RUN apk add --no-cache ca-certificates tzdata \
 
 # Sao chép binary từ builder stage
 COPY --from=builder /app/server /app/server
+COPY --from=builder /app/migrate /app/migrate
 COPY migrations /app/migrations
 
 # Tạo thư mục lưu data SQLite fallback nếu cần
