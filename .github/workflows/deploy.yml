@@ -95,7 +95,7 @@ jobs:
         if: failure()
         shell: powershell
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK || 'https://discord.com/api/webhooks/1557693587209060452/3pSWz8wzVXtoXem3TApx9CmEOhtj8H53sa6Ic6gf_L6sM7YeuFGnpffzZJV3NJ6PwOiB' }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           $shortSha = if ("${{ github.sha }}".Length -ge 7) { "${{ github.sha }}".Substring(0, 7) } else { "${{ github.sha }}" }
           $body = @{
