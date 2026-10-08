@@ -1,6 +1,20 @@
-import React from 'react';
-import { PlusCircle, Search, Smartphone, Monitor, RefreshCw, Bell } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  PlusCircle,
+  Search,
+  Smartphone,
+  Monitor,
+  RefreshCw,
+  Bell,
+  Shield,
+  User,
+  LogIn,
+  UserPlus,
+  LogOut,
+  Sliders,
+} from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   isConnected: boolean;
@@ -13,6 +27,10 @@ interface HeaderProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onRefresh: () => void;
+  unreadNotifCount?: number;
+  onOpenNotifModal: () => void;
+  onOpenAdminModal: () => void;
+  onOpenProfileModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,280 +44,659 @@ export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
   onRefresh,
+  unreadNotifCount = 0,
+  onOpenNotifModal,
+  onOpenAdminModal,
+  onOpenProfileModal,
 }) => {
   const { currency, setCurrency, goldUnit, setGoldUnit } = useCurrency();
+  const { user, isAuthenticated, isAdmin, isGuest, openAuthModal, logout } = useAuth();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  const navTabs = [
+    { id: 'portfolio', label: 'Tài Sản & Sổ Cái' },
+    { id: 'market', label: 'Bảng Giá & Vàng SJC' },
+    { id: 'chart', label: 'Biểu Đồ Kỹ Thuật' },
+    { id: 'forecast', label: 'Dự Báo Monte Carlo' },
+  ];
+
+  const handleAddClick = () => {
+    if (isGuest) {
+      openAuthModal('login');
+    } else {
+      onOpenAddModal();
+    }
+  };
 
   return (
-    <header style={{
-      borderBottom: '1px solid var(--border-subtle)',
-      background: 'rgba(7, 10, 19, 0.85)',
-      backdropFilter: 'blur(20px)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-    }}>
-      <div style={{
-        maxWidth: 1600,
-        margin: '0 auto',
-        padding: '12px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 16,
-        flexWrap: 'wrap',
-      }}>
+    <header
+      style={{
+        borderBottom: '1px solid #27272A',
+        backgroundColor: 'rgba(24, 24, 27, 0.85)',
+        backdropFilter: 'blur(16px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1440,
+          margin: '0 auto',
+          padding: '12px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}
+      >
         {/* Brand & Connection Status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-            boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
-          }}>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#090d16' }}>Au</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              backgroundColor: '#00E5FF',
+              color: '#09090B',
+              fontWeight: 700,
+              fontSize: '16px',
+              boxShadow: '0 0 16px rgba(0, 229, 255, 0.25)',
+            }}
+          >
+            FT
           </div>
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h1 style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <h1 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0, letterSpacing: '-0.02em' }}>
                 FinTracker Pro
               </h1>
-              <span style={{
-                background: 'rgba(99, 102, 241, 0.15)',
-                color: '#818cf8',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                padding: '2px 6px',
-                borderRadius: 4,
-                border: '1px solid rgba(99, 102, 241, 0.3)',
-              }}>
-                Go Core 1.27
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#00E5FF',
+                  backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                  border: '1px solid rgba(0, 229, 255, 0.25)',
+                  padding: '1px 6px',
+                  borderRadius: 4,
+                }}
+              >
+                v2.0
               </span>
             </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '11px', color: '#A1A1AA', marginTop: 2 }}>
               <span
-                className="pulse-dot"
-                style={{ backgroundColor: isConnected ? 'var(--accent-green)' : 'var(--accent-red)' }}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  backgroundColor: isConnected ? '#10B981' : '#EF4444',
+                  boxShadow: isConnected ? '0 0 8px #10B981' : 'none',
+                  display: 'inline-block',
+                }}
               />
-              <span style={{ fontSize: '0.75rem', color: isConnected ? 'var(--accent-green)' : 'var(--text-dim)', fontWeight: 500 }}>
-                {isConnected ? 'Realtime WebSocket Active' : 'Connecting to Go Server...'}
-              </span>
+              <span>{isConnected ? 'Realtime Feed Active' : 'Connecting to Server...'}</span>
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs (Desktop) */}
-        <nav className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.03)', padding: 4, borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
-          {[
-            { id: 'portfolio', label: 'Tài Sản & Lợi Tức' },
-            { id: 'market', label: 'Bảng Giá & Vàng SJC' },
-            { id: 'chart', label: 'Biểu Đồ Kỹ Thuật' },
-            { id: 'forecast', label: 'Dự Đoán Monte Carlo' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 8,
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-                background: activeTab === tab.id ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(79, 70, 229, 0.3) 100%)' : 'transparent',
-                color: activeTab === tab.id ? '#fff' : 'var(--text-muted)',
-                boxShadow: activeTab === tab.id ? '0 2px 8px rgba(99, 102, 241, 0.25)' : 'none',
-                borderBottom: activeTab === tab.id ? '2px solid #818cf8' : 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Central Segmented Control Navigation */}
+        <nav
+          style={{
+            display: 'flex',
+            backgroundColor: '#09090B',
+            border: '1px solid #27272A',
+            borderRadius: 8,
+            padding: 3,
+            gap: 2,
+          }}
+          className="desktop-only"
+        >
+          {navTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: 6,
+                  fontSize: '13px',
+                  fontWeight: isActive ? 600 : 500,
+                  color: isActive ? '#FAFAFA' : '#A1A1AA',
+                  backgroundColor: isActive ? '#27272A' : 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  position: 'relative',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.color = '#FAFAFA';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.color = '#A1A1AA';
+                }}
+              >
+                {tab.label}
+                {isActive && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '25%',
+                      right: '25%',
+                      height: 2,
+                      backgroundColor: '#00E5FF',
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Search & Actions */}
+        {/* Right Tools & Action Area */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Currency Toggle (VND / USD) */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'rgba(255, 255, 255, 0.04)',
-            padding: 3,
-            borderRadius: 8,
-            border: '1px solid var(--border-subtle)',
-          }}>
+          {/* Currency Toggle Segment */}
+          <div
+            style={{
+              display: 'flex',
+              backgroundColor: '#09090B',
+              border: '1px solid #3F3F46',
+              borderRadius: 8,
+              padding: 2,
+            }}
+          >
             <button
               onClick={() => setCurrency('VND')}
               style={{
-                padding: '5px 9px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
+                padding: '4px 10px',
                 borderRadius: 6,
                 border: 'none',
+                fontSize: '12px',
+                fontWeight: 600,
                 cursor: 'pointer',
-                background: currency === 'VND' ? 'var(--accent-gold)' : 'transparent',
-                color: currency === 'VND' ? '#070a13' : 'var(--text-muted)',
-                transition: 'all 0.15s',
+                backgroundColor: currency === 'VND' ? '#00E5FF' : 'transparent',
+                color: currency === 'VND' ? '#09090B' : '#A1A1AA',
+                transition: 'all 0.15s ease',
               }}
-              title="Hiển thị tiền tệ: Việt Nam Đồng (VND)"
             >
               ₫ VND
             </button>
             <button
               onClick={() => setCurrency('USD')}
               style={{
-                padding: '5px 9px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
+                padding: '4px 10px',
                 borderRadius: 6,
                 border: 'none',
+                fontSize: '12px',
+                fontWeight: 600,
                 cursor: 'pointer',
-                background: currency === 'USD' ? 'var(--accent-gold)' : 'transparent',
-                color: currency === 'USD' ? '#070a13' : 'var(--text-muted)',
-                transition: 'all 0.15s',
+                backgroundColor: currency === 'USD' ? '#00E5FF' : 'transparent',
+                color: currency === 'USD' ? '#09090B' : '#A1A1AA',
+                transition: 'all 0.15s ease',
               }}
-              title="Hiển thị tiền tệ: Đô la Mỹ (USD)"
             >
               $ USD
             </button>
           </div>
 
-          {/* Gold Unit Toggle (Lượng / Chỉ / oz) */}
-          <div className="desktop-only" style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'rgba(255, 255, 255, 0.04)',
-            padding: 3,
-            borderRadius: 8,
-            border: '1px solid var(--border-subtle)',
-          }}>
+          {/* Gold Unit Toggle Segment */}
+          <div
+            style={{
+              display: 'flex',
+              backgroundColor: '#09090B',
+              border: '1px solid #3F3F46',
+              borderRadius: 8,
+              padding: 2,
+            }}
+            className="desktop-only"
+          >
             <button
               onClick={() => setGoldUnit('LUONG')}
               style={{
-                padding: '5px 8px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
+                padding: '4px 10px',
                 borderRadius: 6,
                 border: 'none',
+                fontSize: '12px',
+                fontWeight: 600,
                 cursor: 'pointer',
-                background: goldUnit === 'LUONG' ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                color: goldUnit === 'LUONG' ? '#fff' : 'var(--text-muted)',
-                transition: 'all 0.15s',
+                backgroundColor: goldUnit === 'LUONG' ? '#27272A' : 'transparent',
+                color: goldUnit === 'LUONG' ? '#FAFAFA' : '#A1A1AA',
+                transition: 'all 0.15s ease',
               }}
-              title="1 Lượng (37.5 gram)"
             >
               Lượng
             </button>
             <button
               onClick={() => setGoldUnit('CHI')}
               style={{
-                padding: '5px 8px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
+                padding: '4px 10px',
                 borderRadius: 6,
                 border: 'none',
+                fontSize: '12px',
+                fontWeight: 600,
                 cursor: 'pointer',
-                background: goldUnit === 'CHI' ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                color: goldUnit === 'CHI' ? '#fff' : 'var(--text-muted)',
-                transition: 'all 0.15s',
+                backgroundColor: goldUnit === 'CHI' ? '#27272A' : 'transparent',
+                color: goldUnit === 'CHI' ? '#FAFAFA' : '#A1A1AA',
+                transition: 'all 0.15s ease',
               }}
-              title="1 Chỉ = 1/10 Lượng (3.75 gram)"
             >
               Chỉ
             </button>
-            <button
-              onClick={() => setGoldUnit('OUNCE')}
-              style={{
-                padding: '5px 8px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: goldUnit === 'OUNCE' ? 'rgba(99, 102, 241, 0.4)' : 'transparent',
-                color: goldUnit === 'OUNCE' ? '#fff' : 'var(--text-muted)',
-                transition: 'all 0.15s',
-              }}
-              title="1 Ounce troy quốc tế (oz)"
-            >
-              oz
-            </button>
           </div>
 
-          <div style={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-          }}>
-            <Search size={15} style={{ position: 'absolute', left: 12, color: 'var(--text-dim)' }} />
+          {/* Search Box */}
+          <div style={{ position: 'relative', width: 150 }} className="desktop-only">
+            <Search size={14} color="#71717A" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Tìm SJC, FPT, AAPL, BTC..."
+              placeholder="Tìm mã..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid var(--border-subtle)',
+                paddingLeft: 30,
+                paddingRight: 10,
+                paddingTop: 6,
+                paddingBottom: 6,
+                fontSize: '12px',
                 borderRadius: 8,
-                padding: '8px 12px 8px 34px',
-                color: 'var(--text-main)',
-                fontSize: '0.85rem',
-                outline: 'none',
-                width: 190,
-                transition: 'all 0.2s',
+                backgroundColor: '#09090B',
+                border: '1px solid #3F3F46',
+                color: '#FAFAFA',
+                width: '100%',
               }}
             />
           </div>
 
+          {/* Quick Refresh */}
           <button
             onClick={onRefresh}
-            className="btn-ghost"
-            title="Làm mới dữ liệu từ Backend"
-            style={{ padding: '8px 10px' }}
+            style={{
+              padding: 8,
+              borderRadius: 8,
+              border: '1px solid #3F3F46',
+              backgroundColor: 'transparent',
+              color: '#A1A1AA',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            title="Làm mới dữ liệu"
           >
-            <RefreshCw size={15} />
+            <RefreshCw size={14} />
           </button>
 
+          {/* Alert Modal Button */}
           <button
             onClick={onOpenAlertModal}
-            className="btn-ghost"
-            title="Cài đặt cảnh báo giá tự động"
-            style={{ padding: '8px 12px', color: 'var(--accent-gold)' }}
+            style={{
+              padding: '6px 10px',
+              borderRadius: 8,
+              border: '1px solid #3F3F46',
+              backgroundColor: 'transparent',
+              color: '#FAFAFA',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            title="Quản lý cảnh báo giá"
+          >
+            <Bell size={14} color="#F59E0B" />
+            <span className="desktop-only">Cảnh Báo Giá</span>
+          </button>
+
+          {/* Notification Center Button with unread badge */}
+          <button
+            onClick={onOpenNotifModal}
+            style={{
+              position: 'relative',
+              padding: 8,
+              borderRadius: 8,
+              border: '1px solid #3F3F46',
+              backgroundColor: unreadNotifCount > 0 ? 'rgba(0, 229, 255, 0.1)' : 'transparent',
+              color: unreadNotifCount > 0 ? '#00E5FF' : '#A1A1AA',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease',
+            }}
+            title="Trung tâm thông báo & Tùy biến cảnh báo"
           >
             <Bell size={15} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>Cảnh Báo</span>
+            {unreadNotifCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: -4,
+                  backgroundColor: '#00E5FF',
+                  color: '#09090B',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 8px #00E5FF',
+                }}
+              >
+                {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+              </span>
+            )}
           </button>
 
-          {/* Toggle Mobile Simulator Preview */}
+          {/* Admin Control Badge Button (If Admin) */}
+          {isAdmin && (
+            <button
+              onClick={onOpenAdminModal}
+              style={{
+                padding: '6px 10px',
+                borderRadius: 8,
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#EF4444',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+              title="Mở Bảng điều khiển Quản trị viên"
+            >
+              <Shield size={14} />
+              <span className="desktop-only">Quản Trị</span>
+            </button>
+          )}
+
+          {/* Mobile Simulator Preview Toggle */}
           <button
             onClick={onToggleMobilePreview}
-            className="btn-ghost"
-            title="Chuyển chế độ xem Mobile / Desktop"
             style={{
-              padding: '8px 12px',
-              color: isMobilePreview ? 'var(--accent-gold)' : 'var(--text-muted)',
-              borderColor: isMobilePreview ? 'var(--accent-gold)' : 'var(--border-subtle)',
+              padding: 8,
+              borderRadius: 8,
+              border: '1px solid #3F3F46',
+              backgroundColor: isMobilePreview ? '#27272A' : 'transparent',
+              color: isMobilePreview ? '#00E5FF' : '#A1A1AA',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease',
             }}
+            title={isMobilePreview ? "Chuyển sang giao diện Desktop" : "Chuyển sang mô phỏng Mobile"}
           >
-            {isMobilePreview ? <Smartphone size={16} /> : <Monitor size={16} />}
-            <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>
-              {isMobilePreview ? 'Giao diện Mobile' : 'Giao diện Desktop'}
-            </span>
+            {isMobilePreview ? <Monitor size={15} /> : <Smartphone size={15} />}
           </button>
 
+          {/* Primary Action: Add Transaction */}
           <button
-            onClick={onOpenAddModal}
-            className="btn-gold"
+            onClick={handleAddClick}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 8,
+              backgroundColor: '#00E5FF',
+              color: '#09090B',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.2s ease',
+              boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
+            }}
+            title={isGuest ? 'Đăng nhập để thêm giao dịch vào sổ cái' : 'Thêm giao dịch mới'}
           >
-            <PlusCircle size={16} />
-            <span>Thêm Giao Dịch</span>
+            <PlusCircle size={15} />
+            <span className="desktop-only">Thêm Giao Dịch</span>
           </button>
+
+          {/* Authentication Area */}
+          {isAuthenticated && user ? (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '4px 8px 4px 4px',
+                  backgroundColor: '#18181B',
+                  border: '1px solid #3F3F46',
+                  borderRadius: 20,
+                  cursor: 'pointer',
+                  color: '#FAFAFA',
+                }}
+              >
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: '50%',
+                    backgroundColor: user.role === 'admin' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 229, 255, 0.2)',
+                    color: user.role === 'admin' ? '#EF4444' : '#00E5FF',
+                    border: `1px solid ${user.role === 'admin' ? '#EF4444' : '#00E5FF'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {user.username.slice(0, 2).toUpperCase()}
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: 600 }} className="desktop-only">
+                  {user.username}
+                </span>
+              </button>
+
+              {/* User Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '110%',
+                    right: 0,
+                    width: 200,
+                    backgroundColor: '#18181B',
+                    border: '1px solid #27272A',
+                    borderRadius: 10,
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)',
+                    padding: 6,
+                    zIndex: 200,
+                    animation: 'fadeIn 0.15s ease',
+                  }}
+                >
+                  <div style={{ padding: '8px 10px', borderBottom: '1px solid #27272A', marginBottom: 4 }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
+                      {user.full_name || user.username}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#71717A' }}>
+                      {user.email}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenProfileModal();
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      borderRadius: 6,
+                      background: 'none',
+                      border: 'none',
+                      color: '#D4D4D8',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <User size={14} />
+                    <span>Hồ sơ cá nhân</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      onOpenNotifModal();
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      borderRadius: 6,
+                      background: 'none',
+                      border: 'none',
+                      color: '#D4D4D8',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <Sliders size={14} />
+                    <span>Tùy biến thông báo</span>
+                  </button>
+
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onOpenAdminModal();
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 10px',
+                        borderRadius: 6,
+                        background: 'none',
+                        border: 'none',
+                        color: '#EF4444',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      <Shield size={14} />
+                      <span>Trang Quản Trị</span>
+                    </button>
+                  )}
+
+                  <div style={{ height: 1, backgroundColor: '#27272A', margin: '4px 0' }} />
+
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      logout();
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      borderRadius: 6,
+                      background: 'none',
+                      border: 'none',
+                      color: '#EF4444',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
+                    <LogOut size={14} />
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                onClick={() => openAuthModal('login')}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  backgroundColor: 'transparent',
+                  border: '1px solid #3F3F46',
+                  color: '#FAFAFA',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <LogIn size={13} />
+                <span>Đăng Nhập</span>
+              </button>
+
+              <button
+                onClick={() => openAuthModal('register')}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  backgroundColor: 'rgba(0, 229, 255, 0.12)',
+                  border: '1px solid rgba(0, 229, 255, 0.35)',
+                  color: '#00E5FF',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'all 0.15s ease',
+                }}
+                className="desktop-only"
+              >
+                <UserPlus size={13} />
+                <span>Đăng Ký</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

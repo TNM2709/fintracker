@@ -1,0 +1,68 @@
+# ==========================================
+# FinTracker Git Ignore Configuration
+# ==========================================
+
+# --- Environment & Secret Variables ---
+.env
+.env.*
+!.env.example
+
+# --- Go Build, Caches & Executables ---
+.gocache/
+backend/.gocache/
+*.exe
+*.exe~
+server.exe
+backend/server.exe
+backend/server.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+
+# --- Local Databases & Storage ---
+backend/data/*.db
+backend/data/*.db-shm
+backend/data/*.db-wal
+backend/data/*.sqlite
+backend/data/*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# --- Node / Frontend Build & Dependencies ---
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Logs & Temp Files ---
+*.log
+logs/
+tmp/
+scratch/
+
+# --- IDEs & OS Files ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+Desktop.ini

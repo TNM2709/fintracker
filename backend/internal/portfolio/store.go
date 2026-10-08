@@ -1,6 +1,7 @@
 package portfolio
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"sync"
@@ -22,26 +23,26 @@ func NewPortfolioStore(repo *database.Repository) *PortfolioStore {
 		transactions: []model.Transaction{},
 	}
 
-	// Đọc toàn bộ dữ liệu giao dịch thực tế từ SQLite database
+	// Đọc toàn bộ dữ liệu giao dịch thực tế từ Database
 	if repo != nil {
 		if txs, err := repo.GetTransactions(); err == nil {
 			store.transactions = txs
-			log.Printf("[Portfolio] Loaded %d real transactions from SQLite database", len(txs))
+			log.Printf("[Portfolio] Loaded %d real transactions from Database", len(txs))
 		} else {
-			log.Printf("[Portfolio] Error loading transactions from SQLite: %v", err)
+			log.Printf("[Portfolio] Error loading transactions: %v", err)
 		}
 	}
 
 	return store
 }
 
-// AddTransaction thêm giao dịch mới vào sổ cái và lưu vào SQLite Database
+// AddTransaction thêm giao dịch mới vào sổ cái và lưu vào Database
 func (ps *PortfolioStore) AddTransaction(tx model.Transaction) {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
 
 	if tx.ID == "" {
-		tx.ID = "tx-" + time.Now().Format("20060102150405111")
+		tx.ID = fmt.Sprintf("tx-%d", time.Now().UnixNano())
 	}
 	if tx.TransactionDate.IsZero() {
 		tx.TransactionDate = time.Now()
@@ -52,26 +53,31 @@ func (ps *PortfolioStore) AddTransaction(tx model.Transaction) {
 
 	if ps.repo != nil {
 		if err := ps.repo.InsertTransaction(&tx); err != nil {
-			log.Printf("[Portfolio] SQLite InsertTransaction error: %v", err)
+			log.Printf("[Portfolio] InsertTransaction error: %v", err)
 		}
 	}
 
 	ps.transactions = append([]model.Transaction{tx}, ps.transactions...)
 }
 
-// DeleteTransaction xóa giao dịch khỏi sổ cái và SQLite Database
+// DeleteTransaction xóa giao dịch theo ID với kiểm tra quyền sở hữu (hoặc admin nếu userID="")
 func (ps *PortfolioStore) DeleteTransaction(id string) bool {
+	return ps.DeleteTransactionForUser(id, "")
+}
+
+func (ps *PortfolioStore) DeleteTransactionForUser(id string, userID string) bool {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
 
 	if ps.repo != nil {
-		if err := ps.repo.DeleteTransaction(id); err != nil {
-			log.Printf("[Portfolio] SQLite DeleteTransaction error: %v", err)
+		if err := ps.repo.DeleteTransactionForUser(id, userID); err != nil {
+			log.Printf("[Portfolio] DeleteTransactionForUser error: %v", err)
+			return false
 		}
 	}
 
 	for i, tx := range ps.transactions {
-		if tx.ID == id {
+		if tx.ID == id && (userID == "" || tx.UserID == userID || tx.UserID == "") {
 			ps.transactions = append(ps.transactions[:i], ps.transactions[i+1:]...)
 			return true
 		}
@@ -79,33 +85,89 @@ func (ps *PortfolioStore) DeleteTransaction(id string) bool {
 	return false
 }
 
-// ResetPortfolio xóa sạch toàn bộ sổ cái trong SQLite Database
+// ResetPortfolio xóa sạch toàn bộ sổ cái của một người dùng
 func (ps *PortfolioStore) ResetPortfolio() {
+	ps.ResetPortfolioForUser("")
+}
+
+func (ps *PortfolioStore) ResetPortfolioForUser(userID string) {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
 
 	if ps.repo != nil {
-		if err := ps.repo.ClearTransactions(); err != nil {
-			log.Printf("[Portfolio] SQLite ClearTransactions error: %v", err)
+		if err := ps.repo.ClearTransactionsByUser(userID); err != nil {
+			log.Printf("[Portfolio] ClearTransactionsByUser error: %v", err)
 		}
 	}
-	ps.transactions = []model.Transaction{}
+
+	if userID == "" {
+		ps.transactions = []model.Transaction{}
+	} else {
+		var remaining []model.Transaction
+		for _, tx := range ps.transactions {
+			if tx.UserID != userID {
+				remaining = append(remaining, tx)
+			}
+		}
+		ps.transactions = remaining
+	}
 }
 
 // GetTransactions lấy danh sách giao dịch thực tế
 func (ps *PortfolioStore) GetTransactions() []model.Transaction {
-	ps.mu.RLock()
-	defer ps.mu.RUnlock()
-	return ps.transactions
+	return ps.GetTransactionsByUser("")
 }
 
-// GetSummary tính toán tài sản ròng, PnL, DCA, cổ tức và tỷ trọng thực tế
-func (ps *PortfolioStore) GetSummary(assetMap map[string]model.Asset, usdVndRate float64) model.PortfolioSummary {
+func (ps *PortfolioStore) GetTransactionsByUser(userID string) []model.Transaction {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
 
-	if len(ps.transactions) == 0 {
+	if userID == "" {
+		res := make([]model.Transaction, len(ps.transactions))
+		copy(res, ps.transactions)
+		return res
+	}
+
+	var res []model.Transaction
+	for _, tx := range ps.transactions {
+		if tx.UserID == userID {
+			res = append(res, tx)
+		}
+	}
+	return res
+}
+
+// GetSummary tính toán tài sản ròng, PnL, DCA, cổ tức và tỷ trọng toàn bộ
+func (ps *PortfolioStore) GetSummary(assetMap map[string]model.Asset, usdVndRate float64) model.PortfolioSummary {
+	return ps.GetSummaryByUser("", assetMap, usdVndRate)
+}
+
+// GetSummaryByUser tính toán danh mục cho một user cụ thể (nếu userID=="" là Guest mode)
+func (ps *PortfolioStore) GetSummaryByUser(userID string, assetMap map[string]model.Asset, usdVndRate float64) model.PortfolioSummary {
+	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+
+	var userTxs []model.Transaction
+	if userID == "" {
+		// Guest mode: Không có user đăng nhập
+		// Nếu có giao dịch demo (usr-demo) hoặc không, hiển thị mẫu hoặc trống
+		for _, tx := range ps.transactions {
+			if tx.UserID == "usr-demo" || tx.UserID == "" {
+				userTxs = append(userTxs, tx)
+			}
+		}
+	} else {
+		for _, tx := range ps.transactions {
+			if tx.UserID == userID {
+				userTxs = append(userTxs, tx)
+			}
+		}
+	}
+
+	if len(userTxs) == 0 {
 		return model.PortfolioSummary{
+			IsGuest:            userID == "",
+			UserID:             userID,
 			TotalNetWorth:      0,
 			TotalCostBasis:     0,
 			TotalUnrealizedPnL: 0,
@@ -131,7 +193,7 @@ func (ps *PortfolioStore) GetSummary(assetMap map[string]model.Asset, usdVndRate
 
 	grouped := make(map[string]*assetCalc)
 
-	for _, tx := range ps.transactions {
+	for _, tx := range userTxs {
 		calc, exists := grouped[tx.AssetID]
 		if !exists {
 			calc = &assetCalc{
@@ -174,11 +236,11 @@ func (ps *PortfolioStore) GetSummary(assetMap map[string]model.Asset, usdVndRate
 	totalDividendsVND := 0.0
 
 	allocationVND := map[string]float64{
-		"Vàng (Gold)":               0,
-		"Cổ phiếu VN (Stock VN)":    0,
-		"Cổ phiếu Mỹ (Stock US)":    0,
-		"Crypto":                    0,
-		"Tiền mặt & Cổ tức":         0,
+		"Vàng (Gold)":            0,
+		"Cổ phiếu VN (Stock VN)": 0,
+		"Cổ phiếu Mỹ (Stock US)": 0,
+		"Crypto":                 0,
+		"Tiền mặt & Cổ tức":      0,
 	}
 
 	for assetID, c := range grouped {
@@ -281,12 +343,14 @@ func (ps *PortfolioStore) GetSummary(assetMap map[string]model.Asset, usdVndRate
 		estYield = math.Round((totalDividendsVND/totalCostBasisVND*100)*100) / 100
 	}
 
-	recent := ps.transactions
+	recent := userTxs
 	if len(recent) > 10 {
 		recent = recent[:10]
 	}
 
 	return model.PortfolioSummary{
+		IsGuest:            userID == "",
+		UserID:             userID,
 		TotalNetWorth:      math.Round(totalNetWorthVND),
 		TotalCostBasis:     math.Round(totalCostBasisVND),
 		TotalUnrealizedPnL: math.Round(totalPnL),

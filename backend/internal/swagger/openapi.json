@@ -1,0 +1,769 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FinTracker Pro API",
+    "description": "High-Performance Golang Financial Engine API with GORM ORM, Realtime WebSocket, Monte Carlo & Portfolio Health Analytics",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Backend Engine"
+    },
+    {
+      "url": "http://localhost:7173",
+      "description": "Frontend Nginx Proxy"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Check engine health",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/market/summary": {
+      "get": {
+        "tags": [
+          "Market"
+        ],
+        "summary": "Market summary with VN-Index, gold, tickers",
+        "responses": {
+          "200": {
+            "description": "Summary payload"
+          }
+        }
+      }
+    },
+    "/api/v1/market/gold": {
+      "get": {
+        "tags": [
+          "Market"
+        ],
+        "summary": "Gold domestic quotes (SJC, DOJI, PNJ) and world spread",
+        "responses": {
+          "200": {
+            "description": "Gold details"
+          }
+        }
+      }
+    },
+    "/api/v1/market/candles/{asset_id}": {
+      "get": {
+        "tags": [
+          "Market"
+        ],
+        "summary": "Historical OHLCV candles",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "1D"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candle array"
+          }
+        }
+      }
+    },
+    "/api/v1/market/benchmark": {
+      "get": {
+        "tags": [
+          "Market"
+        ],
+        "summary": "12M relative performance comparison",
+        "responses": {
+          "200": {
+            "description": "Series array"
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/{asset_id}": {
+      "get": {
+        "tags": [
+          "Forecasting"
+        ],
+        "summary": "Monte Carlo cone & technical indicators",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "horizon",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forecast data"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/summary": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Portfolio net worth & holdings",
+        "responses": {
+          "200": {
+            "description": "Portfolio summary"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/analytics": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Portfolio health score, Sharpe ratio & rebalancing",
+        "responses": {
+          "200": {
+            "description": "Diagnostics report"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/dividends": {
+      "get": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Dividend calendar & cashflow",
+        "responses": {
+          "200": {
+            "description": "Dividend events"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/transactions": {
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Add transaction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "": "#/components/schemas/TransactionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recorded"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/transactions/{id}": {
+      "delete": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Delete transaction by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/reset": {
+      "post": {
+        "tags": [
+          "Portfolio"
+        ],
+        "summary": "Reset portfolio database",
+        "responses": {
+          "200": {
+            "description": "Reset"
+          }
+        }
+      }
+    },
+    "/api/v1/alerts": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "List price alerts",
+        "responses": {
+          "200": {
+            "description": "Alerts"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Create alert",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "": "#/components/schemas/PriceAlertInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/v1/alerts/{id}": {
+      "delete": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Delete alert by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/api/v1/tools/gold-calculator": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "summary": "Convert lượng/chỉ and gold spread",
+        "parameters": [
+          {
+            "name": "luong",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "default": 1.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gold calculation"
+          }
+        }
+      }
+    },
+    "/api/v1/tools/dca-simulator": {
+      "get": {
+        "tags": [
+          "Tools"
+        ],
+        "summary": "DCA compound interest simulation",
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "default": 10000000
+            }
+          },
+          {
+            "name": "years",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          },
+          {
+            "name": "roi",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "default": 15.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DCA projection"
+          }
+        }
+      }
+    },
+    "/api/v1/ws": {
+      "get": {
+        "tags": [
+          "WebSocket"
+        ],
+        "summary": "Realtime WebSocket feed",
+        "responses": {
+          "101": {
+            "description": "Switching Protocols"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TransactionInput": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "quantity",
+          "price"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "example": "VN-VCB"
+          },
+          "asset_symbol": {
+            "type": "string",
+            "example": "VCB"
+          },
+          "asset_name": {
+            "type": "string",
+            "example": "Vietcombank"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BUY",
+              "SELL",
+              "DIVIDEND"
+            ],
+            "example": "BUY"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 100
+          },
+          "price": {
+            "type": "number",
+            "example": 91500
+          },
+          "fee": {
+            "type": "number",
+            "example": 15000
+          },
+          "tax": {
+            "type": "number",
+            "example": 0
+          },
+          "transaction_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "notes": {
+            "type": "string",
+            "example": "Tích sản định kỳ"
+          }
+        }
+      },
+      "PriceAlertInput": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "target_price"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "example": "XAU-SJC"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "SJC"
+          },
+          "target_price": {
+            "type": "number",
+            "example": 86.5
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "ABOVE",
+              "BELOW"
+            ],
+            "example": "ABOVE"
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "asset_type": {
+            "type": "string",
+            "enum": [
+              "GOLD_VN",
+              "GOLD_WORLD",
+              "STOCK_VN",
+              "STOCK_US",
+              "CRYPTO",
+              "CASH"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "current_price": {
+            "type": "number"
+          },
+          "change_amount": {
+            "type": "number"
+          },
+          "change_percent": {
+            "type": "number"
+          },
+          "high_24h": {
+            "type": "number"
+          },
+          "low_24h": {
+            "type": "number"
+          },
+          "volume": {
+            "type": "number"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GoldDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "buy_price": {
+            "type": "number"
+          },
+          "sell_price": {
+            "type": "number"
+          },
+          "spread": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Candle": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "integer"
+          },
+          "open": {
+            "type": "number"
+          },
+          "high": {
+            "type": "number"
+          },
+          "low": {
+            "type": "number"
+          },
+          "close": {
+            "type": "number"
+          },
+          "volume": {
+            "type": "number"
+          }
+        }
+      },
+      "PortfolioSummary": {
+        "type": "object",
+        "properties": {
+          "total_net_worth": {
+            "type": "number"
+          },
+          "total_cost_basis": {
+            "type": "number"
+          },
+          "total_unrealized_pnl": {
+            "type": "number"
+          },
+          "total_pnl_rate": {
+            "type": "number"
+          },
+          "total_dividends": {
+            "type": "number"
+          },
+          "estimated_yield": {
+            "type": "number"
+          },
+          "asset_allocation": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "holdings": {
+            "type": "array",
+            "items": {
+              "": "#/components/schemas/Holding"
+            }
+          },
+          "recent_transactions": {
+            "type": "array",
+            "items": {
+              "": "#/components/schemas/TransactionInput"
+            }
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Holding": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "asset_type": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "total_quantity": {
+            "type": "number"
+          },
+          "avg_buy_price": {
+            "type": "number"
+          },
+          "current_price": {
+            "type": "number"
+          },
+          "total_cost": {
+            "type": "number"
+          },
+          "current_value": {
+            "type": "number"
+          },
+          "unrealized_pnl": {
+            "type": "number"
+          },
+          "unrealized_pnl_rate": {
+            "type": "number"
+          },
+          "dividends_collected": {
+            "type": "number"
+          },
+          "portfolio_weight": {
+            "type": "number"
+          }
+        }
+      },
+      "PortfolioAnalytics": {
+        "type": "object",
+        "properties": {
+          "health_score": {
+            "type": "integer"
+          },
+          "risk_profile": {
+            "type": "string"
+          },
+          "diversification_grade": {
+            "type": "string"
+          },
+          "hhi_index": {
+            "type": "number"
+          },
+          "estimated_annual_yield": {
+            "type": "number"
+          },
+          "estimated_sharpe_ratio": {
+            "type": "number"
+          },
+          "rebalance_tips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "strength_points": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "risk_warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ForecastResult": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "current_price": {
+            "type": "number"
+          },
+          "horizon_days": {
+            "type": "integer"
+          },
+          "expected_drift": {
+            "type": "number"
+          },
+          "annual_volatility": {
+            "type": "number"
+          },
+          "bear_target": {
+            "type": "number"
+          },
+          "base_target": {
+            "type": "number"
+          },
+          "bull_target": {
+            "type": "number"
+          },
+          "confidence_low_95": {
+            "type": "number"
+          },
+          "confidence_high_95": {
+            "type": "number"
+          },
+          "trend_signal": {
+            "type": "string"
+          },
+          "technical_score": {
+            "type": "number"
+          },
+          "rsi_14": {
+            "type": "number"
+          },
+          "macd_signal": {
+            "type": "string"
+          },
+          "support_levels": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "resistance_levels": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "simulation_sample_cone": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

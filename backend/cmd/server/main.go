@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,7 +21,9 @@ import (
 	"fin-tracker-backend/internal/database"
 	"fin-tracker-backend/internal/handler"
 	"fin-tracker-backend/internal/model"
+	"fin-tracker-backend/internal/notification"
 	"fin-tracker-backend/internal/portfolio"
+	"fin-tracker-backend/internal/swagger"
 )
 
 func main() {
@@ -47,14 +50,26 @@ func main() {
 	}
 	repo := database.NewRepository(db, driver)
 
-	// 2. Khởi tạo các Core Services kết nối với SQLite Database & Live Market Feed
+	// 2. Khởi tạo các Core Services kết nối với Database & Live Market Feed
 	centralCollector := collector.NewCentralCollector(repo)
 	portfolioStore := portfolio.NewPortfolioStore(repo)
 	alertStore := alert.NewAlertStore(repo)
+	notificationStore := notification.NewService(repo)
 	wsHub := handler.NewHub()
 
 	// Chạy WebSocket Hub trong Goroutine riêng
 	go wsHub.Run()
+
+	// Kết nối Notification Service với WebSocket Hub để push thông báo realtime
+	notificationStore.RegisterListener(func(notif model.Notification) {
+		data, err := json.Marshal(map[string]interface{}{
+			"type":         "NOTIFICATION_RECEIVED",
+			"notification": notif,
+		})
+		if err == nil {
+			wsHub.BroadcastJSON(data)
+		}
+	})
 
 	// Kết nối Collector với WebSocket để đẩy dữ liệu giá nhảy realtime & kiểm tra cảnh báo
 	centralCollector.RegisterListener(func(summary model.MarketSummary) {
@@ -74,6 +89,10 @@ func main() {
 		}
 		newTriggers := alertStore.CheckTriggers(priceMap)
 		for _, alt := range newTriggers {
+			// Kích hoạt thông báo trong notificationStore
+			currentPrice := priceMap[alt.AssetID]
+			notificationStore.HandlePriceAlertTriggered(alt, currentPrice)
+
 			altData, err := json.Marshal(map[string]interface{}{
 				"type":  "ALERT_TRIGGERED",
 				"alert": alt,
@@ -82,6 +101,9 @@ func main() {
 				wsHub.BroadcastJSON(altData)
 			}
 		}
+
+		// Kiểm tra biến động mạnh thị trường theo tùy biến thông báo của người dùng
+		notificationStore.CheckMarketVolatility(summary)
 	})
 
 	// Bắt đầu vòng lặp cào và cập nhật giá mỗi 6 giây
@@ -112,8 +134,9 @@ func main() {
 	})
 
 	// 3. Đăng ký REST API & WebSocket handlers
-	apiHandler := handler.NewAPIHandler(centralCollector, portfolioStore, alertStore, wsHub)
+	apiHandler := handler.NewAPIHandler(centralCollector, portfolioStore, alertStore, notificationStore, repo, wsHub)
 	apiHandler.RegisterRoutes(r)
+	swagger.RegisterRoutes(r)
 
 	// 4. Phục vụ Static Single-Page App nếu frontend/dist tồn tại
 	distDir := "../frontend/dist"
@@ -133,9 +156,18 @@ func main() {
 		})
 	}
 
-	// 4. Khởi chạy HTTP Server với Graceful Shutdown
+	// 5. Khởi chạy HTTP Server với Graceful Shutdown
+	listener, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Printf("⚠️ Port %s unavailable (%v), attempting fallback to port 8081...", port, err)
+		port = "8081"
+		listener, err = net.Listen("tcp", ":"+port)
+		if err != nil {
+			log.Fatalf("Fatal: failed to listen on port %s: %v", port, err)
+		}
+	}
+
 	server := &http.Server{
-		Addr:         ":" + port,
 		Handler:      r,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
@@ -145,7 +177,8 @@ func main() {
 	serverErrors := make(chan error, 1)
 	go func() {
 		log.Printf("⚡ Go Backend HTTP & WebSocket Server listening on http://localhost:%s", port)
-		serverErrors <- server.ListenAndServe()
+		log.Printf("📖 Swagger UI & API Schema Docs available at: http://localhost:%s/swagger", port)
+		serverErrors <- server.Serve(listener)
 	}()
 
 	shutdown := make(chan os.Signal, 1)
