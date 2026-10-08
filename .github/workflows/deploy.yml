@@ -1,0 +1,46 @@
+name: CI/CD Auto Deploy to Self-Hosted Server
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy on Home Server
+    runs-on: self-hosted
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Environment Files
+        run: |
+          if [ ! -f backend/.env ]; then
+            echo "Copying backend/.env.example to backend/.env"
+            cp backend/.env.example backend/.env
+          fi
+          if [ ! -f frontend/.env ]; then
+            echo "Copying frontend/.env.example to frontend/.env"
+            cp frontend/.env.example frontend/.env
+          fi
+        shell: bash
+
+      - name: 🐳 Deploy Containers with Docker Compose
+        run: |
+          docker compose down || true
+          docker compose up -d --build --remove-orphans
+        shell: bash
+
+      - name: 🧹 Cleanup Old Dangling Docker Images
+        run: |
+          docker image prune -f
+        shell: bash
+
+      - name: 🩺 Verify Healthcheck
+        run: |
+          sleep 5
+          docker compose ps
+        shell: bash

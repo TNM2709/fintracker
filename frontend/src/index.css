@@ -1,0 +1,285 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #070a13;
+  --bg-secondary: #0d1222;
+  --bg-tertiary: #131a32;
+  --bg-card: rgba(19, 26, 50, 0.7);
+  --bg-card-hover: rgba(27, 36, 68, 0.85);
+  
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-glow: rgba(99, 102, 241, 0.25);
+  --border-gold: rgba(245, 158, 11, 0.3);
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --accent-gold: #f59e0b;
+  --accent-gold-light: #fef3c7;
+  --accent-green: #10b981;
+  --accent-green-bg: rgba(16, 185, 129, 0.12);
+  --accent-red: #f43f5e;
+  --accent-red-bg: rgba(244, 63, 94, 0.12);
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-blue: #3b82f6;
+
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.25);
+  --shadow-gold-glow: 0 0 25px -5px rgba(245, 158, 11, 0.3);
+
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(245, 158, 11, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-glow);
+}
+
+.num-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glass Card */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.glass-panel-gold {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(19, 26, 50, 0.7) 100%);
+  border: 1px solid var(--border-gold);
+}
+
+/* Ticker Animations */
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 40s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Status Dot Pulse */
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #111827;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Badges */
+.badge-gain {
+  background: var(--accent-green-bg);
+  color: var(--accent-green);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.badge-loss {
+  background: var(--accent-red-bg);
+  color: var(--accent-red);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+.badge-gold {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-gold);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Table styles */
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fin-table th {
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.fin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+}
+
+.fin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* App Layout Grid */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px 80px 24px;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 900px) {
+  .main-content {
+    padding: 14px 14px 90px 14px;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-only {
+    display: none !important;
+  }
+}

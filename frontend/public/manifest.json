@@ -1,0 +1,25 @@
+{
+  "name": "FinTracker Pro - Quản Lý Giá Vàng & Tài Sản Đầu Tư",
+  "short_name": "FinTracker Pro",
+  "description": "Theo dõi giá vàng SJC, DOJI, cổ phiếu Việt Nam & Quốc tế, quản lý danh mục và dự báo tương lai Monte Carlo",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070a13",
+  "theme_color": "#070a13",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

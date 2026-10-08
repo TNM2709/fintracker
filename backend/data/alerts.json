@@ -1,0 +1,35 @@
+[
+  {
+    "id": "alt-1",
+    "asset_id": "XAU-SJC",
+    "symbol": "SJC",
+    "target_price": 86000000,
+    "condition": "ABOVE",
+    "is_active": true,
+    "is_triggered": true,
+    "created_at": "2026-10-05T15:20:49.8250713+07:00",
+    "triggered_at": "2026-10-07T15:23:43.8257783+07:00"
+  },
+  {
+    "id": "alt-2",
+    "asset_id": "VN-FPT",
+    "symbol": "FPT",
+    "target_price": 140000,
+    "condition": "ABOVE",
+    "is_active": true,
+    "is_triggered": true,
+    "created_at": "2026-10-06T15:20:49.8250713+07:00",
+    "triggered_at": "2026-10-07T15:28:43.8736044+07:00"
+  },
+  {
+    "id": "alt-3",
+    "asset_id": "XAU-USD",
+    "symbol": "XAU/USD",
+    "target_price": 2640,
+    "condition": "BELOW",
+    "is_active": true,
+    "is_triggered": false,
+    "created_at": "2026-10-04T15:20:49.8250713+07:00",
+    "triggered_at": "0001-01-01T00:00:00Z"
+  }
+]
