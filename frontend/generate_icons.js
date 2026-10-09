@@ -2,9 +2,6 @@ import fs from 'fs';
 import zlib from 'zlib';
 
 function createPNG(width, height, r, g, b) {
-  // Simple uncompressed or deflate PNG generator
-  const buffer = Buffer.alloc(8 + 25 + (1 + width * 4) * height + 12);
-  
   // PNG signature
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
   

@@ -1,5 +1,5 @@
 // FinTracker Pro - Cache Buster & Network Direct
-self.addEventListener('install', (e) => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 

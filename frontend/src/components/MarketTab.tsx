@@ -34,7 +34,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
         .then((data) => setBenchmarks(data))
         .catch((err) => console.error('Benchmark fetch error:', err));
     }
-  }, [subTab]);
+  }, [subTab, benchmarks.length]);
 
   if (!summary) {
     return (
