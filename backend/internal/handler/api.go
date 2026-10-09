@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,8 @@ func (h *APIHandler) RegisterRoutes(r chi.Router) {
 		// ==================== AUTH & USER PROFILE ====================
 		r.Post("/auth/register", h.HandleRegister)
 		r.Post("/auth/login", h.HandleLogin)
+		r.Post("/auth/oauth", h.HandleOAuthLogin)
+		r.Get("/auth/oauth/providers", h.HandleGetOAuthProviders)
 		r.With(auth.AuthMiddleware(false)).Get("/auth/me", h.HandleGetMe)
 		r.With(auth.AuthMiddleware(false)).Put("/auth/profile", h.HandleUpdateProfile)
 
@@ -247,6 +250,187 @@ func (h *APIHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 			Role:      userEntity.Role,
 			Avatar:    userEntity.Avatar,
 			CreatedAt: userEntity.CreatedAt,
+		},
+	})
+}
+
+func (h *APIHandler) HandleGetOAuthProviders(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"providers": []model.OAuthProviderInfo{
+			{
+				ID:          "google",
+				Name:        "Google / Gmail",
+				Enabled:     true,
+				Description: "Đăng nhập an toàn và nhanh chóng bằng tài khoản Google (Gmail)",
+			},
+			{
+				ID:          "facebook",
+				Name:        "Facebook",
+				Enabled:     true,
+				Description: "Đăng nhập nhanh chóng qua tài khoản mạng xã hội Facebook",
+			},
+		},
+	})
+}
+
+func (h *APIHandler) HandleOAuthLogin(w http.ResponseWriter, r *http.Request) {
+	var req model.OAuthLoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "Dữ liệu JSON không hợp lệ: "+err.Error())
+		return
+	}
+
+	provider := strings.ToLower(strings.TrimSpace(req.Provider))
+	if provider != "google" && provider != "facebook" {
+		writeError(w, http.StatusBadRequest, "Nhà cung cấp đăng nhập không được hỗ trợ (chỉ hỗ trợ 'google' hoặc 'facebook')")
+		return
+	}
+
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	if email == "" || !strings.Contains(email, "@") {
+		writeError(w, http.StatusBadRequest, "Email không hợp lệ hoặc bị để trống")
+		return
+	}
+
+	req.FullName = strings.TrimSpace(req.FullName)
+	req.ProviderID = strings.TrimSpace(req.ProviderID)
+
+	providerLabel := "Google (Gmail)"
+	if provider == "facebook" {
+		providerLabel = "Facebook"
+	}
+
+	// 1. Kiểm tra tài khoản đã tồn tại qua Email
+	userEntity, err := h.repo.GetUserByUsernameOrEmail(email)
+	if err == nil && userEntity != nil {
+		// Người dùng đã tồn tại -> cập nhật avatar / full name nếu trước đó trống
+		hasChanges := false
+		if userEntity.Avatar == "" && req.Avatar != "" {
+			userEntity.Avatar = req.Avatar
+			hasChanges = true
+		}
+		if userEntity.FullName == "" && req.FullName != "" {
+			userEntity.FullName = req.FullName
+			hasChanges = true
+		}
+		if hasChanges {
+			_ = h.repo.UpdateUser(userEntity)
+		}
+
+		// Tạo JWT Token phiên đăng nhập 7 ngày
+		token, err := auth.GenerateJWT(userEntity.ID, userEntity.Username, userEntity.Role, 7*24*time.Hour)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "Lỗi tạo token phiên đăng nhập")
+			return
+		}
+
+		writeJSON(w, http.StatusOK, model.AuthResponse{
+			Token: token,
+			User: model.User{
+				ID:        userEntity.ID,
+				Username:  userEntity.Username,
+				Email:     userEntity.Email,
+				FullName:  userEntity.FullName,
+				Role:      userEntity.Role,
+				Avatar:    userEntity.Avatar,
+				CreatedAt: userEntity.CreatedAt,
+			},
+		})
+		return
+	}
+
+	// 2. Tài khoản chưa tồn tại -> Tự động khởi tạo tài khoản mới qua OAuth
+	// Sinh username duy nhất từ email
+	emailParts := strings.Split(email, "@")
+	baseUsername := regexp.MustCompile(`[^a-zA-Z0-9_]`).ReplaceAllString(emailParts[0], "_")
+	baseUsername = strings.ToLower(strings.Trim(baseUsername, "_"))
+	if baseUsername == "" {
+		baseUsername = provider + "_user"
+	}
+
+	candidateUsername := baseUsername
+	for idx := 1; ; idx++ {
+		exist, _ := h.repo.GetUserByUsernameOrEmail(candidateUsername)
+		if exist == nil {
+			break
+		}
+		candidateUsername = fmt.Sprintf("%s_%d", baseUsername, idx)
+	}
+
+	fullName := req.FullName
+	if fullName == "" {
+		fullName = candidateUsername
+	}
+
+	avatar := req.Avatar
+	if avatar == "" {
+		avatar = fmt.Sprintf("https://api.dicebear.com/7.x/identicon/svg?seed=%s", candidateUsername)
+	}
+
+	// Mật khẩu ngẫu nhiên bảo mật cho tài khoản liên kết OAuth
+	oauthPasswordSecret := fmt.Sprintf("oauth_%s_%s_%d", provider, req.ProviderID, time.Now().UnixNano())
+	hashedPassword, err := auth.HashPassword(oauthPasswordSecret)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "Lỗi khởi tạo mật khẩu bảo mật OAuth")
+		return
+	}
+
+	newUser := model.UserEntity{
+		ID:           fmt.Sprintf("usr-%d", time.Now().UnixNano()),
+		Username:     candidateUsername,
+		Email:        email,
+		PasswordHash: hashedPassword,
+		FullName:     fullName,
+		Role:         "user",
+		Avatar:       avatar,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := h.repo.CreateUser(&newUser); err != nil {
+		writeError(w, http.StatusInternalServerError, "Lỗi tạo tài khoản người dùng qua OAuth: "+err.Error())
+		return
+	}
+
+	// Khởi tạo tùy biến thông báo mặc định cho người dùng mới
+	_ = h.repo.UpsertNotificationSettings(&model.UserNotificationSettingsEntity{
+		UserID:                  newUser.ID,
+		EnablePriceAlerts:       true,
+		EnableVolatilityAlerts:  true,
+		EnableTransactionAlerts: true,
+		EnableSound:             true,
+		MinChangePercent:        2.0,
+		WatchedAssets:           "ALL",
+	})
+
+	// Gửi thông báo chào mừng
+	if h.notifications != nil {
+		_, _ = h.notifications.SendNotification(
+			newUser.ID,
+			fmt.Sprintf("Chào mừng đến với FinTracker Pro qua %s!", providerLabel),
+			fmt.Sprintf("Chào mừng %s! Bạn đã đăng nhập thành công bằng tài khoản %s. Toàn bộ danh mục đầu tư và cảnh báo của bạn đã sẵn sàng.", fullName, providerLabel),
+			"SYSTEM",
+			"",
+		)
+	}
+
+	// Tạo Token JWT (hạn 7 ngày)
+	token, err := auth.GenerateJWT(newUser.ID, newUser.Username, newUser.Role, 7*24*time.Hour)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "Lỗi tạo token phiên đăng nhập")
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, model.AuthResponse{
+		Token: token,
+		User: model.User{
+			ID:        newUser.ID,
+			Username:  newUser.Username,
+			Email:     newUser.Email,
+			FullName:  newUser.FullName,
+			Role:      newUser.Role,
+			Avatar:    newUser.Avatar,
+			CreatedAt: newUser.CreatedAt,
 		},
 	})
 }

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { User } from '../types';
+import type { User, OAuthLoginRequest } from '../types';
 import {
   getAuthToken,
   clearAuthToken,
   loginApi,
   registerApi,
+  loginWithOAuthApi,
   getMeApi,
   updateProfileApi,
 } from '../services/api';
@@ -41,6 +42,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(resp.token);
     setIsAuthModalOpen(false);
   }, []);
+
+  const loginWithOAuth = useCallback(
+    async (provider: 'google' | 'facebook', customData?: Partial<OAuthLoginRequest>) => {
+      const defaultName = provider === 'google' ? 'Google Trader' : 'Facebook Trader';
+      const defaultEmail =
+        provider === 'google' ? 'google.trader@gmail.com' : 'fb.trader@facebook.com';
+      const defaultAvatar =
+        provider === 'google'
+          ? 'https://api.dicebear.com/7.x/identicon/svg?seed=google_trader'
+          : 'https://api.dicebear.com/7.x/identicon/svg?seed=fb_trader';
+
+      const payload: OAuthLoginRequest = {
+        provider,
+        email: customData?.email || defaultEmail,
+        full_name: customData?.full_name || defaultName,
+        avatar: customData?.avatar || defaultAvatar,
+        provider_id: customData?.provider_id || `${provider}-id-${Date.now()}`,
+        token: customData?.token || `oauth-token-${Date.now()}`,
+      };
+
+      const resp = await loginWithOAuthApi(payload);
+      setUser(resp.user);
+      setToken(resp.token);
+      setIsAuthModalOpen(false);
+    },
+    []
+  );
 
   const register = useCallback(async (payload: {
     username: string;
@@ -91,6 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         isGuest,
         login,
+        loginWithOAuth,
         register,
         logout,
         updateProfile,

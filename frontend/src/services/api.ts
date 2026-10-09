@@ -12,6 +12,8 @@ import type {
   DCASimulationResult,
   User,
   AuthResponse,
+  OAuthLoginRequest,
+  OAuthProviderInfo,
   AdminUserSummary,
   AdminStats,
   NotificationItem,
@@ -89,6 +91,29 @@ export async function registerApi(payload: {
   const data: AuthResponse = await res.json();
   setAuthToken(data.token);
   return data;
+}
+
+export async function loginWithOAuthApi(payload: OAuthLoginRequest): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/oauth`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Đăng nhập mạng xã hội thất bại');
+  }
+  const data: AuthResponse = await res.json();
+  setAuthToken(data.token);
+  return data;
+}
+
+export async function getOAuthProvidersApi(): Promise<{ providers: OAuthProviderInfo[] }> {
+  const res = await fetch(`${API_BASE}/auth/oauth/providers`);
+  if (!res.ok) {
+    return { providers: [] };
+  }
+  return res.json();
 }
 
 export async function getMeApi(): Promise<User> {

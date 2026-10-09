@@ -226,6 +226,22 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface OAuthLoginRequest {
+  provider: 'google' | 'facebook';
+  email: string;
+  full_name?: string;
+  avatar?: string;
+  provider_id?: string;
+  token?: string;
+}
+
+export interface OAuthProviderInfo {
+  id: 'google' | 'facebook';
+  name: string;
+  enabled: boolean;
+  description: string;
+}
+
 export interface AdminUserSummary {
   user: User;
   transaction_count: number;

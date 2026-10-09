@@ -215,6 +215,24 @@ type LoginRequest struct {
 	Password        string `json:"password"`
 }
 
+// OAuthLoginRequest holds social OAuth payload (Google or Facebook)
+type OAuthLoginRequest struct {
+	Provider   string `json:"provider"`    // "google" | "facebook"
+	Email      string `json:"email"`       // user email address
+	FullName   string `json:"full_name"`   // user display name
+	Avatar     string `json:"avatar"`      // profile avatar URL
+	ProviderID string `json:"provider_id"` // unique user ID from provider
+	Token      string `json:"token"`       // client token
+}
+
+// OAuthProviderInfo represents supported OAuth provider
+type OAuthProviderInfo struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Enabled     bool   `json:"enabled"`
+	Description string `json:"description"`
+}
+
 // AuthResponse holds JWT token and user info
 type AuthResponse struct {
 	Token string `json:"token"`

@@ -295,3 +295,89 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 		t.Fatalf("Data isolation violation! Admin saw %d transactions, expected 0", len(adminPortfolio.RecentTransactions))
 	}
 }
+
+func TestOAuthLoginFlow(t *testing.T) {
+	r, _ := setupTestRouter(t)
+
+	// 1. Get OAuth providers list
+	req := httptest.NewRequest("GET", "/api/v1/auth/oauth/providers", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fatalf("Expected 200 on /auth/oauth/providers, got %d", w.Code)
+	}
+
+	// 2. Login via Google OAuth (new user)
+	googlePayload := model.OAuthLoginRequest{
+		Provider:   "google",
+		Email:      "john.doe@gmail.com",
+		FullName:   "John Doe",
+		Avatar:     "https://lh3.googleusercontent.com/test",
+		ProviderID: "google-uid-1001",
+	}
+	body, _ := json.Marshal(googlePayload)
+	req = httptest.NewRequest("POST", "/api/v1/auth/oauth", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("Expected 201 Created for new Google OAuth user, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var googleResp model.AuthResponse
+	_ = json.NewDecoder(w.Body).Decode(&googleResp)
+	if googleResp.Token == "" || googleResp.User.Email != "john.doe@gmail.com" {
+		t.Fatalf("Invalid Google OAuth response: %+v", googleResp)
+	}
+
+	// 3. Login via Facebook OAuth (new user)
+	fbPayload := model.OAuthLoginRequest{
+		Provider:   "facebook",
+		Email:      "sarah.fb@example.com",
+		FullName:   "Sarah Connor",
+		Avatar:     "https://graph.facebook.com/test",
+		ProviderID: "fb-uid-2002",
+	}
+	body, _ = json.Marshal(fbPayload)
+	req = httptest.NewRequest("POST", "/api/v1/auth/oauth", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("Expected 201 Created for new Facebook OAuth user, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var fbResp model.AuthResponse
+	_ = json.NewDecoder(w.Body).Decode(&fbResp)
+	if fbResp.Token == "" || fbResp.User.Email != "sarah.fb@example.com" {
+		t.Fatalf("Invalid Facebook OAuth response: %+v", fbResp)
+	}
+
+	// 4. Repeated login for existing Google user (should return 200 OK with valid JWT)
+	body, _ = json.Marshal(googlePayload)
+	req = httptest.NewRequest("POST", "/api/v1/auth/oauth", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("Expected 200 OK for existing Google OAuth login, got %d: %s", w.Code, w.Body.String())
+	}
+
+	// 5. Test invalid provider -> 400 Bad Request
+	badPayload := model.OAuthLoginRequest{
+		Provider: "twitter",
+		Email:    "test@example.com",
+	}
+	body, _ = json.Marshal(badPayload)
+	req = httptest.NewRequest("POST", "/api/v1/auth/oauth", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("Expected 400 Bad Request for unsupported provider, got %d", w.Code)
+	}
+}

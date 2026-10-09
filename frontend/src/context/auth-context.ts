@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { User } from '../types';
+import type { User, OAuthLoginRequest } from '../types';
 
 export interface AuthContextType {
   user: User | null;
@@ -8,6 +8,7 @@ export interface AuthContextType {
   isAdmin: boolean;
   isGuest: boolean;
   login: (usernameOrEmail: string, password: string) => Promise<void>;
+  loginWithOAuth: (provider: 'google' | 'facebook', customData?: Partial<OAuthLoginRequest>) => Promise<void>;
   register: (payload: { username: string; email: string; password: string; full_name: string }) => Promise<void>;
   logout: () => void;
   updateProfile: (payload: { full_name?: string; avatar?: string; password?: string }) => Promise<void>;
