@@ -5,6 +5,7 @@ import { PortfolioAnalyticsCard } from './PortfolioAnalyticsCard';
 import { DCACalculatorModal } from './DCACalculatorModal';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   TrendingUp,
   TrendingDown,
@@ -41,6 +42,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
   const [assetFilter, setAssetFilter] = useState<'ALL' | 'GOLD' | 'STOCK_VN' | 'STOCK_US' | 'CRYPTO'>('ALL');
 
   const { formatMoney, currency, usdVndRate } = useCurrency();
+  const { t } = useLanguage();
   const formatVND = (num: number) => formatMoney(num);
 
   const handleAddClick = () => {
@@ -410,7 +412,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
               }}>
-                TỔNG TÀI SẢN RÒNG (NET WORTH)
+                {t.portfolio.totalValue.toUpperCase()}
               </span>
             </div>
 
@@ -445,7 +447,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8, fontSize: '13px', color: '#A1A1AA' }}>
-              <span>Tổng vốn đầu tư gốc: <strong style={{ color: '#FAFAFA', fontFamily: 'monospace' }}>{formatVND(portfolio.total_cost_basis)}</strong></span>
+              <span>{t.portfolio.totalCost}: <strong style={{ color: '#FAFAFA', fontFamily: 'monospace' }}>{formatVND(portfolio.total_cost_basis)}</strong></span>
               <span>•</span>
               <span>Cập nhật: <strong style={{ color: '#00E5FF' }}>Vừa xong</strong></span>
             </div>
@@ -462,7 +464,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 padding: '12px 14px',
               }}>
                 <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                  LÃI/LỖ RÒNG
+                  {t.portfolio.unrealizedPnL.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
                   fontSize: '16px',
@@ -482,7 +484,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 padding: '12px 14px',
               }}>
                 <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                  CỔ TỨC THU
+                  {t.portfolio.dividendUpcoming.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
                   fontSize: '16px',
@@ -502,7 +504,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 padding: '12px 14px',
               }}>
                 <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                  LỢI TỨC / NĂM
+                  {t.portfolio.returnRate.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
                   fontSize: '16px',
@@ -544,7 +546,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 }}
               >
                 <PlusCircle size={15} />
-                <span>Thêm Giao Dịch Mới</span>
+                <span>{t.header.addTransaction}</span>
               </button>
 
               <button
@@ -567,7 +569,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <TrendingUp size={14} color="#00E5FF" />
-                <span>Kế Hoạch DCA</span>
+                <span>{t.portfolio.dcaCalculator}</span>
               </button>
 
               <button
@@ -588,10 +590,10 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                title="Xuất bảng Excel/CSV toàn bộ danh mục"
+                title="Xuất CSV"
               >
                 <FileSpreadsheet size={14} color="#10B981" />
-                <span>Xuất CSV</span>
+                <span>{t.portfolio.exportCsv}</span>
               </button>
             </div>
           </div>
@@ -710,11 +712,11 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
             gap: 2,
           }}>
             {[
-              { id: 'ALL', label: 'Tất Cả' },
-              { id: 'GOLD', label: '🪙 Vàng SJC' },
-              { id: 'STOCK_VN', label: '🏢 Cổ Phiếu VN' },
-              { id: 'STOCK_US', label: '🌐 Cổ Phiếu Mỹ' },
-              { id: 'CRYPTO', label: '₿ Crypto' },
+              { id: 'ALL', label: t.portfolio.filterAll },
+              { id: 'GOLD', label: `🪙 ${t.portfolio.filterGold}` },
+              { id: 'STOCK_VN', label: `🏢 ${t.portfolio.filterStockVn}` },
+              { id: 'STOCK_US', label: `🌐 ${t.portfolio.filterStockUs}` },
+              { id: 'CRYPTO', label: `₿ ${t.portfolio.filterCrypto}` },
             ].map((f) => {
               const isActive = assetFilter === f.id;
               return (
@@ -745,15 +747,15 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
               <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TÀI SẢN</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>KHỐI LƯỢNG</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ VỐN (DCA)</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ THỊ TRƯỜNG</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ TRỊ HIỆN TẠI</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LÃI / LỖ (PNL)</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CỔ TỨC</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TỶ TRỌNG</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>THAO TÁC</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAsset}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colQuantity}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAvgPrice}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colCurrentPrice}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colValue}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colPnL}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.dividendUpcoming}</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>%</th>
+                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.portfolio.colActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -762,7 +764,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                   <td colSpan={9} style={{ textAlign: 'center', padding: '40px 16px', color: '#A1A1AA' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                       <p style={{ margin: 0, fontSize: '14px', color: '#A1A1AA' }}>
-                        Chưa có vị thế nắm giữ nào trong danh mục.
+                        {t.portfolio.emptyHoldings}
                       </p>
                       <div style={{ display: 'flex', gap: 10 }}>
                         <button
@@ -778,7 +780,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                             cursor: 'pointer',
                           }}
                         >
-                          + Thêm Giao Dịch Đầu Tiên
+                          + {t.portfolio.addFirstTx}
                         </button>
                         <button
                           onClick={handleResetClick}
