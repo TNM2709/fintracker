@@ -22,7 +22,9 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (active) setLoading(true);
+    });
 
     fetchForecast(selectedAssetId, horizon)
       .then((data) => {

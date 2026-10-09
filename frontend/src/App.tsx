@@ -22,8 +22,10 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { NotificationModal } from './components/NotificationModal';
 import { AdminModal } from './components/AdminModal';
 import { MobileNav } from './components/MobileNav';
-import { CurrencyProvider, useCurrency } from './context/CurrencyContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
+import { useCurrency } from './context/useCurrency';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
 import { X, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
 
@@ -51,7 +53,8 @@ const MainApp: React.FC = () => {
   const [marketSummary, setMarketSummary] = useState<MarketSummary | null>(null);
   const [portfolioSummary, setPortfolioSummary] = useState<PortfolioSummary | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [unreadNotifCount, setUnreadNotifCount] = useState<number>(0);
+  const [rawUnreadNotifCount, setUnreadNotifCount] = useState<number>(0);
+  const unreadNotifCount = isAuthenticated ? rawUnreadNotifCount : 0;
   const [activeToast, setActiveToast] = useState<{
     title: string;
     message: string;
@@ -78,8 +81,6 @@ const MainApp: React.FC = () => {
       fetchNotifications(10)
         .then((res) => setUnreadNotifCount(res.unread_count || 0))
         .catch(() => {});
-    } else {
-      setUnreadNotifCount(0);
     }
   }, [isAuthenticated, user?.id]);
 

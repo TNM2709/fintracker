@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { DCASimulationResult } from '../types';
 import { fetchDCASimulator } from '../services/api';
-import { useCurrency } from '../context/CurrencyContext';
+import { useCurrency } from '../context/useCurrency';
 import { X, TrendingUp } from 'lucide-react';
 
 interface DCACalculatorModalProps {

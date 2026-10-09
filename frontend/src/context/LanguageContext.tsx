@@ -1,21 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   type LanguageCode,
-  type LanguageMeta,
   SUPPORTED_LANGUAGES,
   translations,
-  type TranslationType,
 } from '../i18n/translations';
+import { LanguageContext } from './useLanguage';
 
-interface LanguageContextType {
-  language: LanguageCode;
-  setLanguage: (lang: LanguageCode) => void;
-  currentLanguageMeta: LanguageMeta;
-  supportedLanguages: LanguageMeta[];
-  t: TranslationType;
-}
-
-const LanguageContext = createContext<LanguageContextType | null>(null);
+export type { LanguageContextType } from './useLanguage';
 
 const STORAGE_KEY = 'fintracker_language';
 
@@ -75,12 +66,4 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       {children}
     </LanguageContext.Provider>
   );
-};
-
-export const useLanguage = (): LanguageContextType => {
-  const ctx = useContext(LanguageContext);
-  if (!ctx) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return ctx;
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { User } from '../types';
 import {
   getAuthToken,
@@ -8,25 +8,8 @@ import {
   getMeApi,
   updateProfileApi,
 } from '../services/api';
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  isGuest: boolean;
-  login: (usernameOrEmail: string, password: string) => Promise<void>;
-  register: (payload: { username: string; email: string; password: string; full_name: string }) => Promise<void>;
-  logout: () => void;
-  updateProfile: (payload: { full_name?: string; avatar?: string; password?: string }) => Promise<void>;
-  isAuthModalOpen: boolean;
-  authModalTab: 'login' | 'register';
-  openAuthModal: (tab?: 'login' | 'register') => void;
-  closeAuthModal: () => void;
-  setAuthModalTab: (tab: 'login' | 'register') => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from './auth-context';
+export type { AuthContextType } from './auth-context';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -121,12 +104,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

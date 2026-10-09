@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Transaction, Asset } from '../types';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { X, Check, Lock, LogIn } from 'lucide-react';
 
 interface TransactionModalProps {

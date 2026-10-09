@@ -179,7 +179,9 @@ export const ChartTab: React.FC<ChartTabProps> = ({
   // 2. Fetch and populate candle data
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
+    queueMicrotask(() => {
+      if (isMounted) setIsLoading(true);
+    });
 
     fetchCandles(selectedAssetId, timeframe)
       .then((candles) => {
