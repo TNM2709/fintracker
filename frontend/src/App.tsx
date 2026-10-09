@@ -24,7 +24,7 @@ import { AdminModal } from './components/AdminModal';
 import { MobileNav } from './components/MobileNav';
 import { CurrencyProvider, useCurrency } from './context/CurrencyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { X, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
 
 const MainApp: React.FC = () => {
