@@ -1,5 +1,6 @@
 import React from 'react';
 import { Wallet, LineChart, Cpu, BarChart2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MobileNavProps {
   activeTab: string;
@@ -7,11 +8,12 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) => {
+  const { t } = useLanguage();
   const tabs = [
-    { id: 'portfolio', label: 'Tài Sản', icon: Wallet },
-    { id: 'market', label: 'Bảng Giá', icon: BarChart2 },
-    { id: 'chart', label: 'Biểu Đồ', icon: LineChart },
-    { id: 'forecast', label: 'Dự Đoán', icon: Cpu },
+    { id: 'portfolio', label: t.nav.mobilePortfolio, icon: Wallet },
+    { id: 'market', label: t.nav.mobileMarket, icon: BarChart2 },
+    { id: 'chart', label: t.nav.mobileChart, icon: LineChart },
+    { id: 'forecast', label: t.nav.mobileForecast, icon: Cpu },
   ];
 
   return (

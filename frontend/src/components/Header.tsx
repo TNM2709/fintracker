@@ -12,9 +12,12 @@ import {
   UserPlus,
   LogOut,
   Sliders,
+  Globe,
+  Check,
 } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeaderProps {
   isConnected: boolean;
@@ -51,13 +54,15 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { currency, setCurrency, goldUnit, setGoldUnit } = useCurrency();
   const { user, isAuthenticated, isAdmin, isGuest, openAuthModal, logout } = useAuth();
+  const { language, setLanguage, currentLanguageMeta, supportedLanguages, t } = useLanguage();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   const navTabs = [
-    { id: 'portfolio', label: 'Tài Sản & Sổ Cái' },
-    { id: 'market', label: 'Bảng Giá & Vàng SJC' },
-    { id: 'chart', label: 'Biểu Đồ Kỹ Thuật' },
-    { id: 'forecast', label: 'Dự Báo Monte Carlo' },
+    { id: 'portfolio', label: t.nav.portfolio },
+    { id: 'market', label: t.nav.market },
+    { id: 'chart', label: t.nav.chart },
+    { id: 'forecast', label: t.nav.forecast },
   ];
 
   const handleAddClick = () => {
@@ -141,7 +146,7 @@ export const Header: React.FC<HeaderProps> = ({
                   display: 'inline-block',
                 }}
               />
-              <span>{isConnected ? 'Realtime Feed Active' : 'Connecting to Server...'}</span>
+              <span>{isConnected ? t.header.realtimeActive : t.header.connecting}</span>
             </div>
           </div>
         </div>
@@ -273,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({
                 transition: 'all 0.15s ease',
               }}
             >
-              Lượng
+              {t.header.goldUnitLuong}
             </button>
             <button
               onClick={() => setGoldUnit('CHI')}
@@ -289,8 +294,108 @@ export const Header: React.FC<HeaderProps> = ({
                 transition: 'all 0.15s ease',
               }}
             >
-              Chỉ
+              {t.header.goldUnitChi}
             </button>
+          </div>
+
+          {/* Multi-language Selector Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => {
+                setIsLangMenuOpen(!isLangMenuOpen);
+                setIsUserMenuOpen(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '5px 10px',
+                backgroundColor: isLangMenuOpen ? '#27272A' : '#09090B',
+                border: isLangMenuOpen ? '1px solid #00E5FF' : '1px solid #3F3F46',
+                borderRadius: 8,
+                cursor: 'pointer',
+                color: '#FAFAFA',
+                fontSize: '12px',
+                fontWeight: 600,
+                transition: 'all 0.15s ease',
+              }}
+              title={t.header.language}
+            >
+              <Globe size={13} color="#00E5FF" />
+              <span>{currentLanguageMeta.flag}</span>
+              <span className="desktop-only">{currentLanguageMeta.code.toUpperCase()}</span>
+            </button>
+
+            {isLangMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '120%',
+                  right: 0,
+                  width: 175,
+                  backgroundColor: '#18181B',
+                  border: '1px solid #3F3F46',
+                  borderRadius: 10,
+                  padding: 4,
+                  zIndex: 200,
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 229, 255, 0.1)',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '6px 10px',
+                    fontSize: '11px',
+                    color: '#71717A',
+                    fontWeight: 600,
+                    borderBottom: '1px solid #27272A',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  {t.header.language}
+                </div>
+                {supportedLanguages.map((lang) => {
+                  const isSelected = lang.code === language;
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setLanguage(lang.code);
+                        setIsLangMenuOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        padding: '8px 10px',
+                        border: 'none',
+                        borderRadius: 6,
+                        backgroundColor: isSelected ? 'rgba(0, 229, 255, 0.12)' : 'transparent',
+                        color: isSelected ? '#00E5FF' : '#FAFAFA',
+                        fontSize: '13px',
+                        fontWeight: isSelected ? 600 : 400,
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) e.currentTarget.style.backgroundColor = '#27272A';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: '15px' }}>{lang.flag}</span>
+                        <span>{lang.nativeName}</span>
+                      </div>
+                      {isSelected && <Check size={14} color="#00E5FF" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Search Box */}
@@ -298,7 +403,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Search size={14} color="#71717A" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Tìm mã..."
+              placeholder={t.header.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               style={{
@@ -333,7 +438,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-            title="Làm mới dữ liệu"
+            title={t.header.quickRefresh}
           >
             <RefreshCw size={14} />
           </button>
@@ -357,10 +462,10 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-            title="Quản lý cảnh báo giá"
+            title={t.header.priceAlerts}
           >
             <Bell size={14} color="#F59E0B" />
-            <span className="desktop-only">Cảnh Báo Giá</span>
+            <span className="desktop-only">{t.header.priceAlerts}</span>
           </button>
 
           {/* Notification Center Button with unread badge */}
@@ -379,7 +484,7 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               transition: 'all 0.15s ease',
             }}
-            title="Trung tâm thông báo & Tùy biến cảnh báo"
+            title={t.header.notifications}
           >
             <Bell size={15} />
             {unreadNotifCount > 0 && (
@@ -423,10 +528,10 @@ export const Header: React.FC<HeaderProps> = ({
                 alignItems: 'center',
                 gap: 5,
               }}
-              title="Mở Bảng điều khiển Quản trị viên"
+              title={t.header.admin}
             >
               <Shield size={14} />
-              <span className="desktop-only">Quản Trị</span>
+              <span className="desktop-only">{t.header.admin}</span>
             </button>
           )}
 
@@ -445,7 +550,7 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               transition: 'all 0.15s ease',
             }}
-            title={isMobilePreview ? "Chuyển sang giao diện Desktop" : "Chuyển sang mô phỏng Mobile"}
+            title={isMobilePreview ? t.header.mobilePreviewDesktop : t.header.mobilePreviewPhone}
           >
             {isMobilePreview ? <Monitor size={15} /> : <Smartphone size={15} />}
           </button>
@@ -468,10 +573,10 @@ export const Header: React.FC<HeaderProps> = ({
               transition: 'all 0.2s ease',
               boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
             }}
-            title={isGuest ? 'Đăng nhập để thêm giao dịch vào sổ cái' : 'Thêm giao dịch mới'}
+            title={isGuest ? 'Đăng nhập để thêm giao dịch vào sổ cái' : t.header.addTransaction}
           >
             <PlusCircle size={15} />
-            <span className="desktop-only">Thêm Giao Dịch</span>
+            <span className="desktop-only">{t.header.addTransaction}</span>
           </button>
 
           {/* Authentication Area */}
@@ -562,7 +667,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <User size={14} />
-                    <span>Hồ sơ cá nhân</span>
+                    <span>{t.header.profile}</span>
                   </button>
 
                   <button
@@ -588,7 +693,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <Sliders size={14} />
-                    <span>Tùy biến thông báo</span>
+                    <span>{t.header.notifications}</span>
                   </button>
 
                   {isAdmin && (
@@ -615,7 +720,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <Shield size={14} />
-                      <span>Trang Quản Trị</span>
+                      <span>{t.header.admin}</span>
                     </button>
                   )}
 
@@ -644,7 +749,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <LogOut size={14} />
-                    <span>Đăng xuất</span>
+                    <span>{t.header.logout}</span>
                   </button>
                 </div>
               )}
@@ -671,7 +776,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <LogIn size={13} />
-                <span>Đăng Nhập</span>
+                <span>{t.header.login}</span>
               </button>
 
               <button
@@ -693,7 +798,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="desktop-only"
               >
                 <UserPlus size={13} />
-                <span>Đăng Ký</span>
+                <span>{t.header.register}</span>
               </button>
             </div>
           )}

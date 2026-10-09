@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { MarketSummary, BenchmarkSeries, GoldCalculatorResult } from '../types';
 import { fetchBenchmark, fetchGoldCalculator } from '../services/api';
 import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ArrowUpRight, Calculator, Globe, Scale, Sparkles, TrendingUp, BarChart2 } from 'lucide-react';
 
 interface MarketTabProps {
@@ -11,6 +12,7 @@ interface MarketTabProps {
 
 export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) => {
   const { formatMoney, currency, goldUnit } = useCurrency();
+  const { t } = useLanguage();
   const [subTab, setSubTab] = useState<'gold' | 'stock_vn' | 'global' | 'calculator' | 'benchmark'>('gold');
 
   // Gold Calculator State
@@ -100,11 +102,11 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
         flexWrap: 'wrap',
       }}>
         {[
-          { id: 'gold', label: '🪙 Bảng Giá Vàng SJC & Thế Giới' },
-          { id: 'stock_vn', label: '🏢 Cổ Phiếu Việt Nam (HOSE/HNX)' },
-          { id: 'global', label: '🌐 Cổ Phiếu Mỹ & Crypto' },
-          { id: 'calculator', label: '🧮 Công Cụ Quy Đổi Vàng' },
-          { id: 'benchmark', label: '📊 So Sánh 12 Tháng' },
+          { id: 'gold', label: `🪙 ${t.market.sjcGold}` },
+          { id: 'stock_vn', label: `🏢 ${t.market.vnStocks}` },
+          { id: 'global', label: `🌐 ${t.market.usStocks} & ${t.market.crypto}` },
+          { id: 'calculator', label: '🧮 Calculator' },
+          { id: 'benchmark', label: '📊 12M Benchmark' },
         ].map((tab) => {
           const isActive = subTab === tab.id;
           return (
