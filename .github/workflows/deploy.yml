@@ -53,7 +53,11 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          $webhook = if ($env:DISCORD_WEBHOOK) { $env:DISCORD_WEBHOOK } else { "https://discord.com/api/webhooks/1557693587209060452/3pSWz8wzVXtoXem3TApx9CmEOhtj8H53sa6Ic6gf_L6sM7YeuFGnpffzZJV3NJ6PwOiB" }
+          $webhook = $env:DISCORD_WEBHOOK
+          if (-not $webhook) {
+            Write-Host "DISCORD_WEBHOOK secret is not configured. Skipping Discord notification."
+            exit 0
+          }
           $shortSha = if ("${{ github.sha }}".Length -ge 7) { "${{ github.sha }}".Substring(0, 7) } else { "${{ github.sha }}" }
           $body = @{
             username = "FinTracker Deploy Bot"
@@ -91,7 +95,11 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          $webhook = if ($env:DISCORD_WEBHOOK) { $env:DISCORD_WEBHOOK } else { "https://discord.com/api/webhooks/1557693587209060452/3pSWz8wzVXtoXem3TApx9CmEOhtj8H53sa6Ic6gf_L6sM7YeuFGnpffzZJV3NJ6PwOiB" }
+          $webhook = $env:DISCORD_WEBHOOK
+          if (-not $webhook) {
+            Write-Host "DISCORD_WEBHOOK secret is not configured. Skipping Discord notification."
+            exit 0
+          }
           $shortSha = if ("${{ github.sha }}".Length -ge 7) { "${{ github.sha }}".Substring(0, 7) } else { "${{ github.sha }}" }
           $body = @{
             username = "FinTracker Deploy Bot"
