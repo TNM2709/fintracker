@@ -41,13 +41,13 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       <div style={{
         padding: 60,
         textAlign: 'center',
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
       }}>
-        <div className="pulse-dot" style={{ backgroundColor: '#00E5FF', margin: '0 auto 16px auto', display: 'block' }} />
-        <p style={{ color: '#FAFAFA', fontSize: '15px', fontWeight: 500 }}>Đang tải bảng giá thời gian thực...</p>
-        <p style={{ color: '#A1A1AA', fontSize: '13px', marginTop: 4 }}>Đồng bộ dữ liệu SJC, HOSE, Nasdaq và Binance</p>
+        <div className="pulse-dot" style={{ backgroundColor: 'var(--brand-primary)', margin: '0 auto 16px auto', display: 'block' }} />
+        <p style={{ color: 'var(--text-primary)', fontSize: '15px', fontWeight: 500 }}>{t.market.loadingRealtime}</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: 4 }}>{t.market.syncingFeeds}</p>
       </div>
     );
   }
@@ -85,7 +85,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
     if (brandName.includes('Minh Châu') || brandName.includes('BTMC')) {
       return { label: 'BTMC', color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.35)', icon: '🐉' };
     }
-    return { label: 'GOLD', color: '#A1A1AA', bg: 'rgba(113, 113, 122, 0.15)', border: 'rgba(113, 113, 122, 0.35)', icon: '✨' };
+    return { label: 'GOLD', color: 'var(--text-secondary)', bg: 'rgba(113, 113, 122, 0.15)', border: 'rgba(113, 113, 122, 0.35)', icon: '✨' };
   };
 
   return (
@@ -93,8 +93,8 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       {/* Sleek Segmented Pill Sub-tab Switcher */}
       <div style={{
         display: 'flex',
-        backgroundColor: '#09090B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-body)',
+        border: '1px solid var(--border-card)',
         borderRadius: 8,
         padding: 4,
         gap: 4,
@@ -105,8 +105,8 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
           { id: 'gold', label: `🪙 ${t.market.sjcGold}` },
           { id: 'stock_vn', label: `🏢 ${t.market.vnStocks}` },
           { id: 'global', label: `🌐 ${t.market.usStocks} & ${t.market.crypto}` },
-          { id: 'calculator', label: '🧮 Calculator' },
-          { id: 'benchmark', label: '📊 12M Benchmark' },
+          { id: 'calculator', label: `🧮 ${t.market.calcTitle}` },
+          { id: 'benchmark', label: `📊 ${t.market.benchmarkTab}` },
         ].map((tab) => {
           const isActive = subTab === tab.id;
           return (
@@ -119,17 +119,17 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 fontWeight: isActive ? 600 : 500,
                 fontSize: '13px',
                 border: 'none',
-                color: isActive ? '#FAFAFA' : '#A1A1AA',
-                backgroundColor: isActive ? '#27272A' : 'transparent',
+                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                backgroundColor: isActive ? 'var(--bg-surface-hover)' : 'transparent',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 position: 'relative',
               }}
               onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.color = '#FAFAFA';
+                if (!isActive) e.currentTarget.style.color = 'var(--text-primary)';
               }}
               onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.color = '#A1A1AA';
+                if (!isActive) e.currentTarget.style.color = 'var(--text-secondary)';
               }}
             >
               {tab.label}
@@ -140,7 +140,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                   left: '20%',
                   right: '20%',
                   height: 2,
-                  backgroundColor: '#00E5FF',
+                  backgroundColor: 'var(--brand-primary)',
                   borderRadius: 2,
                 }} />
               )}
@@ -161,8 +161,8 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
             {/* World Gold Card */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -176,14 +176,14 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 background: 'linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.4), transparent)',
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  VÀNG THẾ GIỚI SPOT (XAU/USD)
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {t.market.worldGold}
                 </span>
-                <Globe size={16} color="#00E5FF" />
+                <Globe size={16} color="var(--brand-primary)" />
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#FAFAFA', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace' }}>
                 ${summary.world_gold_usd.toLocaleString('en-US', { minimumFractionDigits: 1 })}
-                <span style={{ fontSize: '13px', color: '#A1A1AA', marginLeft: 6, fontWeight: 400 }}>/ounce</span>
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', marginLeft: 6, fontWeight: 400 }}>/ounce</span>
               </div>
               <div style={{
                 display: 'inline-flex',
@@ -199,15 +199,15 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 fontWeight: 600,
               }}>
                 <TrendingUp size={12} />
-                <span>+14.20 USD (+0.54%) trong 24h qua</span>
+                <span>+14.20 USD (+0.54%) {t.market.past24h}</span>
               </div>
             </div>
 
             {/* SJC vs World Spread */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -221,25 +221,25 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 background: 'linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent)',
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  CHÊNH LỆCH SJC VS THẾ GIỚI
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {t.market.spreadDifference}
                 </span>
                 <Scale size={16} color="#10B981" />
               </div>
               <div style={{ fontSize: '28px', fontWeight: 700, color: '#10B981', fontFamily: 'monospace' }}>
-                +{summary.gold_vn_spread.toFixed(2)} triệu
-                <span style={{ fontSize: '13px', color: '#A1A1AA', marginLeft: 6, fontWeight: 400 }}>/lượng</span>
+                +{summary.gold_vn_spread.toFixed(2)} {currency === 'USD' ? 'USD' : 'tr'}
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', marginLeft: 6, fontWeight: 400 }}>/{t.header.goldUnitLuong}</span>
               </div>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 6 }}>
-                Tỷ giá quy đổi VCB: <strong style={{ color: '#FAFAFA', fontFamily: 'monospace' }}>{summary.usd_vnd_exchange.toLocaleString()} VND/USD</strong>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 6 }}>
+                {t.market.exchangeRateVcb}: <strong style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>{summary.usd_vnd_exchange.toLocaleString()} VND/USD</strong>
               </div>
             </div>
 
             {/* Recommendation Strategy */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -253,16 +253,16 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 background: 'linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), transparent)',
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  CHIẾN LƯỢC KHUYẾN NGHỊ
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {t.market.recStrategyTitle}
                 </span>
                 <Sparkles size={16} color="#F59E0B" />
               </div>
               <div style={{ fontSize: '18px', fontWeight: 700, color: '#F59E0B' }}>
-                TÍCH SẢN ĐỊNH KỲ (DCA)
+                {t.market.recStrategyDca}
               </div>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 6 }}>
-                Bảo vệ giá trị danh mục trước lạm phát và chu kỳ nới lỏng tiền tệ
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 6 }}>
+                {t.market.recStrategyDesc}
               </div>
             </div>
           </div>
@@ -270,43 +270,43 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
           {/* Bang chi tiet cac thuong hieu vang */}
           <div style={{
             padding: 24,
-            backgroundColor: '#18181B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-card)',
             borderRadius: 12,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                  Bảng So Sánh Giá Vàng Trong Nước (SJC, DOJI, PNJ, BTMC)
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  {t.market.vietnamGoldCompare}
                 </h3>
-                <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
-                  Cập nhật liên tục từ bảng giá các thương hiệu vàng lớn tại Hà Nội và TP.HCM
+                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  {t.market.vietnamGoldSubtitle}
                 </p>
               </div>
               <span style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                color: '#00E5FF',
+                color: 'var(--brand-primary)',
                 backgroundColor: 'rgba(0, 229, 255, 0.1)',
                 border: '1px solid rgba(0, 229, 255, 0.25)',
                 padding: '4px 10px',
                 borderRadius: 6,
               }}>
-                Đơn vị: {currency === 'USD' ? 'USD' : 'Triệu VND'} / {goldUnit === 'CHI' ? 'Chỉ' : goldUnit === 'OUNCE' ? 'Ounce (oz)' : 'Lượng'}
+                {t.market.unitLabel}: {currency === 'USD' ? 'USD' : 'Triệu VND'} / {goldUnit === 'CHI' ? t.header.goldUnitChi : goldUnit === 'OUNCE' ? 'Ounce (oz)' : t.header.goldUnitLuong}
               </span>
             </div>
 
-            <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+            <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>THƯƠNG HIỆU & LOẠI VÀNG</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>KHU VỰC</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ MUA VÀO</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ BÁN RA</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CHÊNH LỆCH (SPREAD)</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CẬP NHẬT</th>
-                    <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>HÀNH ĐỘNG</th>
+                  <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-card)' }}>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colBrand}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colRegion}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.buyPrice}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.sellPrice}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.spread}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colUpdated}</th>
+                    <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.market.colAction}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -315,8 +315,8 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                     return (
                       <tr
                         key={g.id}
-                        style={{ borderBottom: '1px solid #27272A', transition: 'background-color 0.15s ease' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                        style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'background-color 0.15s ease' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                       >
                         <td style={{ padding: '14px 16px' }}>
@@ -336,7 +336,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                               {badge.icon}
                             </div>
                             <div>
-                              <div style={{ fontWeight: 600, color: '#FAFAFA' }}>{g.brand}</div>
+                              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{g.brand}</div>
                               <span style={{
                                 fontSize: '10px',
                                 fontWeight: 600,
@@ -353,18 +353,18 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '14px 16px', color: '#A1A1AA' }}>{g.city}</td>
+                        <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>{g.city}</td>
                         <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#10B981' }}>
                           {getGoldDisplayPrice(g.buy_price)}
                         </td>
-                        <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#FAFAFA' }}>
+                        <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {getGoldDisplayPrice(g.sell_price)}
                         </td>
-                        <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#00E5FF', fontWeight: 500 }}>
+                        <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: 'var(--brand-primary)', fontWeight: 500 }}>
                           {currency === 'USD' ? `$${((g.spread * 1_000_000) / (summary?.usd_vnd_exchange || 25450)).toFixed(1)}` : `${g.spread.toFixed(2)} tr`}
                         </td>
-                        <td style={{ padding: '14px 16px', fontSize: '12px', color: '#A1A1AA', fontFamily: 'monospace' }}>
-                          {new Date(g.updated_at).toLocaleTimeString('vi-VN')}
+                        <td style={{ padding: '14px 16px', fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                          {new Date(g.updated_at).toLocaleTimeString()}
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           <button
@@ -376,25 +376,25 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                               padding: '6px 12px',
                               fontSize: '12px',
                               fontWeight: 500,
-                              backgroundColor: '#09090B',
-                              border: '1px solid #3F3F46',
+                              backgroundColor: 'var(--bg-body)',
+                              border: '1px solid var(--border-card)',
                               borderRadius: 6,
-                              color: '#FAFAFA',
+                              color: 'var(--text-primary)',
                               cursor: 'pointer',
                               transition: 'all 0.15s ease',
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#27272A';
-                              e.currentTarget.style.borderColor = '#00E5FF';
-                              e.currentTarget.style.color = '#00E5FF';
+                              e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+                              e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                              e.currentTarget.style.color = 'var(--brand-primary)';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#09090B';
-                              e.currentTarget.style.borderColor = '#3F3F46';
-                              e.currentTarget.style.color = '#FAFAFA';
+                              e.currentTarget.style.backgroundColor = 'var(--bg-body)';
+                              e.currentTarget.style.borderColor = 'var(--border-card)';
+                              e.currentTarget.style.color = 'var(--text-primary)';
                             }}
                           >
-                            Biểu đồ <ArrowUpRight size={13} />
+                            {t.market.btnChart} <ArrowUpRight size={13} />
                           </button>
                         </td>
                       </tr>
@@ -411,36 +411,36 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       {subTab === 'stock_vn' && (
         <div style={{
           padding: 24,
-          backgroundColor: '#18181B',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 12,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Cổ Phiếu & Chỉ Số Hàng Đầu Thị Trường Việt Nam
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.market.vnStocksTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
-                Dữ liệu khớp lệnh sàn HOSE & HNX thời gian thực
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                {t.market.vnStocksSubtitle}
               </p>
             </div>
-            <span style={{ fontSize: '12px', color: '#00E5FF', fontWeight: 600, backgroundColor: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0, 229, 255, 0.25)', padding: '4px 10px', borderRadius: 6 }}>
-              {vnStocks.length} Mã Cổ Phiếu
+            <span style={{ fontSize: '12px', color: 'var(--brand-primary)', fontWeight: 600, backgroundColor: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0, 229, 255, 0.25)', padding: '4px 10px', borderRadius: 6 }}>
+              {vnStocks.length} {t.market.stocksCount}
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+          <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
-                <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MÃ CK</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TÊN DOANH NGHIỆP</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ KHỚP LỆNH</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>THAY ĐỔI (VND)</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>% BIẾN ĐỘNG</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>KHỐI LƯỢNG</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>BIÊN ĐỘ 24H</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>HÀNH ĐỘNG</th>
+                <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-card)' }}>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colTicker}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colCompany}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colPrice}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colChange} (VND)</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>%{t.market.colChange}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colVolume}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colHighLow}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.market.colAction}</th>
                 </tr>
               </thead>
               <tbody>
@@ -449,15 +449,15 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                   return (
                     <tr
                       key={stock.id}
-                      style={{ borderBottom: '1px solid #27272A', transition: 'background-color 0.15s ease' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                      style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'background-color 0.15s ease' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: 600, color: '#00E5FF', fontSize: '14px' }}>{stock.symbol}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--brand-primary)', fontSize: '14px' }}>{stock.symbol}</span>
                       </td>
-                      <td style={{ padding: '14px 16px', color: '#FAFAFA' }}>{stock.name}</td>
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#FAFAFA' }}>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-primary)' }}>{stock.name}</td>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)' }}>
                         {stock.symbol.includes('INDEX') ? `${stock.current_price.toFixed(2)} pts` : `${stock.current_price.toLocaleString()} VND`}
                       </td>
                       <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: isUp ? '#10B981' : '#EF4444' }}>
@@ -477,10 +477,10 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                           {isUp ? '▲ +' : '▼ '}{stock.change_percent.toFixed(2)}%
                         </span>
                       </td>
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#A1A1AA' }}>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: 'var(--text-secondary)' }}>
                         {stock.volume.toLocaleString()}
                       </td>
-                      <td style={{ padding: '14px 16px', fontSize: '12px', color: '#A1A1AA', fontFamily: 'monospace' }}>
+                      <td style={{ padding: '14px 16px', fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
                         {stock.high_24h.toLocaleString()} / {stock.low_24h.toLocaleString()}
                       </td>
                       <td style={{ padding: '14px 16px', textAlign: 'center' }}>
@@ -493,25 +493,25 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                             padding: '6px 12px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            backgroundColor: '#09090B',
-                            border: '1px solid #3F3F46',
+                            backgroundColor: 'var(--bg-body)',
+                            border: '1px solid var(--border-card)',
                             borderRadius: 6,
-                            color: '#FAFAFA',
+                            color: 'var(--text-primary)',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#27272A';
-                            e.currentTarget.style.borderColor = '#00E5FF';
-                            e.currentTarget.style.color = '#00E5FF';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+                            e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                            e.currentTarget.style.color = 'var(--brand-primary)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#09090B';
-                            e.currentTarget.style.borderColor = '#3F3F46';
-                            e.currentTarget.style.color = '#FAFAFA';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-body)';
+                            e.currentTarget.style.borderColor = 'var(--border-card)';
+                            e.currentTarget.style.color = 'var(--text-primary)';
                           }}
                         >
-                          Biểu đồ <ArrowUpRight size={13} />
+                          {t.market.btnChart} <ArrowUpRight size={13} />
                         </button>
                       </td>
                     </tr>
@@ -527,35 +527,35 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       {subTab === 'global' && (
         <div style={{
           padding: 24,
-          backgroundColor: '#18181B',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 12,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Thị Trường Tài Chính Quốc Tế & Tiền Điện Tử
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.market.globalMarketTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
-                Cổ phiếu US Tech (Nasdaq) và Crypto (Binance) cập nhật 24/7
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                {t.market.globalMarketSubtitle}
               </p>
             </div>
-            <span style={{ fontSize: '12px', color: '#00E5FF', fontWeight: 600, backgroundColor: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0, 229, 255, 0.25)', padding: '4px 10px', borderRadius: 6 }}>
-              {globalAssets.length} Tài Sản Quốc Tế
+            <span style={{ fontSize: '12px', color: 'var(--brand-primary)', fontWeight: 600, backgroundColor: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0, 229, 255, 0.25)', padding: '4px 10px', borderRadius: 6 }}>
+              {globalAssets.length} {t.market.globalAssetsCount}
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+          <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
-                <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MÃ / TÀI SẢN</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TÊN ĐẦY ĐỦ</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LOẠI TÀI SẢN</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ THỊ TRƯỜNG</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>% BIẾN ĐỘNG 24H</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>KHỐI LƯỢNG 24H</th>
-                  <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>HÀNH ĐỘNG</th>
+                <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-card)' }}>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colSymbol}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colCompany}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colAssetType}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colPrice}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>%{t.market.change24h}</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.market.colVolume} 24H</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.market.colAction}</th>
                 </tr>
               </thead>
               <tbody>
@@ -565,14 +565,14 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                   return (
                     <tr
                       key={asset.id}
-                      style={{ borderBottom: '1px solid #27272A', transition: 'background-color 0.15s ease' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                      style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'background-color 0.15s ease' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontWeight: 600, color: '#00E5FF', fontSize: '14px' }}>{asset.symbol}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--brand-primary)', fontSize: '14px' }}>{asset.symbol}</span>
                       </td>
-                      <td style={{ padding: '14px 16px', color: '#FAFAFA' }}>{asset.name}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-primary)' }}>{asset.name}</td>
                       <td style={{ padding: '14px 16px' }}>
                         <span style={{
                           fontSize: '10px',
@@ -581,12 +581,12 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                           borderRadius: 4,
                           backgroundColor: isCrypto ? 'rgba(249, 115, 22, 0.15)' : 'rgba(0, 229, 255, 0.15)',
                           border: isCrypto ? '1px solid rgba(249, 115, 22, 0.35)' : '1px solid rgba(0, 229, 255, 0.35)',
-                          color: isCrypto ? '#F97316' : '#00E5FF',
+                          color: isCrypto ? '#F97316' : 'var(--brand-primary)',
                         }}>
                           {isCrypto ? 'CRYPTO' : 'US-STOCK'}
                         </span>
                       </td>
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#FAFAFA' }}>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)' }}>
                         ${asset.current_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                       </td>
                       <td style={{ padding: '14px 16px' }}>
@@ -603,7 +603,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                           {isUp ? '▲ +' : '▼ '}{asset.change_percent.toFixed(2)}%
                         </span>
                       </td>
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#A1A1AA' }}>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: 'var(--text-secondary)' }}>
                         {asset.volume.toLocaleString()}
                       </td>
                       <td style={{ padding: '14px 16px', textAlign: 'center' }}>
@@ -616,25 +616,25 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                             padding: '6px 12px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            backgroundColor: '#09090B',
-                            border: '1px solid #3F3F46',
+                            backgroundColor: 'var(--bg-body)',
+                            border: '1px solid var(--border-card)',
                             borderRadius: 6,
-                            color: '#FAFAFA',
+                            color: 'var(--text-primary)',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#27272A';
-                            e.currentTarget.style.borderColor = '#00E5FF';
-                            e.currentTarget.style.color = '#00E5FF';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+                            e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                            e.currentTarget.style.color = 'var(--brand-primary)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#09090B';
-                            e.currentTarget.style.borderColor = '#3F3F46';
-                            e.currentTarget.style.color = '#FAFAFA';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-body)';
+                            e.currentTarget.style.borderColor = 'var(--border-card)';
+                            e.currentTarget.style.color = 'var(--text-primary)';
                           }}
                         >
-                          Biểu đồ <ArrowUpRight size={13} />
+                          {t.market.btnChart} <ArrowUpRight size={13} />
                         </button>
                       </td>
                     </tr>
@@ -650,21 +650,21 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       {subTab === 'calculator' && (
         <div style={{
           padding: 24,
-          backgroundColor: '#18181B',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 12,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-            <Calculator size={18} color="#00E5FF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-              Công Cụ Quy Đổi Giá Trị Vàng SJC & Spot Thế Giới
+            <Calculator size={18} color="var(--brand-primary)" />
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+              {t.market.calcConverterTitle}
             </h3>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#A1A1AA', marginBottom: 8, fontWeight: 500 }}>
-                Nhập số lượng vàng (Lượng / Cây):
+              <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: 8, fontWeight: 500 }}>
+                {t.market.calcInputPrompt}
               </label>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <input
@@ -674,11 +674,11 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                   value={goldQtyLuong}
                   onChange={(e) => setGoldQtyLuong(parseFloat(e.target.value) || 0)}
                   style={{
-                    backgroundColor: '#09090B',
-                    border: '1px solid #3F3F46',
+                    backgroundColor: 'var(--bg-body)',
+                    border: '1px solid var(--border-card)',
                     borderRadius: 8,
                     padding: '10px 14px',
-                    color: '#FAFAFA',
+                    color: 'var(--text-primary)',
                     fontSize: '16px',
                     fontFamily: 'monospace',
                     width: 160,
@@ -696,14 +696,14 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                         borderRadius: 6,
                         fontSize: '12px',
                         fontWeight: goldQtyLuong === preset ? 600 : 500,
-                        backgroundColor: goldQtyLuong === preset ? 'rgba(0, 229, 255, 0.15)' : '#09090B',
-                        border: goldQtyLuong === preset ? '1px solid #00E5FF' : '1px solid #27272A',
-                        color: goldQtyLuong === preset ? '#00E5FF' : '#A1A1AA',
+                        backgroundColor: goldQtyLuong === preset ? 'rgba(0, 229, 255, 0.15)' : 'var(--bg-body)',
+                        border: goldQtyLuong === preset ? '1px solid var(--brand-primary)' : '1px solid var(--border-card)',
+                        color: goldQtyLuong === preset ? 'var(--brand-primary)' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      {preset} lượng
+                      {preset} {t.market.unitLuong}
                     </button>
                   ))}
                 </div>
@@ -719,70 +719,70 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 gap: 16,
                 marginBottom: 20,
               }}>
-                <div style={{ backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: 18 }}>
-                  <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                    GIÁ TRỊ MUA VÀO SJC (VND)
+                <div style={{ backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', borderRadius: 8, padding: 18 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
+                    {t.market.sjcBuyValue} (VND)
                   </div>
-                  <div className="num-mono" style={{ fontSize: '22px', fontWeight: 700, color: '#FAFAFA', marginTop: 6 }}>
+                  <div className="num-mono" style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)', marginTop: 6 }}>
                     {formatVND(calcResult.total_buy_cost)}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#71717A', marginTop: 4 }}>
-                    Đơn giá: {formatVND(calcResult.sjc_buy_price_lg)} / lượng
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: 4 }}>
+                    {t.market.unitUnitPrice}: {formatVND(calcResult.sjc_buy_price_lg)} / {t.market.unitLuong}
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: 18 }}>
-                  <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                    GIÁ TRỊ THẾ GIỚI QUY ĐỔI (VND)
+                <div style={{ backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', borderRadius: 8, padding: 18 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
+                    {t.market.worldGoldValue} (VND)
                   </div>
-                  <div className="num-mono" style={{ fontSize: '22px', fontWeight: 700, color: '#00E5FF', marginTop: 6 }}>
+                  <div className="num-mono" style={{ fontSize: '22px', fontWeight: 700, color: 'var(--brand-primary)', marginTop: 6 }}>
                     {formatVND(calcResult.world_equiv_value)}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#71717A', marginTop: 4 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: 4 }}>
                     ≈ ${(calcResult.world_equiv_value / (summary?.usd_vnd_exchange || 25450)).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} USD (Spot XAU)
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: 18 }}>
-                  <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
-                    CHÊNH LỆCH PHÍ PREMIUM SJC
+                <div style={{ backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', borderRadius: 8, padding: 18 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
+                    {t.market.spreadDifference}
                   </div>
                   <div className="num-mono" style={{ fontSize: '22px', fontWeight: 700, color: '#10B981', marginTop: 6 }}>
                     +{formatVND(calcResult.domestic_premium)}
                   </div>
                   <div style={{ fontSize: '11px', color: '#10B981', marginTop: 4, fontWeight: 500 }}>
-                    Cao hơn thế giới +{calcResult.premium_pct.toFixed(2)}%
+                    {t.market.higherThanWorld} +{calcResult.premium_pct.toFixed(2)}%
                   </div>
                 </div>
               </div>
 
               {/* Visual Arbitrage Ratio Bar */}
               <div style={{
-                backgroundColor: '#09090B',
-                border: '1px solid #27272A',
+                backgroundColor: 'var(--bg-body)',
+                border: '1px solid var(--border-card)',
                 borderRadius: 8,
                 padding: '16px 20px',
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#A1A1AA', marginBottom: 8 }}>
-                  <span>Phân tích Chênh Lệch Giá Nội Địa vs Thế Giới:</span>
-                  <span style={{ color: '#00E5FF', fontWeight: 600 }}>Phí bảo hiểm thương hiệu: {calcResult.premium_pct.toFixed(2)}%</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                  <span>{t.market.spreadAnalysis}:</span>
+                  <span style={{ color: 'var(--brand-primary)', fontWeight: 600 }}>{t.market.brandPremiumLabel}: {calcResult.premium_pct.toFixed(2)}%</span>
                 </div>
                 <div style={{
                   height: 10,
                   borderRadius: 5,
-                  backgroundColor: '#27272A',
+                  backgroundColor: 'var(--bg-surface-hover)',
                   overflow: 'hidden',
                   display: 'flex',
                 }}>
-                  <div style={{ width: `${Math.min(100, (calcResult.world_equiv_value / calcResult.total_buy_cost) * 100)}%`, backgroundColor: '#00E5FF' }} title="Giá trị vàng thế giới" />
+                  <div style={{ width: `${Math.min(100, (calcResult.world_equiv_value / calcResult.total_buy_cost) * 100)}%`, backgroundColor: 'var(--brand-primary)' }} title="Giá trị vàng thế giới" />
                   <div style={{ width: `${Math.min(30, (calcResult.domestic_premium / calcResult.total_buy_cost) * 100)}%`, backgroundColor: '#10B981' }} title="Chênh lệch trong nước" />
                 </div>
-                <div style={{ display: 'flex', gap: 20, fontSize: '11px', color: '#71717A', marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 20, fontSize: '11px', color: 'var(--text-muted)', marginTop: 8 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: '#00E5FF' }} /> Giá vàng thực tế (XAU)
+                    <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: 'var(--brand-primary)' }} /> {t.market.goldRealSpot}
                   </span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: '#10B981' }} /> Premium thương hiệu SJC ({calcResult.premium_pct.toFixed(1)}%)
+                    <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: '#10B981' }} /> {t.market.brandPremiumSjc} ({calcResult.premium_pct.toFixed(1)}%)
                   </span>
                 </div>
               </div>
@@ -795,14 +795,14 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
       {subTab === 'benchmark' && (
         <div style={{
           padding: 24,
-          backgroundColor: '#18181B',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 12,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-            <BarChart2 size={18} color="#00E5FF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-              So Sánh Hiệu Suất Tăng Trưởng 12 Tháng Qua
+            <BarChart2 size={18} color="var(--brand-primary)" />
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+              {t.market.benchmark12MTitle}
             </h3>
           </div>
 
@@ -813,14 +813,14 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
               const strokeColor = bm.color || (bm.id.includes('GOLD') ? '#F59E0B' : bm.id.includes('SP500') ? '#8B5CF6' : bm.id.includes('VNINDEX') ? '#3B82F6' : '#10B981');
               return (
                 <div key={bm.id} style={{
-                  backgroundColor: '#09090B',
-                  border: '1px solid #27272A',
+                  backgroundColor: 'var(--bg-body)',
+                  border: '1px solid var(--border-card)',
                   borderTop: `3px solid ${strokeColor}`,
                   borderRadius: 8,
                   padding: 18,
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#FAFAFA' }}>{bm.name}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{bm.name}</span>
                     <span style={{
                       padding: '2px 8px',
                       borderRadius: 4,
@@ -833,7 +833,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                       {isGain ? '+' : ''}{lastPct.toFixed(2)}%
                     </span>
                   </div>
-                  <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 4 }}>Loại: {bm.asset_type}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 4 }}>{t.market.colAssetType}: {bm.asset_type}</div>
                 </div>
               );
             })}
@@ -841,27 +841,27 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
 
           {/* SVG 12-Month Performance Comparison Chart */}
           <div style={{
-            backgroundColor: '#09090B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-body)',
+            border: '1px solid var(--border-card)',
             borderRadius: 8,
             padding: 20,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
-                Đồ Thị Tỷ Suất Sinh Lời Tích Lũy 12 Tháng (Normalized Baseline 0%)
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {t.market.benchmark12MSubtitle}
               </span>
               <div style={{ display: 'flex', gap: 16, fontSize: '11px' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#F59E0B' }}>
-                  <span style={{ width: 12, height: 3, backgroundColor: '#F59E0B' }} /> Vàng SJC
+                  <span style={{ width: 12, height: 3, backgroundColor: '#F59E0B' }} /> {t.market.sjcGold}
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#00E5FF' }}>
-                  <span style={{ width: 12, height: 3, backgroundColor: '#00E5FF' }} /> S&P 500
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--brand-primary)' }}>
+                  <span style={{ width: 12, height: 3, backgroundColor: 'var(--brand-primary)' }} /> S&P 500
                 </span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#10B981' }}>
                   <span style={{ width: 12, height: 3, backgroundColor: '#10B981' }} /> VN-Index
                 </span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#A855F7' }}>
-                  <span style={{ width: 12, height: 3, backgroundColor: '#A855F7' }} /> Lãi Suất 12T
+                  <span style={{ width: 12, height: 3, backgroundColor: '#A855F7' }} /> {t.market.interestRate12M}
                 </span>
               </div>
             </div>
@@ -869,18 +869,18 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
             <div style={{ width: '100%', height: 260, position: 'relative' }}>
               <svg viewBox="0 0 850 240" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
                 {/* Horizontal Grid lines */}
-                <line x1="50" y1="30" x2="800" y2="30" stroke="#27272A" strokeDasharray="3 3" />
-                <text x="40" y="34" fill="#71717A" fontSize="10" textAnchor="end">+30%</text>
+                <line x1="50" y1="30" x2="800" y2="30" stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                <text x="40" y="34" fill="var(--text-muted)" fontSize="10" textAnchor="end">+30%</text>
 
-                <line x1="50" y1="80" x2="800" y2="80" stroke="#27272A" strokeDasharray="3 3" />
-                <text x="40" y="84" fill="#71717A" fontSize="10" textAnchor="end">+20%</text>
+                <line x1="50" y1="80" x2="800" y2="80" stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                <text x="40" y="84" fill="var(--text-muted)" fontSize="10" textAnchor="end">+20%</text>
 
-                <line x1="50" y1="130" x2="800" y2="130" stroke="#27272A" strokeDasharray="3 3" />
-                <text x="40" y="134" fill="#71717A" fontSize="10" textAnchor="end">+10%</text>
+                <line x1="50" y1="130" x2="800" y2="130" stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                <text x="40" y="134" fill="var(--text-muted)" fontSize="10" textAnchor="end">+10%</text>
 
                 {/* 0% Baseline */}
-                <line x1="50" y1="180" x2="800" y2="180" stroke="#3F3F46" strokeWidth="1.5" />
-                <text x="40" y="184" fill="#A1A1AA" fontSize="11" fontWeight="600" textAnchor="end">0%</text>
+                <line x1="50" y1="180" x2="800" y2="180" stroke="var(--border-card)" strokeWidth="1.5" />
+                <text x="40" y="184" fill="var(--text-secondary)" fontSize="11" fontWeight="600" textAnchor="end">0%</text>
 
                 {/* Render Curves */}
                 {benchmarks.map((bm) => {
@@ -910,8 +910,8 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
                 })}
 
                 {/* X Axis Labels */}
-                {['T-11', 'T-10', 'T-9', 'T-8', 'T-7', 'T-6', 'T-5', 'T-4', 'T-3', 'T-2', 'T-1', 'Hiện tại'].map((m, idx) => (
-                  <text key={idx} x={50 + idx * (750 / 11)} y="210" fill="#71717A" fontSize="10" textAnchor="middle">
+                {['T-11', 'T-10', 'T-9', 'T-8', 'T-7', 'T-6', 'T-5', 'T-4', 'T-3', 'T-2', 'T-1', t.market.currentMonth].map((m, idx) => (
+                  <text key={idx} x={50 + idx * (750 / 11)} y="210" fill="var(--text-muted)" fontSize="10" textAnchor="middle">
                     {m}
                   </text>
                 ))}

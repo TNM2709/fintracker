@@ -27,6 +27,7 @@ import { useCurrency } from './context/useCurrency';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { X, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
 
 const MainApp: React.FC = () => {
@@ -193,11 +194,11 @@ const MainApp: React.FC = () => {
       style={{
         maxWidth: isMobilePreview ? 430 : '100%',
         margin: isMobilePreview ? '24px auto' : '0 auto',
-        border: isMobilePreview ? '2px solid #3F3F46' : 'none',
+        border: isMobilePreview ? '2px solid var(--border-card)' : 'none',
         borderRadius: isMobilePreview ? 16 : 0,
         minHeight: isMobilePreview ? 860 : '100vh',
         overflow: 'hidden',
-        backgroundColor: '#09090B',
+        backgroundColor: 'var(--bg-body)',
         position: 'relative',
       }}
     >
@@ -209,17 +210,17 @@ const MainApp: React.FC = () => {
             top: 24,
             right: 24,
             zIndex: 2000,
-            backgroundColor: '#18181B',
+            backgroundColor: 'var(--bg-surface)',
             border: `1px solid ${
               activeToast.type === 'VOLATILITY'
                 ? '#F59E0B'
                 : activeToast.type === 'TRANSACTION'
                 ? '#10B981'
-                : '#00E5FF'
+                : 'var(--brand-primary)'
             }`,
             padding: '16px 20px',
             borderRadius: 12,
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -232,13 +233,13 @@ const MainApp: React.FC = () => {
           ) : activeToast.type === 'TRANSACTION' ? (
             <DollarSign size={22} color="#10B981" />
           ) : (
-            <TrendingUp size={22} color="#00E5FF" />
+            <TrendingUp size={22} color="var(--brand-primary)" />
           )}
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: '14px', color: '#FAFAFA' }}>
+            <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-primary)' }}>
               {activeToast.title}
             </div>
-            <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2, lineHeight: 1.4 }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.4 }}>
               {activeToast.message}
             </div>
           </div>
@@ -249,7 +250,7 @@ const MainApp: React.FC = () => {
               border: 'none',
               cursor: 'pointer',
               marginLeft: 8,
-              color: '#A1A1AA',
+              color: 'var(--text-secondary)',
               padding: 4,
             }}
           >
@@ -361,13 +362,15 @@ const MainApp: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <LanguageProvider>
-      <CurrencyProvider>
-        <AuthProvider>
-          <MainApp />
-        </AuthProvider>
-      </CurrencyProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <MainApp />
+          </AuthProvider>
+        </CurrencyProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 };
 

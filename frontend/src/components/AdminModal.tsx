@@ -7,6 +7,7 @@ import {
   fetchAdminStats,
 } from '../services/api';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import {
   X,
   Shield,
@@ -28,6 +29,7 @@ interface AdminModalProps {
 
 export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
   const { user: currentUser } = useAuth();
+  const { t } = useLanguage();
   const [users, setUsers] = useState<AdminUserSummary[]>([]);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [search, setSearch] = useState('');
@@ -48,12 +50,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
       if (err instanceof Error) {
         setActionMsg({ text: err.message, error: true });
       } else {
-        setActionMsg({ text: 'Lỗi tải dữ liệu quản trị', error: true });
+        setActionMsg({ text: t.common.error, error: true });
       }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,44 +69,37 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
 
   const handleRoleToggle = async (targetUser: AdminUserSummary) => {
     const newRole = targetUser.user.role === 'admin' ? 'user' : 'admin';
-    const confirmText =
-      newRole === 'admin'
-        ? `Bạn có chắc muốn thăng cấp người dùng "${targetUser.user.username}" lên làm Quản trị viên (Admin)?`
-        : `Bạn có chắc muốn giáng cấp người dùng "${targetUser.user.username}" về người dùng thông thường?`;
+    const confirmText = `${t.admin.toggleRole}: ${targetUser.user.username} -> ${newRole}?`;
 
     if (!window.confirm(confirmText)) return;
 
     try {
       await updateAdminUserRole(targetUser.user.id, newRole);
-      setActionMsg({ text: `Đã đổi vai trò của ${targetUser.user.username} thành ${newRole}` });
+      setActionMsg({ text: `${t.admin.toggleRole}: ${targetUser.user.username} (${newRole})` });
       loadData();
     } catch (err: unknown) {
       if (err instanceof Error) {
         setActionMsg({ text: err.message, error: true });
       } else {
-        setActionMsg({ text: 'Lỗi cập nhật vai trò', error: true });
+        setActionMsg({ text: t.common.error, error: true });
       }
     }
   };
 
   const handleDelete = async (targetUser: AdminUserSummary) => {
-    if (
-      !window.confirm(
-        `CẢNH BÁO: Bạn có chắc muốn xóa vĩnh viễn tài khoản "${targetUser.user.username}"? Mọi dữ liệu giao dịch và cảnh báo của người này sẽ bị xóa khỏi hệ thống.`
-      )
-    ) {
+    if (!window.confirm(`${t.admin.deleteConfirm} (${targetUser.user.username})`)) {
       return;
     }
 
     try {
       await deleteAdminUser(targetUser.user.id);
-      setActionMsg({ text: `Đã xóa tài khoản ${targetUser.user.username} thành công` });
+      setActionMsg({ text: `${t.admin.deleteUser}: ${targetUser.user.username} (${t.common.success})` });
       loadData();
     } catch (err: unknown) {
       if (err instanceof Error) {
         setActionMsg({ text: err.message, error: true });
       } else {
-        setActionMsg({ text: 'Lỗi xóa tài khoản', error: true });
+        setActionMsg({ text: t.common.error, error: true });
       }
     }
   };
@@ -180,8 +175,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                  Bảng Quản Trị Hệ Thống (Admin Control Center)
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  {t.admin.controlCenter}
                 </h2>
                 <span
                   style={{
@@ -197,8 +192,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                   ADMIN ONLY
                 </span>
               </div>
-              <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '2px 0 0 0' }}>
-                Quản lý phân quyền người dùng, xem thống kê sổ cái và trạng thái engine
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+                {t.admin.controlDesc}
               </p>
             </div>
           </div>
@@ -206,7 +201,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               onClick={loadData}
-              title="Làm mới dữ liệu"
+              title={t.header.quickRefresh}
               style={{
                 background: 'none',
                 border: '1px solid #3F3F46',
@@ -276,7 +271,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#A1A1AA', fontSize: '11px' }}>
                   <Users size={13} />
-                  <span>Tổng Người Dùng</span>
+                  <span>{t.admin.totalUsers}</span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#FAFAFA', marginTop: 4 }}>
                   {stats.total_users}
@@ -293,7 +288,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#EF4444', fontSize: '11px' }}>
                   <Shield size={13} />
-                  <span>Quản Trị Viên</span>
+                  <span>{t.admin.roleAdmin}</span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#EF4444', marginTop: 4 }}>
                   {stats.total_admins}
@@ -310,7 +305,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#00E5FF', fontSize: '11px' }}>
                   <TrendingUp size={13} />
-                  <span>Giao Dịch Sổ Cái</span>
+                  <span>{t.admin.ledgerTxCount}</span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700, color: '#00E5FF', marginTop: 4 }}>
                   {stats.total_transactions}
@@ -327,7 +322,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#10B981', fontSize: '11px' }}>
                   <Database size={13} />
-                  <span>Cơ Sở Dữ Liệu</span>
+                  <span>{t.admin.database}</span>
                 </div>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#FAFAFA', marginTop: 8, textTransform: 'uppercase' }}>
                   {stats.database_driver}
@@ -346,7 +341,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo username, email, họ tên..."
+                placeholder={t.admin.searchPlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
@@ -363,7 +358,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
             <div style={{ fontSize: '12px', color: '#71717A' }}>
-              Hiển thị {filteredUsers.length} / {users.length} tài khoản
+              {filteredUsers.length} / {users.length}
             </div>
           </div>
 
@@ -379,25 +374,25 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: '#18181B', borderBottom: '1px solid #27272A', color: '#A1A1AA' }}>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>Người Dùng</th>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>Vai Trò</th>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>Giao Dịch</th>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>Cảnh Báo</th>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>Ngày Tạo</th>
-                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px', textAlign: 'right' }}>Thao Tác</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>{t.admin.colUser}</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>{t.admin.colRole}</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>{t.admin.colTxCount}</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>{t.admin.colAlerts}</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px' }}>{t.admin.colCreatedAt}</th>
+                  <th style={{ padding: '10px 14px', fontWeight: 600, fontSize: '12px', textAlign: 'right' }}>{t.admin.colActions}</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: 30, textAlign: 'center', color: '#A1A1AA' }}>
-                      Đang tải danh sách người dùng...
+                    <td colSpan={6} style={{ padding: 30, textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      {t.common.loading}
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: 30, textAlign: 'center', color: '#71717A' }}>
-                      Không tìm thấy người dùng phù hợp
+                    <td colSpan={6} style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)' }}>
+                      {t.common.search}: 0
                     </td>
                   </tr>
                 ) : (
@@ -432,11 +427,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                               {item.user.username.slice(0, 2).toUpperCase()}
                             </div>
                             <div>
-                              <div style={{ fontWeight: 600, color: '#FAFAFA' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                                 {item.user.full_name || item.user.username}
                                 {isCurrent && (
                                   <span style={{ fontSize: '10px', color: '#00E5FF', marginLeft: 6 }}>
-                                    (Bạn)
+                                    {t.admin.youTag}
                                   </span>
                                 )}
                               </div>
@@ -485,7 +480,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                             {!isMasterAdmin && (
                               <button
                                 onClick={() => handleRoleToggle(item)}
-                                title={item.user.role === 'admin' ? 'Giáng cấp về User' : 'Thăng cấp lên Admin'}
+                                title={item.user.role === 'admin' ? t.admin.demoteUser : t.admin.promoteAdmin}
                                 style={{
                                   padding: '5px 8px',
                                   borderRadius: 6,
@@ -501,7 +496,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                                 }}
                               >
                                 {item.user.role === 'admin' ? <UserX size={13} /> : <UserCheck size={13} />}
-                                <span>{item.user.role === 'admin' ? 'Giáng cấp' : 'Thăng Admin'}</span>
+                                <span>{item.user.role === 'admin' ? t.admin.demoteUser : t.admin.promoteAdmin}</span>
                               </button>
                             )}
 
@@ -509,7 +504,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                             {!isMasterAdmin && !isCurrent && (
                               <button
                                 onClick={() => handleDelete(item)}
-                                title="Xóa người dùng"
+                                title={t.admin.deleteUser}
                                 style={{
                                   padding: '5px 8px',
                                   borderRadius: 6,

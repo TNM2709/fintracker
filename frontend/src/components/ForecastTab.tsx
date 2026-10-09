@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { ForecastResult, Asset } from '../types';
 import { fetchForecast } from '../services/api';
+import { useLanguage } from '../context/useLanguage';
 import { TrendingUp, Target, ShieldAlert, Cpu, Compass, Layers } from 'lucide-react';
 
 interface ForecastTabProps {
@@ -14,6 +15,7 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
   onSelectAsset,
   allAssets,
 }) => {
+  const { t } = useLanguage();
   const [horizon, setHorizon] = useState<number>(30);
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,7 +58,7 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             border: '1px solid rgba(16, 185, 129, 0.35)',
             color: '#10B981',
           }}>
-            MUA MẠNH (STRONG BUY)
+            {t.forecast.strongBuy}
           </span>
         );
       case 'BUY':
@@ -70,7 +72,7 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             border: '1px solid rgba(16, 185, 129, 0.35)',
             color: '#10B981',
           }}>
-            TÍCH LŨY (BUY)
+            {t.forecast.buy}
           </span>
         );
       case 'SELL':
@@ -84,7 +86,7 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             border: '1px solid rgba(239, 68, 68, 0.35)',
             color: '#EF4444',
           }}>
-            BÁN / HẠ TỶ TRỌNG (SELL)
+            {t.forecast.sell}
           </span>
         );
       default:
@@ -96,9 +98,9 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             borderRadius: 6,
             backgroundColor: 'rgba(0, 229, 255, 0.15)',
             border: '1px solid rgba(0, 229, 255, 0.35)',
-            color: '#00E5FF',
+            color: 'var(--brand-primary)',
           }}>
-            THEO DÕI (NEUTRAL)
+            {t.forecast.neutral}
           </span>
         );
     }
@@ -116,8 +118,8 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
       {/* Top Selector & Horizon Bar */}
       <div style={{
         padding: '16px 24px',
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         display: 'flex',
         justifyContent: 'space-between',
@@ -130,19 +132,19 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             width: 38,
             height: 38,
             borderRadius: 8,
-            backgroundColor: '#27272A',
-            border: '1px solid #3F3F46',
+            backgroundColor: 'var(--bg-surface-hover)',
+            border: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 0 12px rgba(0, 229, 255, 0.15)',
           }}>
-            <Cpu size={20} color="#00E5FF" />
+            <Cpu size={20} color="var(--brand-primary)" />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Động Cơ Dự Đoán Định Lượng & Monte Carlo Song Song
+              <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.forecast.engineTitle}
               </h2>
               <span style={{
                 fontSize: '10px',
@@ -156,8 +158,8 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
                 5,000 Iterations
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '3px 0 0 0' }}>
-              Mô phỏng chuỗi thời gian ngẫu nhiên đa nhân xử lý trực tiếp trên Go Backend
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '3px 0 0 0' }}>
+              {t.forecast.engineSubtitle}
             </p>
           </div>
         </div>
@@ -168,9 +170,9 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             value={selectedAssetId}
             onChange={(e) => onSelectAsset(e.target.value)}
             style={{
-              backgroundColor: '#09090B',
-              border: '1px solid #3F3F46',
-              color: '#FAFAFA',
+              backgroundColor: 'var(--bg-body)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
               borderRadius: 8,
               padding: '8px 12px',
               fontSize: '13px',
@@ -179,12 +181,12 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
               outline: 'none',
             }}
           >
-            <option value="XAU-SJC">Vàng SJC (Việt Nam)</option>
-            <option value="XAU-USD">Vàng Thế Giới (XAU/USD)</option>
-            <option value="VN-INDEX">Chỉ Số VN-Index</option>
-            <option value="VN-FPT">FPT Telecom & AI</option>
+            <option value="XAU-SJC">{t.market.sjcGold}</option>
+            <option value="XAU-USD">{t.market.worldGold}</option>
+            <option value="VN-INDEX">VN-Index</option>
+            <option value="VN-FPT">FPT Corp</option>
             <option value="VN-VCB">Vietcombank</option>
-            <option value="VN-HPG">Tập đoàn Hoà Phát</option>
+            <option value="VN-HPG">Hoa Phat Group</option>
             <option value="US-NVDA">NVIDIA (NVDA)</option>
             <option value="US-AAPL">Apple (AAPL)</option>
             <option value="CRYPTO-BTC">Bitcoin (BTC)</option>
@@ -193,34 +195,29 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
           {/* Segmented Control for Horizon */}
           <div style={{
             display: 'flex',
-            backgroundColor: '#09090B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-body)',
+            border: '1px solid var(--border-card)',
             borderRadius: 8,
             padding: 2,
             gap: 2,
           }}>
-            {[
-              { days: 7, label: '7 Ngày' },
-              { days: 14, label: '14 Ngày' },
-              { days: 30, label: '30 Ngày' },
-              { days: 90, label: '90 Ngày' },
-            ].map((h) => (
+            {[7, 14, 30, 90].map((days) => (
               <button
-                key={h.days}
-                onClick={() => setHorizon(h.days)}
+                key={days}
+                onClick={() => setHorizon(days)}
                 style={{
                   padding: '6px 12px',
                   borderRadius: 6,
                   border: 'none',
                   fontSize: '12px',
-                  fontWeight: horizon === h.days ? 600 : 500,
+                  fontWeight: horizon === days ? 600 : 500,
                   cursor: 'pointer',
-                  backgroundColor: horizon === h.days ? '#27272A' : 'transparent',
-                  color: horizon === h.days ? '#FAFAFA' : '#A1A1AA',
+                  backgroundColor: horizon === days ? 'var(--bg-surface-hover)' : 'transparent',
+                  color: horizon === days ? 'var(--text-primary)' : 'var(--text-secondary)',
                   transition: 'all 0.15s ease',
                 }}
               >
-                {h.label}
+                {t.forecast.daysLabel.replace('{days}', String(days))}
               </button>
             ))}
           </div>
@@ -231,16 +228,16 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
         <div style={{
           padding: 60,
           textAlign: 'center',
-          backgroundColor: '#18181B',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 12,
         }}>
-          <div className="pulse-dot" style={{ backgroundColor: '#00E5FF', margin: '0 auto 16px auto', display: 'block' }} />
-          <p style={{ color: '#FAFAFA', fontSize: '15px', fontWeight: 500 }}>
-            Đang chạy mô phỏng 5,000 chuỗi thời gian Monte Carlo song song trên Go...
+          <div className="pulse-dot" style={{ backgroundColor: 'var(--brand-primary)', margin: '0 auto 16px auto', display: 'block' }} />
+          <p style={{ color: 'var(--text-primary)', fontSize: '15px', fontWeight: 500 }}>
+            {t.forecast.loadingForecast}
           </p>
-          <p style={{ color: '#A1A1AA', fontSize: '13px', marginTop: 4 }}>
-            Thuật toán Geometric Brownian Motion (GBM) phân tích rủi ro & dải tin cậy
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: 4 }}>
+            {t.forecast.disclaimer}
           </p>
         </div>
       ) : forecast ? (
@@ -252,27 +249,27 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             gap: 12,
             marginBottom: 16,
           }}>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>ĐỘ BIẾN ĐỘNG (VOLATILITY σ)</div>
-              <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: '#FAFAFA', marginTop: 4 }}>
-                {forecast.annual_volatility.toFixed(1)}% / năm
+            <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-card)', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>{t.forecast.volatilityLabel}</div>
+              <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
+                {forecast.annual_volatility.toFixed(1)}% / yr
               </div>
             </div>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>TỶ SUẤT KỲ VỌNG (DRIFT μ)</div>
+            <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-card)', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>{t.forecast.expectedDriftLabel}</div>
               <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: forecast.expected_drift >= 0 ? '#10B981' : '#EF4444', marginTop: 4 }}>
-                {forecast.expected_drift >= 0 ? '+' : ''}{forecast.expected_drift.toFixed(1)}% / năm
+                {forecast.expected_drift >= 0 ? '+' : ''}{forecast.expected_drift.toFixed(1)}% / yr
               </div>
             </div>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>VALUE AT RISK (VaR 95%)</div>
+            <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-card)', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>VALUE AT RISK (VaR 95%)</div>
               <div className="num-mono" style={{ fontSize: '18px', fontWeight: 700, color: '#EF4444', marginTop: 4 }}>
                 {(((forecast.confidence_low_95 - forecast.current_price) / forecast.current_price) * 100).toFixed(1)}%
               </div>
             </div>
-            <div style={{ backgroundColor: '#18181B', border: '1px solid #27272A', borderRadius: 8, padding: '12px 16px' }}>
-              <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600 }}>KHOẢNG TIN CẬY 95%</div>
-              <div className="num-mono" style={{ fontSize: '13px', fontWeight: 600, color: '#00E5FF', marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-card)', borderRadius: 8, padding: '12px 16px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>{t.forecast.confidenceInterval95}</div>
+              <div className="num-mono" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--brand-primary)', marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 [{formatPrice(forecast.confidence_low_95)} - {formatPrice(forecast.confidence_high_95)}]
               </div>
             </div>
@@ -287,8 +284,8 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             {/* Bearish Target */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -303,27 +300,27 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  KỊCH BẢN PHÒNG THỦ (BEAR CASE)
+                  {t.forecast.bearCase}
                 </span>
                 <ShieldAlert size={16} color="#EF4444" />
               </div>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
-                Xác suất 10th Percentile (Bi quan)
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                10th Percentile (5%)
               </div>
               <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#EF4444', marginBottom: 6 }}>
                 {formatPrice(forecast.bear_target)}
               </div>
               <div style={{ fontSize: '12px', color: '#EF4444', fontWeight: 500 }}>
                 {(((forecast.bear_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>so với giá hiện tại</span>
+                <span style={{ color: 'var(--text-secondary)', marginLeft: 6 }}>{t.chart.currentPrice}</span>
               </div>
             </div>
 
             {/* Base Target */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -337,29 +334,29 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
                 background: 'linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.4), transparent)',
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#00E5FF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  KỊCH BẢN CƠ SỞ (BASE / MEDIAN)
+                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--brand-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {t.forecast.baseCase}
                 </span>
-                <Target size={16} color="#00E5FF" />
+                <Target size={16} color="var(--brand-primary)" />
               </div>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
-                Kỳ vọng trung bình 50th Percentile
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                {t.forecast.medianExpected}
               </div>
-              <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#00E5FF', marginBottom: 6 }}>
+              <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: 'var(--brand-primary)', marginBottom: 6 }}>
                 {formatPrice(forecast.base_target)}
               </div>
               <div style={{ fontSize: '12px', color: forecast.base_target >= forecast.current_price ? '#10B981' : '#EF4444', fontWeight: 500 }}>
                 {forecast.base_target >= forecast.current_price ? '+' : ''}
                 {(((forecast.base_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>kỳ vọng sau {forecast.horizon_days} ngày</span>
+                <span style={{ color: 'var(--text-secondary)', marginLeft: 6 }}>{t.forecast.daysLabel.replace('{days}', String(forecast.horizon_days))}</span>
               </div>
             </div>
 
             {/* Bullish Target */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
               position: 'relative',
               overflow: 'hidden',
@@ -374,19 +371,19 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  KỊCH BẢN LẠC QUAN (BULL CASE)
+                  {t.forecast.bullCase}
                 </span>
                 <TrendingUp size={16} color="#10B981" />
               </div>
-              <div style={{ fontSize: '12px', color: '#A1A1AA', marginBottom: 12 }}>
-                Xác suất 90th Percentile (Lạc quan)
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                {t.forecast.optimistic95}
               </div>
               <div className="num-mono" style={{ fontSize: '24px', fontWeight: 700, color: '#10B981', marginBottom: 6 }}>
                 {formatPrice(forecast.bull_target)}
               </div>
               <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 500 }}>
                 +{(((forecast.bull_target - forecast.current_price) / forecast.current_price) * 100).toFixed(2)}%
-                <span style={{ color: '#A1A1AA', marginLeft: 6 }}>tiềm năng bứt phá</span>
+                <span style={{ color: 'var(--text-secondary)', marginLeft: 6 }}>{t.forecast.probProfit}</span>
               </div>
             </div>
           </div>
@@ -394,39 +391,39 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
           {/* 2. Simulation Cone Card */}
           <div style={{
             padding: 24,
-            backgroundColor: '#18181B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-card)',
             borderRadius: 12,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                  Dải Xác Suất Biến Động (Geometric Brownian Motion Simulation Cone)
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  {t.forecast.title} (Simulation Cone)
                 </h3>
-                <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
-                  Khoảng tin cậy 80% & 95% thể hiện độ rủi ro và biên độ giao động kỳ vọng
+                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                  {t.forecast.confidenceInterval}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: 16, fontSize: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 3, backgroundColor: '#00E5FF' }} />
-                  <span style={{ color: '#A1A1AA' }}>95% Confidence Band</span>
+                  <span style={{ width: 12, height: 3, backgroundColor: 'var(--brand-primary)' }} />
+                  <span style={{ color: 'var(--text-secondary)' }}>95% Confidence Band</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 12, height: 2, backgroundColor: '#FAFAFA' }} />
-                  <span style={{ color: '#A1A1AA' }}>Đường trung đạo (Median)</span>
+                  <span style={{ width: 12, height: 2, backgroundColor: 'var(--text-primary)' }} />
+                  <span style={{ color: 'var(--text-secondary)' }}>Median</span>
                 </div>
               </div>
             </div>
 
             {/* SVG Visualizer */}
-            <div style={{ width: '100%', height: 260, backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: '16px 20px', position: 'relative' }}>
+            <div style={{ width: '100%', height: 260, backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', borderRadius: 8, padding: '16px 20px', position: 'relative' }}>
               <svg width="100%" height="100%" viewBox="0 0 800 240" preserveAspectRatio="none">
                 {/* 95% Confidence Area */}
                 <polygon
                   points="40,120 760,20 760,220"
                   fill="rgba(0, 229, 255, 0.04)"
-                  stroke="#3F3F46"
+                  stroke="var(--border-subtle)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
                 />
@@ -474,12 +471,12 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
                   })}
 
                 {/* Base Case Central Trendline */}
-                <line x1="40" y1="120" x2="760" y2="105" stroke="#FAFAFA" strokeWidth="2" strokeDasharray="4 4" />
+                <line x1="40" y1="120" x2="760" y2="105" stroke="var(--text-primary)" strokeWidth="2" strokeDasharray="4 4" />
 
                 {/* Current Price Marker */}
-                <circle cx="40" cy="120" r="5" fill="#00E5FF" />
-                <text x="45" y="145" fill="#FAFAFA" fontSize="12" fontFamily="monospace">
-                  Hiện tại: {formatPrice(forecast.current_price)}
+                <circle cx="40" cy="120" r="5" fill="var(--brand-primary)" />
+                <text x="45" y="145" fill="var(--text-primary)" fontSize="12" fontFamily="monospace">
+                  {t.chart.currentPrice}: {formatPrice(forecast.current_price)}
                 </text>
               </svg>
             </div>
@@ -494,15 +491,15 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             {/* Tin hieu & Diem so */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Compass size={18} color="#00E5FF" />
-                  <h4 style={{ fontWeight: 600, fontSize: '16px', color: '#FAFAFA', margin: 0 }}>
-                    Đánh Giá Tín Hiệu & Xu Hướng
+                  <Compass size={18} color="var(--brand-primary)" />
+                  <h4 style={{ fontWeight: 600, fontSize: '16px', color: 'var(--text-primary)', margin: 0 }}>
+                    {t.forecast.technicalSignal}
                   </h4>
                 </div>
                 {getSignalBadge(forecast.trend_signal)}
@@ -510,20 +507,20 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
                 <div>
-                  <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>ĐIỂM KỸ THUẬT</div>
-                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#00E5FF', fontFamily: 'monospace' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>{t.forecast.technicalScore}</div>
+                  <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--brand-primary)', fontFamily: 'monospace' }}>
                     {forecast.technical_score}
-                    <span style={{ fontSize: '13px', color: '#71717A', fontWeight: 400 }}>/100</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 400 }}>/100</span>
                   </div>
                 </div>
 
                 <div style={{ flex: 1 }}>
-                  <div style={{ height: 8, borderRadius: 4, backgroundColor: '#09090B', border: '1px solid #27272A', overflow: 'hidden' }}>
+                  <div style={{ height: 8, borderRadius: 4, backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', overflow: 'hidden' }}>
                     <div
                       style={{
                         height: '100%',
                         width: `${forecast.technical_score}%`,
-                        backgroundColor: '#00E5FF',
+                        backgroundColor: 'var(--brand-primary)',
                         transition: 'width 0.6s ease',
                       }}
                     />
@@ -532,21 +529,21 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #27272A' }}>
-                  <span style={{ color: '#A1A1AA' }}>Chỉ số RSI (14 ngày):</span>
-                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: forecast.rsi_14 > 70 ? '#EF4444' : forecast.rsi_14 < 30 ? '#10B981' : '#FAFAFA' }}>
-                    {forecast.rsi_14} ({forecast.rsi_14 > 70 ? 'Quá Mua' : forecast.rsi_14 < 30 ? 'Quá Bán' : 'Cân Bằng'})
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-card)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>RSI (14):</span>
+                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: forecast.rsi_14 > 70 ? '#EF4444' : forecast.rsi_14 < 30 ? '#10B981' : 'var(--text-primary)' }}>
+                    {forecast.rsi_14} ({forecast.rsi_14 > 70 ? t.forecast.rsiOverbought : forecast.rsi_14 < 30 ? t.forecast.rsiOversold : t.forecast.rsiNeutral})
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #27272A' }}>
-                  <span style={{ color: '#A1A1AA' }}>Tín hiệu MACD:</span>
-                  <span style={{ fontWeight: 600, color: forecast.macd_signal.includes('BULLISH') ? '#10B981' : '#FAFAFA' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-card)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>MACD:</span>
+                  <span style={{ fontWeight: 600, color: forecast.macd_signal.includes('BULLISH') ? '#10B981' : 'var(--text-primary)' }}>
                     {forecast.macd_signal}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                  <span style={{ color: '#A1A1AA' }}>Độ biến động năm:</span>
-                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: '#FAFAFA' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>{t.forecast.volatility}:</span>
+                  <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--text-primary)' }}>
                     {forecast.annual_volatility.toFixed(1)}%
                   </span>
                 </div>
@@ -556,21 +553,21 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
             {/* Vung Khang cu & Ho tro */}
             <div style={{
               padding: 24,
-              backgroundColor: '#18181B',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               borderRadius: 12,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <Layers size={18} color="#00E5FF" />
-                <h4 style={{ fontWeight: 600, fontSize: '16px', color: '#FAFAFA', margin: 0 }}>
-                  Vùng Cung Cầu: Kháng Cự & Hỗ Trợ
+                <Layers size={18} color="var(--brand-primary)" />
+                <h4 style={{ fontWeight: 600, fontSize: '16px', color: 'var(--text-primary)', margin: 0 }}>
+                  {t.forecast.supportResistance}
                 </h4>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
                   <div style={{ fontSize: '11px', color: '#EF4444', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
-                    VÙNG KHÁNG CỰ (RESISTANCE LEVELS)
+                    {t.forecast.resistanceLevels}
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     {forecast.resistance_levels.map((res, i) => (
@@ -595,7 +592,7 @@ export const ForecastTab: React.FC<ForecastTabProps> = ({
 
                 <div>
                   <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
-                    VÙNG HỖ TRỢ (SUPPORT LEVELS)
+                    {t.forecast.supportLevels}
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     {forecast.support_levels.map((sup, i) => (

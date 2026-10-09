@@ -97,13 +97,13 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
       <div style={{
         padding: 60,
         textAlign: 'center',
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
       }}>
-        <div className="pulse-dot" style={{ backgroundColor: '#00E5FF', margin: '0 auto 16px auto', display: 'block' }} />
-        <p style={{ color: '#FAFAFA', fontSize: '15px', fontWeight: 500 }}>Đang tải dữ liệu danh mục đầu tư...</p>
-        <p style={{ color: '#A1A1AA', fontSize: '13px', marginTop: 4 }}>Đồng bộ thời gian thực từ sổ cái Go Backend</p>
+        <div className="pulse-dot" style={{ backgroundColor: 'var(--brand-primary)', margin: '0 auto 16px auto', display: 'block' }} />
+        <p style={{ color: 'var(--text-primary)', fontSize: '15px', fontWeight: 500 }}>{t.common.loading}</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: 4 }}>{t.portfolio.userLedgerDesc}</p>
       </div>
     );
   }
@@ -243,7 +243,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#00E5FF',
+                color: 'var(--brand-primary)',
                 flexShrink: 0,
               }}
             >
@@ -251,15 +251,15 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#FAFAFA' }}>
-                  Chế Độ Xem Khách (Chỉ Xem)
+                <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {t.portfolio.guestBannerTitle}
                 </h4>
                 <span
                   style={{
                     fontSize: '11px',
                     fontWeight: 600,
                     backgroundColor: 'rgba(0, 229, 255, 0.15)',
-                    color: '#00E5FF',
+                    color: 'var(--brand-primary)',
                     padding: '1px 6px',
                     borderRadius: 4,
                   }}
@@ -267,8 +267,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                   DEMO VIEW
                 </span>
               </div>
-              <p style={{ margin: '3px 0 0 0', fontSize: '12px', color: '#A1A1AA' }}>
-                Đăng nhập hoặc đăng ký tài khoản để quản lý sổ cái riêng, lưu trữ giao dịch cá nhân và nhận thông báo cảnh báo giá.
+              <p style={{ margin: '3px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                {t.portfolio.guestBannerDesc}
               </p>
             </div>
           </div>
@@ -278,7 +278,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               style={{
                 padding: '8px 16px',
                 borderRadius: 8,
-                backgroundColor: '#00E5FF',
+                backgroundColor: 'var(--brand-primary)',
                 color: '#09090B',
                 border: 'none',
                 fontWeight: 600,
@@ -290,7 +290,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               }}
             >
               <LogIn size={14} />
-              <span>Đăng Nhập</span>
+              <span>{t.header.login}</span>
             </button>
             <button
               onClick={() => openAuthModal('register')}
@@ -298,8 +298,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 padding: '8px 14px',
                 borderRadius: 8,
                 backgroundColor: 'transparent',
-                border: '1px solid #3F3F46',
-                color: '#FAFAFA',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
                 fontSize: '13px',
                 cursor: 'pointer',
                 display: 'flex',
@@ -308,7 +308,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               }}
             >
               <UserPlus size={14} />
-              <span>Tạo Tài Khoản</span>
+              <span>{t.header.register}</span>
             </button>
           </div>
         </div>
@@ -317,8 +317,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
           style={{
             padding: '12px 18px',
             borderRadius: 10,
-            backgroundColor: '#18181B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid var(--border-card)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -332,7 +332,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 height: 32,
                 borderRadius: '50%',
                 backgroundColor: user.role === 'admin' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 229, 255, 0.15)',
-                color: user.role === 'admin' ? '#EF4444' : '#00E5FF',
+                color: user.role === 'admin' ? '#EF4444' : 'var(--brand-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -343,8 +343,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               {user.username.slice(0, 2).toUpperCase()}
             </div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>Sổ cái của {user.full_name || user.username}</span>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>{t.portfolio.userLedgerOf.replace('{name}', user.full_name || user.username)}</span>
                 <span
                   style={{
                     fontSize: '10px',
@@ -352,15 +352,15 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                     padding: '1px 6px',
                     borderRadius: 4,
                     backgroundColor: user.role === 'admin' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(0, 229, 255, 0.1)',
-                    color: user.role === 'admin' ? '#EF4444' : '#00E5FF',
+                    color: user.role === 'admin' ? '#EF4444' : 'var(--brand-primary)',
                     textTransform: 'uppercase',
                   }}
                 >
                   {user.role}
                 </span>
               </div>
-              <div style={{ fontSize: '11px', color: '#71717A' }}>
-                Dữ liệu sổ cái được bảo mật và phân lập riêng cho tài khoản của bạn
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                {t.portfolio.userLedgerDesc}
               </div>
             </div>
           </div>
@@ -369,15 +369,15 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
       {/* 1. EXECUTIVE BALANCE HERO (Bloomberg / Coinbase Pro Style) */}
       <div style={{
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         padding: 24,
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.4)',
+        boxShadow: '0 4px 24px -1px rgba(0, 0, 0, 0.2)',
       }}>
-        {/* Subtle top cyan line highlight */}
+        {/* Subtle top brand line highlight */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -408,7 +408,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               <span style={{
                 fontSize: '12px',
                 fontWeight: 600,
-                color: '#A1A1AA',
+                color: 'var(--text-secondary)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
               }}>
@@ -420,7 +420,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               <span className="num-mono" style={{
                 fontSize: '38px',
                 fontWeight: 700,
-                color: '#FAFAFA',
+                color: 'var(--text-primary)',
                 letterSpacing: '-0.03em',
                 lineHeight: 1.1,
               }}>
@@ -442,14 +442,14 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               }}>
                 {isProfitable ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 <span>{isProfitable ? '+' : ''}{portfolio.total_pnl_rate.toFixed(2)}%</span>
-                <span style={{ color: '#A1A1AA', fontSize: '11px', fontWeight: 400 }}>({formatVND(portfolio.total_unrealized_pnl)})</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '11px', fontWeight: 400 }}>({formatVND(portfolio.total_unrealized_pnl)})</span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8, fontSize: '13px', color: '#A1A1AA' }}>
-              <span>{t.portfolio.totalCost}: <strong style={{ color: '#FAFAFA', fontFamily: 'monospace' }}>{formatVND(portfolio.total_cost_basis)}</strong></span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8, fontSize: '13px', color: 'var(--text-secondary)' }}>
+              <span>{t.portfolio.totalCost}: <strong style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>{formatVND(portfolio.total_cost_basis)}</strong></span>
               <span>•</span>
-              <span>Cập nhật: <strong style={{ color: '#00E5FF' }}>Vừa xong</strong></span>
+              <span>{t.common.status}: <strong style={{ color: 'var(--brand-primary)' }}>{t.portfolio.updatedJustNow}</strong></span>
             </div>
           </div>
 
@@ -458,12 +458,12 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               {/* Metric 1: Unrealized P&L */}
               <div style={{
-                backgroundColor: '#09090B',
-                border: '1px solid #27272A',
+                backgroundColor: 'var(--bg-body)',
+                border: '1px solid var(--border-card)',
                 borderRadius: 8,
                 padding: '12px 14px',
               }}>
-                <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
                   {t.portfolio.unrealizedPnL.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
@@ -478,18 +478,18 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
               {/* Metric 2: Dividends */}
               <div style={{
-                backgroundColor: '#09090B',
-                border: '1px solid #27272A',
+                backgroundColor: 'var(--bg-body)',
+                border: '1px solid var(--border-card)',
                 borderRadius: 8,
                 padding: '12px 14px',
               }}>
-                <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
                   {t.portfolio.dividendUpcoming.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
                   fontSize: '16px',
                   fontWeight: 600,
-                  color: '#00E5FF',
+                  color: 'var(--brand-primary)',
                   marginTop: 4,
                 }}>
                   {formatVND(portfolio.total_dividends)}
@@ -498,18 +498,18 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
               {/* Metric 3: Yield */}
               <div style={{
-                backgroundColor: '#09090B',
-                border: '1px solid #27272A',
+                backgroundColor: 'var(--bg-body)',
+                border: '1px solid var(--border-card)',
                 borderRadius: 8,
                 padding: '12px 14px',
               }}>
-                <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>
                   {t.portfolio.returnRate.toUpperCase()}
                 </div>
                 <div className="num-mono" style={{
                   fontSize: '16px',
                   fontWeight: 600,
-                  color: '#FAFAFA',
+                  color: 'var(--text-primary)',
                   marginTop: 4,
                 }}>
                   {portfolio.estimated_yield.toFixed(2)}%
@@ -522,7 +522,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               <button
                 onClick={handleAddClick}
                 style={{
-                  backgroundColor: '#00E5FF',
+                  backgroundColor: 'var(--brand-primary)',
                   color: '#09090B',
                   fontWeight: 600,
                   fontSize: '13px',
@@ -537,11 +537,11 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                   boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#00B8CC';
+                  e.currentTarget.style.backgroundColor = 'var(--brand-hover)';
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#00E5FF';
+                  e.currentTarget.style.backgroundColor = 'var(--brand-primary)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -553,8 +553,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 onClick={() => setIsDCAModalOpen(true)}
                 style={{
                   backgroundColor: 'transparent',
-                  border: '1px solid #3F3F46',
-                  color: '#FAFAFA',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-primary)',
                   fontWeight: 500,
                   fontSize: '13px',
                   borderRadius: 8,
@@ -565,10 +565,10 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                   gap: 6,
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <TrendingUp size={14} color="#00E5FF" />
+                <TrendingUp size={14} color="var(--brand-primary)" />
                 <span>{t.portfolio.dcaCalculator}</span>
               </button>
 
@@ -576,8 +576,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                 onClick={handleExportCSV}
                 style={{
                   backgroundColor: 'transparent',
-                  border: '1px solid #3F3F46',
-                  color: '#FAFAFA',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-primary)',
                   fontWeight: 500,
                   fontSize: '13px',
                   borderRadius: 8,
@@ -588,9 +588,9 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                   gap: 6,
                   transition: 'all 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                title="Xuất CSV"
+                title={t.portfolio.exportCsv}
               >
                 <FileSpreadsheet size={14} color="#10B981" />
                 <span>{t.portfolio.exportCsv}</span>
@@ -601,16 +601,16 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
         {/* Multi-asset Allocation Ribbon */}
         <div style={{
-          borderTop: '1px solid #27272A',
+          borderTop: '1px solid var(--border-card)',
           paddingTop: 16,
           marginTop: 8,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              PHÂN BỔ DANH MỤC ĐẦU TƯ
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t.portfolio.allocationTitle}
             </span>
-            <span style={{ fontSize: '12px', color: '#71717A' }}>
-              {portfolio.holdings.length} vị thế đang nắm giữ
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {portfolio.holdings.length} {t.portfolio.positionsCount}
             </span>
           </div>
 
@@ -621,8 +621,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
             borderRadius: 6,
             overflow: 'hidden',
             display: 'flex',
-            backgroundColor: '#09090B',
-            border: '1px solid #27272A',
+            backgroundColor: 'var(--bg-body)',
+            border: '1px solid var(--border-card)',
             marginBottom: 12,
           }}>
             {Object.entries(portfolio.asset_allocation).map(([category, pct], idx) => {
@@ -649,8 +649,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               return (
                 <div key={category} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '12px' }}>
                   <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: colors[idx % colors.length] }} />
-                  <span style={{ color: '#A1A1AA' }}>{category}:</span>
-                  <span className="num-mono" style={{ fontWeight: 600, color: '#FAFAFA' }}>{pct}%</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>{category}:</span>
+                  <span className="num-mono" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{pct}%</span>
                 </div>
               );
             })}
@@ -666,8 +666,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
       {/* 3. HOLDINGS TABLE (Terminal Class) */}
       <div style={{
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         padding: 24,
       }}>
@@ -682,23 +682,23 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Chi Tiết Các Vị Thế Nắm Giữ (Holdings)
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.portfolio.holdingsTitle}
               </h3>
               <span style={{
                 fontSize: '11px',
                 fontWeight: 600,
-                color: '#00E5FF',
+                color: 'var(--brand-primary)',
                 backgroundColor: 'rgba(0, 229, 255, 0.1)',
                 border: '1px solid rgba(0, 229, 255, 0.25)',
                 padding: '2px 8px',
                 borderRadius: 4,
               }}>
-                {filteredHoldings.length} Mã
+                {filteredHoldings.length} {t.portfolio.symbolsCount}
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '4px 0 0 0' }}>
-              Theo dõi biến động thị trường, giá vốn DCA và tỷ trọng danh mục thực tế
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+              {t.portfolio.holdingsSubtitle}
             </p>
           </div>
 
@@ -743,34 +743,34 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
         </div>
 
         {/* Table Container */}
-        <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
-              <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAsset}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colQuantity}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAvgPrice}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colCurrentPrice}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colValue}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colPnL}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.dividendUpcoming}</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>%</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.portfolio.colActions}</th>
+              <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-subtle)' }}>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAsset}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colQuantity}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAvgPrice}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colCurrentPrice}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colValue}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colPnL}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.dividendUpcoming}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>%</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.portfolio.colActions}</th>
               </tr>
             </thead>
             <tbody>
               {filteredHoldings.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px 16px', color: '#A1A1AA' }}>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--text-secondary)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                      <p style={{ margin: 0, fontSize: '14px', color: '#A1A1AA' }}>
+                      <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
                         {t.portfolio.emptyHoldings}
                       </p>
                       <div style={{ display: 'flex', gap: 10 }}>
                         <button
                           onClick={handleAddClick}
                           style={{
-                            backgroundColor: '#00E5FF',
+                            backgroundColor: 'var(--brand-primary)',
                             color: '#09090B',
                             fontWeight: 600,
                             fontSize: '13px',
@@ -786,8 +786,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                           onClick={handleResetClick}
                           style={{
                             backgroundColor: 'transparent',
-                            border: '1px solid #3F3F46',
-                            color: '#FAFAFA',
+                            border: '1px solid var(--border-subtle)',
+                            color: 'var(--text-primary)',
                             fontWeight: 500,
                             fontSize: '13px',
                             borderRadius: 8,
@@ -795,7 +795,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                             cursor: 'pointer',
                           }}
                         >
-                          ⚡ Nạp Dữ Liệu Mẫu
+                          ⚡ {t.portfolio.restoreSampleData}
                         </button>
                       </div>
                     </div>
@@ -811,10 +811,10 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                     <tr
                       key={h.asset_id}
                       style={{
-                        borderBottom: '1px solid #27272A',
+                        borderBottom: '1px solid var(--border-card)',
                         transition: 'background-color 0.15s ease',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       {/* Asset Column with Rich Badge */}
@@ -859,17 +859,17 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                       </td>
 
                       {/* Quantity */}
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#FAFAFA', fontWeight: 600 }}>
-                        {h.total_quantity.toLocaleString()} <span style={{ fontSize: '11px', color: '#71717A', fontWeight: 400 }}>{h.asset_id.includes('XAU') ? 'lượng' : h.asset_id.includes('CRYPTO') ? 'Coin' : 'CP'}</span>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: 'var(--text-primary)', fontWeight: 600 }}>
+                        {h.total_quantity.toLocaleString()} <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 400 }}>{h.asset_id.includes('XAU') ? t.header.goldUnitLuong : h.asset_id.includes('CRYPTO') ? 'Coin' : 'CP'}</span>
                       </td>
 
                       {/* Cost basis DCA */}
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: '#A1A1AA' }}>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', color: 'var(--text-secondary)' }}>
                         {isUSD ? `$${h.avg_buy_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : formatVND(h.avg_buy_price)}
                       </td>
 
                       {/* Current Price */}
-                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#FAFAFA' }}>
+                      <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-primary)' }}>
                         {isUSD ? (
                           <div>
                             <div>${h.current_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
@@ -968,25 +968,25 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                             padding: '6px 12px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            backgroundColor: '#09090B',
-                            border: '1px solid #3F3F46',
+                            backgroundColor: 'var(--bg-body)',
+                            border: '1px solid var(--border-subtle)',
                             borderRadius: 6,
-                            color: '#FAFAFA',
+                            color: 'var(--text-primary)',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#27272A';
-                            e.currentTarget.style.borderColor = '#00E5FF';
-                            e.currentTarget.style.color = '#00E5FF';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+                            e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                            e.currentTarget.style.color = 'var(--brand-primary)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#09090B';
-                            e.currentTarget.style.borderColor = '#3F3F46';
-                            e.currentTarget.style.color = '#FAFAFA';
+                            e.currentTarget.style.backgroundColor = 'var(--bg-body)';
+                            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                            e.currentTarget.style.color = 'var(--text-primary)';
                           }}
                         >
-                          Biểu đồ <ArrowUpRight size={13} />
+                          {t.portfolio.btnChart} <ArrowUpRight size={13} />
                         </button>
                       </td>
                     </tr>
@@ -1000,49 +1000,49 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
       {/* 4. DIVIDEND SCHEDULE CALENDAR */}
       <div style={{
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         padding: 24,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Calendar size={18} color="#00E5FF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-              Lịch Nhận Cổ Tức & Ước Tính Dòng Tiền Dự Kiến
+            <Calendar size={18} color="var(--brand-primary)" />
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+              {t.portfolio.dividendScheduleTitle}
             </h3>
           </div>
-          <span style={{ fontSize: '13px', color: '#A1A1AA' }}>
-            Tự động tính toán theo số lượng tài sản sở hữu thực tế
+          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            {t.portfolio.dividendScheduleSubtitle}
           </span>
         </div>
 
-        <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
-              <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MÃ CK</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SỰ KIỆN DOANH NGHIỆP</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>NGÀY GDKHQ</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>NGÀY THANH TOÁN</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CỔ TỨC / CP</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TỶ SUẤT</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DÒNG TIỀN DỰ KIẾN</th>
+              <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-subtle)' }}>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colTicker}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colCorporateEvent}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colExDate}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colPayDate}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colDivPerShare}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colDivYield}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colEstimatedCash}</th>
               </tr>
             </thead>
             <tbody>
               {dividendEvents.map((ev) => (
                 <tr
                   key={ev.id}
-                  style={{ borderBottom: '1px solid #27272A', transition: 'background-color 0.15s ease' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                  style={{ borderBottom: '1px solid var(--border-card)', transition: 'background-color 0.15s ease' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: '#00E5FF' }}>{ev.symbol}</td>
-                  <td style={{ padding: '12px 16px', color: '#FAFAFA' }}>{ev.name}</td>
-                  <td style={{ padding: '12px 16px', color: '#A1A1AA', fontFamily: 'monospace' }}>{ev.ex_date}</td>
+                  <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--brand-primary)' }}>{ev.symbol}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--text-primary)' }}>{ev.name}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{ev.ex_date}</td>
                   <td style={{ padding: '12px 16px', color: '#10B981', fontFamily: 'monospace', fontWeight: 500 }}>{ev.pay_date}</td>
-                  <td style={{ padding: '12px 16px', color: '#FAFAFA', fontFamily: 'monospace' }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
                     {ev.asset_id.includes('US') ? `$${ev.dividend_amount}` : `${ev.dividend_amount.toLocaleString()} VND`}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -1059,8 +1059,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                       {ev.yield_pct}%
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: ev.estimated_cash > 0 ? '#00E5FF' : '#71717A', fontFamily: 'monospace' }}>
-                    {ev.estimated_cash > 0 ? (ev.asset_id.includes('US') ? `$${ev.estimated_cash.toLocaleString()}` : formatVND(ev.estimated_cash)) : 'Chưa có vị thế'}
+                  <td style={{ padding: '12px 16px', fontWeight: 600, color: ev.estimated_cash > 0 ? 'var(--brand-primary)' : 'var(--text-muted)', fontFamily: 'monospace' }}>
+                    {ev.estimated_cash > 0 ? (ev.asset_id.includes('US') ? `$${ev.estimated_cash.toLocaleString()}` : formatVND(ev.estimated_cash)) : t.portfolio.noPositionYet}
                   </td>
                 </tr>
               ))}
@@ -1071,14 +1071,14 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 
       {/* 5. TRANSACTION HISTORY LEDGER */}
       <div style={{
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         padding: 24,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-            Lịch Sử Sổ Giao Dịch
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+            {t.portfolio.ledgerHistory}
           </h3>
           <button
             onClick={handleResetClick}
@@ -1090,51 +1090,51 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
               fontWeight: 500,
               padding: '6px 12px',
               backgroundColor: 'transparent',
-              border: '1px solid #3F3F46',
+              border: '1px solid var(--border-subtle)',
               borderRadius: 8,
-              color: '#A1A1AA',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               transition: 'background-color 0.2s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-            title="Khôi phục về danh mục demo mẫu"
+            title={t.portfolio.restoreSampleData}
           >
-            <RotateCcw size={13} /> Phục hồi dữ liệu mẫu
+            <RotateCcw size={13} /> {t.portfolio.restoreSampleData}
           </button>
         </div>
 
-        <div style={{ overflowX: 'auto', border: '1px solid #27272A', borderRadius: 8 }}>
+        <div style={{ overflowX: 'auto', border: '1px solid var(--border-card)', borderRadius: 8 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
-              <tr style={{ backgroundColor: '#09090B', borderBottom: '1px solid #3F3F46' }}>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>THỜI GIAN</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LOẠI</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MÃ</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>KHỐI LƯỢNG</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GIÁ KHỚP</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>TỔNG GIÁ TRỊ</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>GHI CHÚ</th>
-                <th style={{ padding: '12px 16px', color: '#A1A1AA', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>XÓA</th>
+              <tr style={{ backgroundColor: 'var(--bg-body)', borderBottom: '1px solid var(--border-subtle)' }}>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colTime}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colType}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colTicker}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colQuantity}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colAvgPrice}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colTotalAmount}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t.portfolio.colNotes}</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' }}>{t.portfolio.btnDelete}</th>
               </tr>
             </thead>
             <tbody>
               {portfolio.recent_transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '32px 16px', color: '#A1A1AA', fontSize: '13px' }}>
-                    Chưa có lịch sử giao dịch nào trong sổ cái.
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                    {t.portfolio.addFirstTx}
                   </td>
                 </tr>
               ) : (
                 portfolio.recent_transactions.map((tx) => (
                   <tr
                     key={tx.id}
-                    style={{ borderBottom: '1px solid #27272A', transition: 'background-color 0.15s ease' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#27272A')}
+                    style={{ borderBottom: '1px solid var(--border-card)', transition: 'background-color 0.15s ease' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    <td style={{ padding: '12px 16px', fontSize: '12px', color: '#A1A1AA', fontFamily: 'monospace' }}>
-                      {new Date(tx.transaction_date).toLocaleDateString('vi-VN')}
+                    <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
+                      {new Date(tx.transaction_date).toLocaleDateString()}
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       <span style={{
@@ -1144,32 +1144,32 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
                         fontWeight: 600,
                         backgroundColor: tx.type === 'BUY' ? 'rgba(0, 229, 255, 0.12)' : tx.type === 'DIVIDEND' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                         border: tx.type === 'BUY' ? '1px solid rgba(0, 229, 255, 0.3)' : tx.type === 'DIVIDEND' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
-                        color: tx.type === 'BUY' ? '#00E5FF' : tx.type === 'DIVIDEND' ? '#10B981' : '#EF4444',
+                        color: tx.type === 'BUY' ? 'var(--brand-primary)' : tx.type === 'DIVIDEND' ? '#10B981' : '#EF4444',
                       }}>
-                        {tx.type === 'BUY' ? 'MUA' : tx.type === 'DIVIDEND' ? 'CỔ TỨC' : 'BÁN'}
+                        {tx.type === 'BUY' ? t.transaction.buyTab : tx.type === 'DIVIDEND' ? t.transaction.dividendTab : t.transaction.sellTab}
                       </span>
                     </td>
-                    <td style={{ padding: '12px 16px', fontWeight: 600, color: '#FAFAFA' }}>{tx.asset_symbol}</td>
-                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#FAFAFA' }}>{tx.quantity.toLocaleString()}</td>
-                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#FAFAFA' }}>{tx.price.toLocaleString()}</td>
-                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#00E5FF' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{tx.asset_symbol}</td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: 'var(--text-primary)' }}>{tx.quantity.toLocaleString()}</td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: 'var(--text-primary)' }}>{tx.price.toLocaleString()}</td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--brand-primary)' }}>
                       {tx.total_amount.toLocaleString()}
                     </td>
-                    <td style={{ padding: '12px 16px', fontSize: '12px', color: '#A1A1AA' }}>{tx.notes || '—'}</td>
+                    <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{tx.notes || '—'}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                       <button
                         onClick={() => handleDeleteClick(tx.id)}
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#A1A1AA',
+                          color: 'var(--text-secondary)',
                           cursor: 'pointer',
                           padding: 4,
                           transition: 'color 0.2s ease',
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = '#EF4444')}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = '#A1A1AA')}
-                        title="Xoá giao dịch"
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+                        title={t.portfolio.btnDelete}
                       >
                         <Trash2 size={14} />
                       </button>

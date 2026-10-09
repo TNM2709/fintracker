@@ -1,5 +1,6 @@
 import React from 'react';
 import type { PortfolioAnalytics } from '../types';
+import { useLanguage } from '../context/useLanguage';
 import { ShieldCheck, AlertTriangle, Lightbulb, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
 
 interface PortfolioAnalyticsCardProps {
@@ -11,10 +12,12 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
   analytics,
   onOpenDCAModal,
 }) => {
+  const { t } = useLanguage();
+
   if (!analytics) return null;
 
   const score = analytics.health_score;
-  const scoreColor = score >= 80 ? '#10B981' : score >= 65 ? '#00E5FF' : '#EF4444';
+  const scoreColor = score >= 80 ? '#10B981' : score >= 65 ? 'var(--brand-primary)' : '#EF4444';
 
   // SVG Gauge calculation (circumference for radius 38)
   const radius = 38;
@@ -23,14 +26,14 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
 
   return (
     <div style={{
-      backgroundColor: '#18181B',
-      border: '1px solid #27272A',
+      backgroundColor: 'var(--bg-surface)',
+      border: '1px solid var(--border-card)',
       borderRadius: 12,
       padding: 24,
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Subtle top cyan line highlight */}
+      {/* Subtle top brand line highlight */}
       <div style={{
         position: 'absolute',
         top: 0,
@@ -47,19 +50,19 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
             width: 38,
             height: 38,
             borderRadius: 8,
-            backgroundColor: '#27272A',
-            border: '1px solid #3F3F46',
+            backgroundColor: 'var(--bg-surface-hover)',
+            border: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 0 12px rgba(0, 229, 255, 0.15)',
           }}>
-            <Sparkles size={18} color="#00E5FF" />
+            <Sparkles size={18} color="var(--brand-primary)" />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Đánh Giá Sức Khỏe Danh Mục & Khuyến Nghị AI
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.portfolio.analyticsTitle}
               </h3>
               <span style={{
                 fontSize: '11px',
@@ -73,8 +76,8 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
                 HHI & Sharpe
               </span>
             </div>
-            <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '3px 0 0 0' }}>
-              Phân tích định lượng mức độ phân tán rủi ro và khuyến nghị tái cân bằng tự động
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '3px 0 0 0' }}>
+              {t.analytics.title}
             </p>
           </div>
         </div>
@@ -82,7 +85,7 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
         <button
           onClick={onOpenDCAModal}
           style={{
-            backgroundColor: '#00E5FF',
+            backgroundColor: 'var(--brand-primary)',
             color: '#09090B',
             fontWeight: 600,
             fontSize: '13px',
@@ -97,16 +100,16 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
             boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#00B8CC';
+            e.currentTarget.style.backgroundColor = 'var(--brand-hover)';
             e.currentTarget.style.transform = 'translateY(-1px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#00E5FF';
+            e.currentTarget.style.backgroundColor = 'var(--brand-primary)';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
           <TrendingUp size={15} />
-          <span>Kế Hoạch Tích Sản Lãi Kép (DCA)</span>
+          <span>{t.portfolio.dcaCalculator}</span>
         </button>
       </div>
 
@@ -119,10 +122,10 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
       }}>
         {/* Modern Circular Progress Health Meter */}
         <div style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           borderRadius: 8,
           padding: '16px 20px',
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-subtle)',
           display: 'flex',
           alignItems: 'center',
           gap: 18,
@@ -135,7 +138,7 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
                 cx="46"
                 cy="46"
                 r={radius}
-                stroke="#27272A"
+                stroke="var(--border-card)"
                 strokeWidth="7"
                 fill="none"
               />
@@ -164,39 +167,39 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <span style={{ fontSize: '20px', fontWeight: 700, color: '#FAFAFA', fontFamily: 'monospace', lineHeight: 1 }}>
+              <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'monospace', lineHeight: 1 }}>
                 {score}
               </span>
-              <span style={{ fontSize: '10px', color: '#71717A', fontWeight: 500, marginTop: 2 }}>/100</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500, marginTop: 2 }}>/100</span>
             </div>
           </div>
 
           <div>
-            <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              ĐIỂM SỨC KHỎE
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t.analytics.scoreLabel}
             </div>
             <div style={{ fontSize: '15px', fontWeight: 600, color: scoreColor, marginTop: 4 }}>
-              {score >= 80 ? 'Rất lành mạnh' : score >= 60 ? 'Tương đối tốt' : 'Cần tối ưu tỷ trọng'}
+              {score >= 80 ? t.analytics.scoreVeryHealthy : score >= 60 ? t.analytics.scoreFair : t.analytics.scoreNeedsOptimization}
             </div>
-            <div style={{ fontSize: '12px', color: '#71717A', marginTop: 2 }}>
-              Đo lường rủi ro tập trung vốn
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: 2 }}>
+              {t.analytics.measureConcentration}
             </div>
           </div>
         </div>
 
         {/* Khau vi rui ro */}
         <div style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           borderRadius: 8,
           padding: '16px 20px',
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-subtle)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              KHẨU VỊ RỦI RO
+            <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {t.analytics.riskAppetite}
             </span>
             <span style={{
               fontSize: '11px',
@@ -204,43 +207,43 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
               borderRadius: 4,
               backgroundColor: 'rgba(0, 229, 255, 0.1)',
               border: '1px solid rgba(0, 229, 255, 0.25)',
-              color: '#00E5FF',
+              color: 'var(--brand-primary)',
               fontWeight: 600,
             }}>
               {analytics.diversification_grade}
             </span>
           </div>
-          <div style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAFA' }}>
+          <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>
             {analytics.risk_profile}
           </div>
-          <div style={{ fontSize: '12px', color: '#71717A', marginTop: 4 }}>
-            Chỉ số tập trung tài sản HHI tối ưu
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: 4 }}>
+            {t.analytics.hhiOptimal}
           </div>
         </div>
 
         {/* Sharpe Ratio */}
         <div style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           borderRadius: 8,
           padding: '16px 20px',
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-subtle)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
         }}>
-          <div style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
-            SHARPE RATIO ƯỚC TÍNH
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+            {t.analytics.estSharpeRatio}
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <span style={{ fontSize: '24px', fontWeight: 600, color: '#00E5FF', fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '24px', fontWeight: 600, color: 'var(--brand-primary)', fontFamily: 'monospace' }}>
               {analytics.estimated_sharpe_ratio}
             </span>
             <span style={{ fontSize: '12px', color: '#10B981', fontWeight: 500 }}>
-              (Vượt chuẩn &gt; 1.5)
+              {t.analytics.sharpeBenchmark}
             </span>
           </div>
-          <div style={{ fontSize: '12px', color: '#71717A', marginTop: 4 }}>
-            Tỷ suất bù đắp rủi ro so với lãi suất phi rủi ro
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: 4 }}>
+            {t.analytics.riskPremiumDescription}
           </div>
         </div>
       </div>
@@ -253,20 +256,20 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
       }}>
         {/* Cot 1: Diem Manh & Luu Y */}
         <div style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           borderRadius: 8,
           padding: 20,
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-subtle)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#10B981', marginBottom: 14 }}>
             <ShieldCheck size={16} />
-            <span>Điểm Mạnh Danh Mục</span>
+            <span>{t.analytics.strengths}</span>
           </div>
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: '#A1A1AA' }}>
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10, fontSize: '13px', color: 'var(--text-secondary)' }}>
             {analytics.strength_points?.map((pt, i) => (
               <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                 <CheckCircle2 size={15} color="#10B981" style={{ marginTop: 2, flexShrink: 0 }} />
-                <span style={{ color: '#FAFAFA' }}>{pt}</span>
+                <span style={{ color: 'var(--text-primary)' }}>{pt}</span>
               </li>
             ))}
           </ul>
@@ -275,9 +278,9 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#EF4444', marginTop: 18, marginBottom: 10 }}>
                 <AlertTriangle size={15} />
-                <span>Điểm Cần Lưu Ý</span>
+                <span>{t.analytics.cautions}</span>
               </div>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: '13px', color: '#A1A1AA' }}>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: '13px', color: 'var(--text-secondary)' }}>
                 {analytics.risk_warnings.map((w, i) => (
                   <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <span style={{ color: '#EF4444', fontWeight: 700 }}>•</span>
@@ -291,36 +294,36 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
 
         {/* Cot 2: Khuyen Nghi Tai Can Bang */}
         <div style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           borderRadius: 8,
           padding: 20,
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-subtle)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: '#00E5FF', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 600, color: 'var(--brand-primary)', marginBottom: 14 }}>
             <Lightbulb size={16} />
-            <span>Khuyến Nghị Hành Động (AI Rebalancing)</span>
+            <span>{t.analytics.aiRebalancing}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {analytics.rebalance_tips?.map((tip, i) => (
               <div
                 key={i}
                 style={{
-                  backgroundColor: '#18181B',
-                  border: '1px solid #27272A',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-card)',
                   borderRadius: 8,
                   padding: '12px 14px',
                   fontSize: '13px',
-                  color: '#FAFAFA',
+                  color: 'var(--text-primary)',
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: 12,
                   transition: 'border-color 0.2s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#3F3F46')}
-                onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#27272A')}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-card)')}
               >
                 <span style={{
-                  color: '#00E5FF',
+                  color: 'var(--brand-primary)',
                   fontWeight: 700,
                   fontSize: '11px',
                   backgroundColor: 'rgba(0, 229, 255, 0.1)',
@@ -331,7 +334,7 @@ export const PortfolioAnalyticsCard: React.FC<PortfolioAnalyticsCardProps> = ({
                 }}>
                   TIP #{i + 1}
                 </span>
-                <span style={{ color: '#FAFAFA', lineHeight: 1.4 }}>{tip}</span>
+                <span style={{ color: 'var(--text-primary)', lineHeight: 1.4 }}>{tip}</span>
               </div>
             ))}
           </div>
