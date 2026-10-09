@@ -1,9 +1,9 @@
 package collector
 
 import (
+	"fin-tracker-backend/internal/model"
 	"fmt"
 	"math"
-	"fin-tracker-backend/internal/model"
 )
 
 // GetBenchmarkComparison returns 12-month normalized performance comparison

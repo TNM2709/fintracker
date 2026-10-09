@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+
+echo "🔍 [Husky] Đang kiểm tra chất lượng code trước khi commit..."
+
+# Chuyển về thư mục gốc của repository
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR" || exit 1
+
+# ========================================================
+# 1. KIỂM TRA FRONTEND (LINT & TYPESCRIPT)
+# ========================================================
+echo "🎨 [Frontend] Đang kiểm tra linting (oxlint) & kiểu dữ liệu (tsc)..."
+cd "$ROOT_DIR/frontend" || exit 1
+
+if ! npm run lint:fix; then
+  echo "❌ [Frontend] Lỗi Linting! Hãy sửa các lỗi trên trước khi commit."
+  exit 1
+fi
+
+if ! npm run typecheck; then
+  echo "❌ [Frontend] Lỗi TypeScript! Hãy sửa các lỗi type trước khi commit."
+  exit 1
+fi
+
+# ========================================================
+# 2. KIỂM TRA BACKEND (GO FORMAT & GO VET)
+# ========================================================
+echo "⚙️ [Backend] Đang kiểm tra định dạng code (gofmt) & static analysis (go vet)..."
+cd "$ROOT_DIR/backend" || exit 1
+
+UNFORMATTED=$(gofmt -l .)
+if [ -n "$UNFORMATTED" ]; then
+  echo "❌ [Backend] Phát hiện file Go chưa tuân thủ chuẩn format (gofmt):"
+  echo "$UNFORMATTED"
+  echo "👉 Hãy chạy 'gofmt -w .' trong thư mục backend để tự động format lại trước khi commit!"
+  exit 1
+fi
+
+if ! go vet ./...; then
+  echo "❌ [Backend] Lỗi 'go vet'! Hãy kiểm tra và sửa code trước khi commit."
+  exit 1
+fi
+
+echo "✅ [Husky] Toàn bộ kiểm tra FE & BE đều đã đạt chuẩn! Tiến hành commit..."
+exit 0

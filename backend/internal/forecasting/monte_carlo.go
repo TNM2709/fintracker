@@ -11,19 +11,19 @@ import (
 
 // MonteCarloResult holds quantitative statistical outputs
 type MonteCarloResult struct {
-	HorizonDays         int
-	CurrentPrice        float64
-	DailyDrift          float64
-	DailyVolatility     float64
-	AnnualDrift         float64
-	AnnualVolatility    float64
-	BearTarget10Pct     float64
-	BaseTarget50Pct     float64
-	BullTarget90Pct     float64
-	ConfidenceLow95     float64
-	ConfidenceHigh95    float64
-	SamplePaths         [][]float64 // 7 sample paths to render visual fan chart
-	AllFinalPrices      []float64
+	HorizonDays      int
+	CurrentPrice     float64
+	DailyDrift       float64
+	DailyVolatility  float64
+	AnnualDrift      float64
+	AnnualVolatility float64
+	BearTarget10Pct  float64
+	BaseTarget50Pct  float64
+	BullTarget90Pct  float64
+	ConfidenceLow95  float64
+	ConfidenceHigh95 float64
+	SamplePaths      [][]float64 // 7 sample paths to render visual fan chart
+	AllFinalPrices   []float64
 }
 
 // RunParallelMonteCarlo runs Geometric Brownian Motion simulation across CPU cores

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Wallet, LineChart, Cpu, BarChart2 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../context/useLanguage';
 
 interface MobileNavProps {
   activeTab: string;

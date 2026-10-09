@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import type { MarketSummary, BenchmarkSeries, GoldCalculatorResult } from '../types';
 import { fetchBenchmark, fetchGoldCalculator } from '../services/api';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCurrency } from '../context/useCurrency';
+import { useLanguage } from '../context/useLanguage';
 import { ArrowUpRight, Calculator, Globe, Scale, Sparkles, TrendingUp, BarChart2 } from 'lucide-react';
 
 interface MarketTabProps {
@@ -34,7 +34,7 @@ export const MarketTab: React.FC<MarketTabProps> = ({ summary, onSelectAsset }) 
         .then((data) => setBenchmarks(data))
         .catch((err) => console.error('Benchmark fetch error:', err));
     }
-  }, [subTab]);
+  }, [subTab, benchmarks.length]);
 
   if (!summary) {
     return (

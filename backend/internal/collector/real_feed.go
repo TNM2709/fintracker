@@ -53,7 +53,7 @@ type yahooChartResponse struct {
 				RegularMarketDayLow        float64 `json:"regularMarketDayLow"`
 				RegularMarketVolume        float64 `json:"regularMarketVolume"`
 			} `json:"meta"`
-			Timestamp []int64 `json:"timestamp"`
+			Timestamp  []int64 `json:"timestamp"`
 			Indicators struct {
 				Quote []struct {
 					Open   []float64 `json:"open"`

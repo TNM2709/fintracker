@@ -6,7 +6,7 @@ import {
   deleteAdminUser,
   fetchAdminStats,
 } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import {
   X,
   Shield,
@@ -57,7 +57,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-      loadData();
+      queueMicrotask(() => {
+        loadData();
+      });
     }
   }, [isOpen, loadData]);
 

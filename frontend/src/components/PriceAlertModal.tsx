@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { PriceAlert, Asset } from '../types';
 import { fetchAlerts, addAlert, deleteAlert } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { Bell, Trash2, Plus, X, Lock, LogIn } from 'lucide-react';
 
 interface PriceAlertModalProps {

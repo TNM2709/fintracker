@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Transaction, Asset } from '../types';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { X, Check, Lock, LogIn } from 'lucide-react';
 
 interface TransactionModalProps {
@@ -17,6 +17,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   allAssets,
 }) => {
   const { isGuest, openAuthModal } = useAuth();
+
+  const [assetId, setAssetId] = useState<string>('XAU-SJC');
+  const [type, setType] = useState<'BUY' | 'SELL' | 'DIVIDEND'>('BUY');
+  const [quantity, setQuantity] = useState<string>('1');
+  const [price, setPrice] = useState<string>('85500000');
+  const [fee, setFee] = useState<string>('0');
+  const [notes, setNotes] = useState<string>('');
+
   if (!isOpen) return null;
 
   if (isGuest) {
@@ -112,13 +120,6 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       </div>
     );
   }
-
-  const [assetId, setAssetId] = useState<string>('XAU-SJC');
-  const [type, setType] = useState<'BUY' | 'SELL' | 'DIVIDEND'>('BUY');
-  const [quantity, setQuantity] = useState<string>('1');
-  const [price, setPrice] = useState<string>('85500000');
-  const [fee, setFee] = useState<string>('0');
-  const [notes, setNotes] = useState<string>('');
 
   const handleAssetChange = (newAssetId: string) => {
     setAssetId(newAssetId);

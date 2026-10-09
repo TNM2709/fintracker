@@ -1,20 +1,11 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import {
+  type Currency,
+  type GoldUnit,
+  CurrencyContext,
+} from './useCurrency';
 
-export type Currency = 'VND' | 'USD';
-export type GoldUnit = 'LUONG' | 'CHI' | 'OUNCE';
-
-interface CurrencyContextType {
-  currency: Currency;
-  setCurrency: (c: Currency) => void;
-  goldUnit: GoldUnit;
-  setGoldUnit: (u: GoldUnit) => void;
-  usdVndRate: number;
-  setUsdVndRate: (r: number) => void;
-  formatMoney: (amountVnd: number, forceCurrency?: Currency) => string;
-  formatGoldPrice: (pricePerLuongVnd: number) => { text: string; unitLabel: string };
-}
-
-const CurrencyContext = createContext<CurrencyContextType | null>(null);
+export type { Currency, GoldUnit, CurrencyContextType } from './useCurrency';
 
 export const CurrencyProvider: React.FC<{ children: React.ReactNode; initialRate?: number }> = ({
   children,
@@ -79,12 +70,4 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode; initialRate
       {children}
     </CurrencyContext.Provider>
   );
-};
-
-export const useCurrency = (): CurrencyContextType => {
-  const ctx = useContext(CurrencyContext);
-  if (!ctx) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
-  }
-  return ctx;
 };

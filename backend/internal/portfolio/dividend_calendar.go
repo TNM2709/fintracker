@@ -1,8 +1,8 @@
 package portfolio
 
 import (
-	"math"
 	"fin-tracker-backend/internal/model"
+	"math"
 )
 
 // GetDividendCalendar returns upcoming dividend events matched with user's holdings

@@ -284,4 +284,3 @@ func (sc *StockCollector) SetAsset(a model.Asset) {
 	defer sc.mu.Unlock()
 	sc.assets[a.ID] = &a
 }
-

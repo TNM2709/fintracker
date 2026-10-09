@@ -1,0 +1,100 @@
+name: 🔍 Code Quality & Compliance CI
+
+# Kích hoạt khi PUSH code từ local lên origin; bỏ qua kiểm tra khi tạo Pull Request vào nhánh server
+on:
+  push:
+    branches:
+      - main
+      - server
+  pull_request:
+    branches:
+      - main # Chỉ kiểm tra khi tạo PR vào main, hoàn toàn KHÔNG check khi tạo PR vào nhánh server
+  workflow_dispatch: # Cho phép bấm chạy thủ công trên web GitHub Actions
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ========================================================
+  # 1. FRONTEND: LINTING, TYPECHECK & FORMAT COMPLIANCE
+  # ========================================================
+  frontend-quality:
+    name: 🎨 Frontend Check (Lint & Types)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Install Frontend Dependencies
+        run: npm ci
+
+      - name: 🔎 Code Linting & Convention Check (oxlint)
+        run: npm run lint
+
+      - name: 🛡️ Strict TypeScript Typecheck (tsc -b)
+        run: npm run typecheck
+
+      - name: 🏗️ Verify Production Bundle Build
+        run: npm run build
+
+  # ========================================================
+  # 2. BACKEND: GO FORMAT, STATIC ANALYSIS & BUILD
+  # ========================================================
+  backend-quality:
+    name: ⚙️ Backend Check (Go Format, Vet & Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐹 Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'backend/go.mod'
+          check-latest: true
+          cache-dependency-path: backend/go.sum
+
+      - name: 📐 Check Go Formatting (gofmt)
+        run: |
+          UNFORMATTED=$(gofmt -l .)
+          if [ -n "$UNFORMATTED" ]; then
+            echo "❌ Phát hiện code Go chưa tuân thủ định dạng chuẩn (gofmt):"
+            echo "$UNFORMATTED"
+            echo "👉 Hãy chạy 'gofmt -w .' trong thư mục backend để tự động format lại."
+            exit 1
+          else
+            echo "✅ Toàn bộ file Go đã tuân thủ chuẩn gofmt!"
+          fi
+
+      - name: 🕵️ Static Analysis & Code Smells (go vet)
+        run: go vet ./...
+
+      - name: 🧪 Verify Go Dependencies Sync (go.mod & go.sum)
+        run: |
+          go mod tidy
+          if ! git diff --exit-code go.mod go.sum; then
+            echo "❌ go.mod hoặc go.sum chưa được đồng bộ! Hãy chạy 'go mod tidy' ở máy cục bộ và commit."
+            exit 1
+          fi
+
+      - name: 🔨 Compile Go Binaries (Server & Migrate)
+        run: |
+          go build -v -o /dev/null ./cmd/server
+          go build -v -o /dev/null ./cmd/migrate
+          echo "✅ Biên dịch Go Server và Migrate thành công!"

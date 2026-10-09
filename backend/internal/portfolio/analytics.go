@@ -1,14 +1,14 @@
 package portfolio
 
 import (
-	"math"
 	"fin-tracker-backend/internal/model"
+	"math"
 )
 
 type PortfolioAnalytics struct {
-	HealthScore          int      `json:"health_score"`          // 0 - 100
-	RiskProfile          string   `json:"risk_profile"`          // "THẬN TRỌNG", "CÂN BẰNG", "TĂNG TRƯỞNG MẠNH"
-	DiversificationGrade string   `json:"diversification_grade"` // "XUẤT SẮC (A+)", "TỐT (B)", "TẬP TRUNG CAO (C)"
+	HealthScore          int      `json:"health_score"`           // 0 - 100
+	RiskProfile          string   `json:"risk_profile"`           // "THẬN TRỌNG", "CÂN BẰNG", "TĂNG TRƯỞNG MẠNH"
+	DiversificationGrade string   `json:"diversification_grade"`  // "XUẤT SẮC (A+)", "TỐT (B)", "TẬP TRUNG CAO (C)"
 	HHIIndex             float64  `json:"hhi_index"`              // Herfindahl-Hirschman Index (0 - 1)
 	EstimatedAnnualYield float64  `json:"estimated_annual_yield"` // %
 	EstimatedSharpeRatio float64  `json:"estimated_sharpe_ratio"`

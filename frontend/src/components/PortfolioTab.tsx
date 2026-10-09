@@ -3,9 +3,9 @@ import type { PortfolioSummary, DividendEvent, PortfolioAnalytics } from '../typ
 import { fetchDividendCalendar, fetchPortfolioAnalytics } from '../services/api';
 import { PortfolioAnalyticsCard } from './PortfolioAnalyticsCard';
 import { DCACalculatorModal } from './DCACalculatorModal';
-import { useCurrency } from '../context/CurrencyContext';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCurrency } from '../context/useCurrency';
+import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import {
   TrendingUp,
   TrendingDown,

@@ -15,9 +15,9 @@ import {
   Globe,
   Check,
 } from 'lucide-react';
-import { useCurrency } from '../context/CurrencyContext';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCurrency } from '../context/useCurrency';
+import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 
 interface HeaderProps {
   isConnected: boolean;
