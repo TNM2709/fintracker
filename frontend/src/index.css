@@ -55,6 +55,53 @@
 }
 
 /* ========================================================
+   LIGHT MODE DESIGN SYSTEM TOKENS
+   ======================================================== */
+[data-theme="light"] {
+  --bg-body: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #F1F5F9;
+  --border-subtle: #E2E8F0;
+  --border-card: #E2E8F0;
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+
+  --brand-primary: #0284C7;
+  --brand-hover: #0369A1;
+
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+
+  --text-main: #0F172A;
+  --text-dim: #64748B;
+
+  --accent-gold: #0284C7;
+  --accent-gold-light: #0F172A;
+
+  --border-glow: #0284C7;
+  --border-gold: #E2E8F0;
+}
+
+[data-theme="light"] body {
+  background-color: #F8FAFC;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.25) 1px, transparent 1px);
+  color: #0F172A;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+/* ========================================================
    CSS RESET & BASE TYPOGRAPHY
    ======================================================== */
 * {
@@ -351,8 +398,8 @@ select:focus {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #18181B;
-  border-top: 1px solid #3F3F46;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-card);
   justify-content: space-around;
   padding: 10px 12px 14px 12px;
   z-index: 100;

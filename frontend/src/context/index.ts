@@ -9,3 +9,8 @@ export type { LanguageContextType } from './useLanguage';
 export { CurrencyProvider } from './CurrencyContext';
 export { useCurrency } from './useCurrency';
 export type { CurrencyContextType, Currency, GoldUnit } from './useCurrency';
+
+export { ThemeProvider } from './ThemeContext';
+export { useTheme } from './useTheme';
+export type { Theme, ThemeContextType } from './useTheme';
+

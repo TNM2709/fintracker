@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import { X, User, Lock, Mail, Shield, LogOut, Check, Calendar } from 'lucide-react';
 
 interface UserProfileModalProps {
@@ -9,6 +10,7 @@ interface UserProfileModalProps {
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
   const { user, updateProfile, logout } = useAuth();
+  const { t } = useLanguage();
 
   const [fullName, setFullName] = useState(user?.full_name || '');
   const [newPassword, setNewPassword] = useState('');
@@ -26,7 +28,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     setErrorMsg('');
 
     if (newPassword && newPassword !== confirmPassword) {
-      setErrorMsg('Mật khẩu xác nhận không khớp');
+      setErrorMsg(t.profile.passwordMismatch);
       setIsLoading(false);
       return;
     }
@@ -36,14 +38,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
         full_name: fullName,
         password: newPassword || undefined,
       });
-      setSuccessMsg('Cập nhật thông tin thành công!');
+      setSuccessMsg(t.profile.success);
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: unknown) {
       if (err instanceof Error) {
         setErrorMsg(err.message);
       } else {
-        setErrorMsg('Cập nhật thất bại');
+        setErrorMsg(t.profile.failed);
       }
     } finally {
       setIsLoading(false);
@@ -76,10 +78,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
         style={{
           width: '100%',
           maxWidth: 460,
-          backgroundColor: '#121214',
-          border: '1px solid #27272A',
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-card)',
           borderRadius: 16,
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
           overflow: 'hidden',
           animation: 'scaleIn 0.2s ease-out',
         }}
@@ -88,11 +90,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
         <div
           style={{
             padding: '20px 24px',
-            borderBottom: '1px solid #27272A',
+            borderBottom: '1px solid var(--border-card)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(to right, rgba(24, 24, 27, 0.8), rgba(18, 18, 20, 0.8))',
+            backgroundColor: 'var(--bg-surface)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -106,7 +108,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#00E5FF',
+                color: 'var(--brand-primary)',
                 fontWeight: 700,
                 fontSize: '16px',
               }}
@@ -115,7 +117,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
                   {user.full_name || user.username}
                 </h2>
                 <span
@@ -125,15 +127,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                     padding: '2px 8px',
                     borderRadius: 999,
                     backgroundColor: user.role === 'admin' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(0, 229, 255, 0.15)',
-                    color: user.role === 'admin' ? '#EF4444' : '#00E5FF',
+                    color: user.role === 'admin' ? '#EF4444' : 'var(--brand-primary)',
                     border: `1px solid ${user.role === 'admin' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(0, 229, 255, 0.3)'}`,
                     textTransform: 'uppercase',
                   }}
                 >
-                  {user.role === 'admin' ? 'Quản Trị Viên' : 'Nhà Đầu Tư'}
+                  {user.role === 'admin' ? t.profile.adminRole : t.profile.userRole}
                 </span>
               </div>
-              <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '2px 0 0 0' }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
                 @{user.username}
               </p>
             </div>
@@ -143,7 +145,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             style={{
               background: 'none',
               border: 'none',
-              color: '#A1A1AA',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               padding: 4,
             }}
@@ -192,11 +194,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
           <form onSubmit={handleUpdate}>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                Họ và tên
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                {t.profile.fullName}
               </label>
               <div style={{ position: 'relative' }}>
-                <User size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <User size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="text"
                   value={fullName}
@@ -204,10 +206,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                   style={{
                     width: '100%',
                     padding: '10px 12px 10px 36px',
-                    backgroundColor: '#09090B',
-                    border: '1px solid #3F3F46',
+                    backgroundColor: 'var(--bg-body)',
+                    border: '1px solid var(--border-card)',
                     borderRadius: 8,
-                    color: '#FAFAFA',
+                    color: 'var(--text-primary)',
                     fontSize: '13px',
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -217,11 +219,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                Email
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                {t.profile.email}
               </label>
               <div style={{ position: 'relative' }}>
-                <Mail size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <Mail size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="email"
                   disabled
@@ -229,10 +231,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                   style={{
                     width: '100%',
                     padding: '10px 12px 10px 36px',
-                    backgroundColor: '#18181B',
-                    border: '1px solid #27272A',
+                    backgroundColor: 'var(--bg-surface-hover)',
+                    border: '1px solid var(--border-card)',
                     borderRadius: 8,
-                    color: '#71717A',
+                    color: 'var(--text-muted)',
                     fontSize: '13px',
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -243,23 +245,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             </div>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                Đổi mật khẩu mới (để trống nếu không đổi)
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                {t.profile.changePasswordOptional}
               </label>
               <div style={{ position: 'relative' }}>
-                <Lock size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="password"
-                  placeholder="Mật khẩu mới (tối thiểu 6 ký tự)"
+                  placeholder={t.auth.passwordMin6}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '10px 12px 10px 36px',
-                    backgroundColor: '#09090B',
-                    border: '1px solid #3F3F46',
+                    backgroundColor: 'var(--bg-body)',
+                    border: '1px solid var(--border-card)',
                     borderRadius: 8,
-                    color: '#FAFAFA',
+                    color: 'var(--text-primary)',
                     fontSize: '13px',
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -270,23 +272,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
             {newPassword && (
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Xác nhận mật khẩu mới
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                  {t.auth.confirmPassword}
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="password"
-                    placeholder="Nhập lại mật khẩu mới"
+                    placeholder={t.profile.confirmNewPassword}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '10px 12px 10px 36px',
-                      backgroundColor: '#09090B',
-                      border: '1px solid #3F3F46',
+                      backgroundColor: 'var(--bg-body)',
+                      border: '1px solid var(--border-card)',
                       borderRadius: 8,
-                      color: '#FAFAFA',
+                      color: 'var(--text-primary)',
                       fontSize: '13px',
                       outline: 'none',
                       boxSizing: 'border-box',
@@ -304,7 +306,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                   flex: 1,
                   padding: '10px',
                   borderRadius: 8,
-                  backgroundColor: '#00E5FF',
+                  backgroundColor: 'var(--brand-primary)',
                   color: '#09090B',
                   border: 'none',
                   fontSize: '13px',
@@ -313,7 +315,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                   transition: 'opacity 0.2s',
                 }}
               >
-                {isLoading ? 'Đang lưu...' : 'Lưu Thay Đổi'}
+                {isLoading ? t.profile.saving : t.profile.saveChanges}
               </button>
 
               <button
@@ -334,7 +336,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                 }}
               >
                 <LogOut size={15} />
-                <span>Đăng Xuất</span>
+                <span>{t.header.logout}</span>
               </button>
             </div>
           </form>
@@ -344,21 +346,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             style={{
               marginTop: 20,
               paddingTop: 14,
-              borderTop: '1px solid #27272A',
+              borderTop: '1px solid var(--border-card)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               fontSize: '11px',
-              color: '#71717A',
+              color: 'var(--text-muted)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Calendar size={13} />
-              <span>Tham gia: {new Date(user.created_at).toLocaleDateString('vi-VN')}</span>
+              <span>{t.profile.memberSince}: {new Date(user.created_at).toLocaleDateString()}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Shield size={13} />
-              <span>Mã ID: {user.id}</span>
+              <span>{t.profile.userId}: {user.id}</span>
             </div>
           </div>
         </div>

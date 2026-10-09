@@ -1,5 +1,6 @@
 import React from 'react';
 import type { MarketSummary } from '../types';
+import { useLanguage } from '../context/useLanguage';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface TickerBarProps {
@@ -8,6 +9,8 @@ interface TickerBarProps {
 }
 
 export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) => {
+  const { t } = useLanguage();
+
   if (!summary) return null;
 
   const sjc = summary.featured_gold?.find((g) => g.id === 'sjc-hanoi') || summary.featured_gold?.[0];
@@ -16,9 +19,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
     {
       id: 'XAU-SJC',
       symbol: 'SJC',
-      label: 'Vàng Miếng SJC',
+      label: t.market.sjcGold,
       value: sjc ? `${sjc.buy_price} - ${sjc.sell_price}` : '138.5 - 140.5',
-      unit: 'tr/lượng',
+      unit: `tr/${t.header.goldUnitLuong}`,
       change: '+0.35%',
       isPositive: true,
       tag: 'GOLD',
@@ -26,7 +29,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
     {
       id: 'XAU-USD',
       symbol: 'XAU/USD',
-      label: 'Spot Gold',
+      label: t.market.worldGold,
       value: `$${summary.world_gold_usd.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`,
       unit: '/oz',
       change: '+0.54%',
@@ -36,9 +39,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
     {
       id: 'SPREAD',
       symbol: 'SPREAD',
-      label: 'Chênh Lệch SJC/TG',
+      label: t.market.spreadDifference,
       value: `+${summary.gold_vn_spread} tr`,
-      unit: '/lượng',
+      unit: `/${t.header.goldUnitLuong}`,
       change: 'Spread',
       isPositive: true,
       tag: 'ARBITRAGE',
@@ -66,7 +69,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
     {
       id: 'USDVND',
       symbol: 'USD/VND',
-      label: 'Tỷ Giá Ngoại Tệ',
+      label: t.market.fxRates,
       value: `${summary.usd_vnd_exchange.toLocaleString()}`,
       unit: 'VND',
       change: 'VCB Rate',
@@ -100,9 +103,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
 
   return (
     <div style={{
-      backgroundColor: 'rgba(9, 9, 11, 0.95)',
+      backgroundColor: 'var(--bg-primary)',
       backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid #27272A',
+      borderBottom: '1px solid var(--border-card)',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       padding: '7px 0',
@@ -117,13 +120,13 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
         top: 0,
         bottom: 0,
         zIndex: 10,
-        backgroundColor: '#09090B',
+        backgroundColor: 'var(--bg-primary)',
         padding: '0 16px',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        borderRight: '1px solid #27272A',
-        boxShadow: '10px 0 20px rgba(9, 9, 11, 0.8)',
+        borderRight: '1px solid var(--border-card)',
+        boxShadow: '10px 0 20px rgba(0, 0, 0, 0.4)',
       }} className="desktop-only">
         <span
           style={{
@@ -135,7 +138,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
             display: 'inline-block',
           }}
         />
-        <span style={{ fontSize: '11px', fontWeight: 600, color: '#FAFAFA', letterSpacing: '0.04em' }}>
+        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '0.04em' }}>
           LIVE FEED
         </span>
       </div>
@@ -152,19 +155,19 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
               padding: '3px 16px',
               margin: '0 4px',
               borderRadius: 6,
-              backgroundColor: 'rgba(24, 24, 27, 0.6)',
-              border: '1px solid #27272A',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-card)',
               cursor: 'pointer',
               userSelect: 'none',
               transition: 'all 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#27272A';
-              e.currentTarget.style.borderColor = '#3F3F46';
+              e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+              e.currentTarget.style.borderColor = 'var(--border-subtle)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(24, 24, 27, 0.6)';
-              e.currentTarget.style.borderColor = '#27272A';
+              e.currentTarget.style.backgroundColor = 'var(--bg-surface)';
+              e.currentTarget.style.borderColor = 'var(--border-card)';
             }}
           >
             <span style={{
@@ -172,9 +175,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
               fontWeight: 700,
               padding: '1px 5px',
               borderRadius: 4,
-              backgroundColor: '#09090B',
-              color: '#00E5FF',
-              border: '1px solid rgba(0, 229, 255, 0.2)',
+              backgroundColor: 'var(--bg-body)',
+              color: 'var(--brand-primary)',
+              border: '1px solid var(--border-subtle)',
             }}>
               {item.symbol}
             </span>
@@ -182,7 +185,7 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
             <span style={{
               fontSize: '12px',
               fontWeight: 500,
-              color: '#A1A1AA',
+              color: 'var(--text-secondary)',
             }}>
               {item.label}
             </span>
@@ -190,9 +193,9 @@ export const TickerBar: React.FC<TickerBarProps> = ({ summary, onSelectAsset }) 
             <span className="num-mono" style={{
               fontSize: '13px',
               fontWeight: 600,
-              color: '#FAFAFA',
+              color: 'var(--text-primary)',
             }}>
-              {item.value} <span style={{ fontSize: '10px', color: '#71717A' }}>{item.unit}</span>
+              {item.value} <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{item.unit}</span>
             </span>
 
             <span style={{

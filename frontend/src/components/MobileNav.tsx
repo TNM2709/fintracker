@@ -32,13 +32,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) 
               flexDirection: 'column',
               alignItems: 'center',
               gap: 4,
-              color: isActive ? '#00E5FF' : '#A1A1AA',
+              color: isActive ? 'var(--brand-primary)' : 'var(--text-secondary)',
               cursor: 'pointer',
               flex: 1,
               transition: 'color 0.2s ease',
             }}
           >
-            <Icon size={20} color={isActive ? '#00E5FF' : '#A1A1AA'} />
+            <Icon size={20} color={isActive ? 'var(--brand-primary)' : 'var(--text-secondary)'} />
             <span style={{ fontSize: '12px', fontWeight: isActive ? 600 : 400 }}>
               {tab.label}
             </span>

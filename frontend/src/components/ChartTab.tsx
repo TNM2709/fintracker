@@ -3,6 +3,8 @@ import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lig
 import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 import type { Asset } from '../types';
 import { fetchCandles } from '../services/api';
+import { useLanguage } from '../context/useLanguage';
+import { useTheme } from '../context/useTheme';
 
 interface ChartTabProps {
   selectedAssetId: string;
@@ -15,6 +17,9 @@ export const ChartTab: React.FC<ChartTabProps> = ({
   onSelectAsset,
   allAssets,
 }) => {
+  const { t } = useLanguage();
+  const { isDark } = useTheme();
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -50,26 +55,26 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       width: container.clientWidth,
       height: 480,
       layout: {
-        background: { color: '#18181B' },
-        textColor: '#A1A1AA',
+        background: { color: isDark ? '#18181B' : '#FFFFFF' },
+        textColor: isDark ? '#A1A1AA' : '#475569',
         fontSize: 12,
         fontFamily: "'Inter', sans-serif",
       },
       grid: {
-        vertLines: { color: 'rgba(63, 63, 70, 0.3)' },
-        horzLines: { color: 'rgba(63, 63, 70, 0.3)' },
+        vertLines: { color: isDark ? 'rgba(63, 63, 70, 0.3)' : 'rgba(226, 232, 240, 0.8)' },
+        horzLines: { color: isDark ? 'rgba(63, 63, 70, 0.3)' : 'rgba(226, 232, 240, 0.8)' },
       },
       crosshair: {
-        vertLine: { color: '#00E5FF', width: 1, style: 1 },
-        horzLine: { color: '#00E5FF', width: 1, style: 1 },
+        vertLine: { color: isDark ? '#00E5FF' : '#0284C7', width: 1, style: 1 },
+        horzLine: { color: isDark ? '#00E5FF' : '#0284C7', width: 1, style: 1 },
       },
       timeScale: {
-        borderColor: '#3F3F46',
+        borderColor: isDark ? '#3F3F46' : '#E2E8F0',
         timeVisible: true,
         secondsVisible: false,
       },
       rightPriceScale: {
-        borderColor: '#3F3F46',
+        borderColor: isDark ? '#3F3F46' : '#E2E8F0',
         autoScale: true,
       },
     });
@@ -101,7 +106,7 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
     // Volume Histogram series
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#3F3F46',
+      color: isDark ? '#3F3F46' : '#CBD5E1',
       priceFormat: { type: 'volume' },
       priceScaleId: '',
     });
@@ -112,7 +117,7 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
     // MA20 Line series
     const ma20Series = chart.addSeries(LineSeries, {
-      color: '#FAFAFA',
+      color: isDark ? '#FAFAFA' : '#0F172A',
       lineWidth: 2,
       title: 'MA20',
       priceScaleId: 'right',
@@ -125,7 +130,7 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
     // MA50 Line series
     const ma50Series = chart.addSeries(LineSeries, {
-      color: '#00E5FF',
+      color: isDark ? '#00E5FF' : '#0284C7',
       lineWidth: 2,
       title: 'MA50',
       priceScaleId: 'right',
@@ -148,14 +153,14 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       ) {
         setHoverData(null);
       } else {
-        const data = param.seriesData.get(candleSeries) as any;
+        const data = param.seriesData.get(candleSeries) as { open: number; high: number; low: number; close: number } | undefined;
         if (data) {
           setHoverData({
             open: data.open,
             high: data.high,
             low: data.low,
             close: data.close,
-            time: new Date((param.time as number) * 1000).toLocaleDateString('vi-VN'),
+            time: new Date((param.time as number) * 1000).toLocaleDateString(),
           });
         }
       }
@@ -174,7 +179,7 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       chart.remove();
       chartInstanceRef.current = null;
     };
-  }, []);
+  }, [isDark]);
 
   // 2. Fetch and populate candle data
   useEffect(() => {
@@ -250,8 +255,8 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       {/* Chart Control Toolbar */}
       <div style={{
         padding: '16px 24px',
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         display: 'flex',
         justifyContent: 'space-between',
@@ -264,13 +269,13 @@ export const ChartTab: React.FC<ChartTabProps> = ({
           <div style={{
             padding: '6px 12px',
             borderRadius: 8,
-            backgroundColor: '#09090B',
-            border: '1px solid #3F3F46',
+            backgroundColor: 'var(--bg-body)',
+            border: '1px solid var(--border-subtle)',
           }}>
             <span style={{
               fontWeight: 600,
               fontSize: '14px',
-              color: '#00E5FF',
+              color: 'var(--brand-primary)',
             }}>
               {currentAsset?.symbol}
             </span>
@@ -280,9 +285,9 @@ export const ChartTab: React.FC<ChartTabProps> = ({
             value={selectedAssetId}
             onChange={(e) => onSelectAsset(e.target.value)}
             style={{
-              backgroundColor: '#09090B',
-              border: '1px solid #3F3F46',
-              color: '#FAFAFA',
+              backgroundColor: 'var(--bg-body)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
               borderRadius: 8,
               padding: '10px 14px',
               fontSize: '14px',
@@ -291,25 +296,25 @@ export const ChartTab: React.FC<ChartTabProps> = ({
               outline: 'none',
             }}
             onFocus={(e) => {
-              e.currentTarget.style.outline = '2px solid #00E5FF';
+              e.currentTarget.style.outline = '2px solid var(--brand-primary)';
               e.currentTarget.style.outlineOffset = '-1px';
             }}
             onBlur={(e) => {
               e.currentTarget.style.outline = 'none';
             }}
           >
-            <optgroup label="Vàng (Gold)">
-              <option value="XAU-SJC">Vàng SJC 999.9 (Lượng)</option>
-              <option value="XAU-USD">Vàng Thế Giới (XAU/USD Ounce)</option>
+            <optgroup label={t.chart.goldCategory}>
+              <option value="XAU-SJC">{t.market.sjcGold}</option>
+              <option value="XAU-USD">{t.market.worldGold}</option>
             </optgroup>
-            <optgroup label="Chỉ Số & Cổ Phiếu Việt Nam">
-              <option value="VN-INDEX">Chỉ Số VN-INDEX</option>
+            <optgroup label={t.chart.vnCategory}>
+              <option value="VN-INDEX">VN-INDEX</option>
               <option value="VN-VCB">Vietcombank (VCB)</option>
-              <option value="VN-FPT">Tập đoàn FPT (FPT)</option>
-              <option value="VN-HPG">Hòa Phát (HPG)</option>
+              <option value="VN-FPT">FPT Corp (FPT)</option>
+              <option value="VN-HPG">Hoa Phat (HPG)</option>
               <option value="VN-VHM">Vinhomes (VHM)</option>
             </optgroup>
-            <optgroup label="Quốc Tế & Crypto">
+            <optgroup label={t.chart.globalCategory}>
               <option value="US-SP500">S&P 500 Index</option>
               <option value="US-AAPL">Apple Inc. (AAPL)</option>
               <option value="US-NVDA">NVIDIA (NVDA)</option>
@@ -322,7 +327,7 @@ export const ChartTab: React.FC<ChartTabProps> = ({
 
         {/* Timeframe & Indicators Switchers */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', backgroundColor: '#09090B', border: '1px solid #27272A', borderRadius: 8, padding: 2, gap: 2 }}>
+          <div style={{ display: 'flex', backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-card)', borderRadius: 8, padding: 2, gap: 2 }}>
             {['1D', '1W', '1M', 'ALL'].map((tf) => {
               const isSelected = timeframe === tf;
               return (
@@ -336,8 +341,8 @@ export const ChartTab: React.FC<ChartTabProps> = ({
                     fontSize: '12px',
                     fontWeight: isSelected ? 600 : 500,
                     cursor: 'pointer',
-                    backgroundColor: isSelected ? '#27272A' : 'transparent',
-                    color: isSelected ? '#FAFAFA' : '#A1A1AA',
+                    backgroundColor: isSelected ? 'var(--bg-surface-hover)' : 'transparent',
+                    color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
                     transition: 'all 0.15s ease',
                   }}
                 >
@@ -355,16 +360,16 @@ export const ChartTab: React.FC<ChartTabProps> = ({
               fontSize: '12px',
               fontWeight: 500,
               cursor: 'pointer',
-              border: '1px solid #3F3F46',
+              border: '1px solid var(--border-subtle)',
               backgroundColor: showMA20 ? 'rgba(250, 250, 250, 0.12)' : 'transparent',
-              color: showMA20 ? '#FAFAFA' : '#71717A',
+              color: showMA20 ? 'var(--text-primary)' : 'var(--text-muted)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
               transition: 'all 0.15s ease',
             }}
           >
-            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA20 ? '#FAFAFA' : '#71717A' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA20 ? 'var(--text-primary)' : 'var(--text-muted)' }} />
             MA 20
           </button>
 
@@ -376,16 +381,16 @@ export const ChartTab: React.FC<ChartTabProps> = ({
               fontSize: '12px',
               fontWeight: 500,
               cursor: 'pointer',
-              border: '1px solid #3F3F46',
+              border: '1px solid var(--border-subtle)',
               backgroundColor: showMA50 ? 'rgba(0, 229, 255, 0.12)' : 'transparent',
-              color: showMA50 ? '#00E5FF' : '#71717A',
+              color: showMA50 ? 'var(--brand-primary)' : 'var(--text-muted)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
               transition: 'all 0.15s ease',
             }}
           >
-            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA50 ? '#00E5FF' : '#71717A' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: showMA50 ? 'var(--brand-primary)' : 'var(--text-muted)' }} />
             MA 50
           </button>
         </div>
@@ -394,8 +399,8 @@ export const ChartTab: React.FC<ChartTabProps> = ({
       {/* Main Chart Canvas Panel */}
       <div style={{
         padding: 24,
-        backgroundColor: '#18181B',
-        border: '1px solid #27272A',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
         position: 'relative',
       }}>
@@ -409,19 +414,19 @@ export const ChartTab: React.FC<ChartTabProps> = ({
           gap: 12,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ fontWeight: 600, color: '#FAFAFA' }}>{currentAsset?.name}</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{currentAsset?.name}</span>
             {hoverData ? (
-              <div style={{ display: 'flex', gap: 12, color: '#A1A1AA', fontFamily: 'monospace', fontSize: '13px' }}>
-                <span>O: <strong style={{ color: '#FAFAFA' }}>{hoverData.open.toLocaleString()}</strong></span>
+              <div style={{ display: 'flex', gap: 12, color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: '13px' }}>
+                <span>O: <strong style={{ color: 'var(--text-primary)' }}>{hoverData.open.toLocaleString()}</strong></span>
                 <span>H: <strong style={{ color: '#10B981' }}>{hoverData.high.toLocaleString()}</strong></span>
                 <span>L: <strong style={{ color: '#EF4444' }}>{hoverData.low.toLocaleString()}</strong></span>
-                <span>C: <strong style={{ color: '#FAFAFA' }}>{hoverData.close.toLocaleString()}</strong></span>
-                <span style={{ color: '#71717A' }}>[{hoverData.time}]</span>
+                <span>C: <strong style={{ color: 'var(--text-primary)' }}>{hoverData.close.toLocaleString()}</strong></span>
+                <span style={{ color: 'var(--text-muted)' }}>[{hoverData.time}]</span>
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 8, fontFamily: 'monospace', fontSize: '13px' }}>
-                <span style={{ color: '#A1A1AA' }}>Giá hiện tại:</span>
-                <strong style={{ color: '#00E5FF', fontSize: '14px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>{t.chart.currentPrice}:</span>
+                <strong style={{ color: 'var(--brand-primary)', fontSize: '14px' }}>
                   {currentAsset?.current_price.toLocaleString()} {currentAsset?.currency}
                 </strong>
               </div>
@@ -429,9 +434,9 @@ export const ChartTab: React.FC<ChartTabProps> = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {showMA20 && <span style={{ color: '#FAFAFA', fontSize: '12px', fontWeight: 500 }}>● MA20</span>}
-            {showMA50 && <span style={{ color: '#00E5FF', fontSize: '12px', fontWeight: 500 }}>● MA50</span>}
-            <span style={{ color: '#71717A', fontSize: '12px', fontWeight: 500 }}>■ Volume</span>
+            {showMA20 && <span style={{ color: 'var(--text-primary)', fontSize: '12px', fontWeight: 500 }}>● MA20</span>}
+            {showMA50 && <span style={{ color: 'var(--brand-primary)', fontSize: '12px', fontWeight: 500 }}>● MA50</span>}
+            <span style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 500 }}>■ Volume</span>
           </div>
         </div>
 
@@ -442,14 +447,14 @@ export const ChartTab: React.FC<ChartTabProps> = ({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(9, 9, 11, 0.7)',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
             borderRadius: 12,
           }}>
-            <span style={{ color: '#A1A1AA', fontSize: '14px' }}>Đang tải chuỗi nến OHLCV...</span>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{t.chart.loadingCandles}</span>
           </div>
         )}
 

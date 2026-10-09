@@ -6,9 +6,6 @@ on:
     branches:
       - main
       - server
-  pull_request:
-    branches:
-      - main # Chỉ kiểm tra khi tạo PR vào main, hoàn toàn KHÔNG check khi tạo PR vào nhánh server
   workflow_dispatch: # Cho phép bấm chạy thủ công trên web GitHub Actions
 
 concurrency:

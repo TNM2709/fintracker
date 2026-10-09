@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { PriceAlert, Asset } from '../types';
 import { fetchAlerts, addAlert, deleteAlert } from '../services/api';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import { Bell, Trash2, Plus, X, Lock, LogIn } from 'lucide-react';
 
 interface PriceAlertModalProps {
@@ -16,6 +17,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
   allAssets,
 }) => {
   const { isAuthenticated, isGuest, openAuthModal } = useAuth();
+  const { t } = useLanguage();
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [assetId, setAssetId] = useState<string>('XAU-SJC');
   const [condition, setCondition] = useState<'ABOVE' | 'BELOW'>('ABOVE');
@@ -117,11 +119,11 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
           >
             <Lock size={22} />
           </div>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: '0 0 8px 0' }}>
-            Cần Đăng Nhập Để Đặt Cảnh Báo
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+            {t.alerts.needLoginTitle}
           </h3>
-          <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '0 0 20px 0', lineHeight: 1.5 }}>
-            Cảnh báo giá được gắn với tài khoản cá nhân để gửi thông báo tức thời khi giá chạm ngưỡng. Vui lòng đăng nhập để sử dụng.
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+            {t.alerts.needLoginDesc}
           </p>
           <div style={{ display: 'flex', gap: 10 }}>
             <button
@@ -146,7 +148,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
               }}
             >
               <LogIn size={15} />
-              <span>Đăng Nhập Ngay</span>
+              <span>{t.auth.loginNow}</span>
             </button>
             <button
               onClick={onClose}
@@ -160,7 +162,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              Đóng
+              {t.common.close}
             </button>
           </div>
         </div>
@@ -209,11 +211,11 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
               <Bell size={18} />
             </div>
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                Cảnh Báo Giá Thông Minh
+              <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {t.alerts.smartAlertTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '2px 0 0' }}>
-                Thông báo thời gian thực khi giá chạm ngưỡng
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+                {t.alerts.smartAlertDesc}
               </p>
             </div>
           </div>
@@ -233,27 +235,27 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
 
         {/* Form Tạo Mới */}
         <form onSubmit={handleCreate} style={{
-          backgroundColor: '#09090B',
+          backgroundColor: 'var(--bg-body)',
           padding: 16,
           borderRadius: 8,
-          border: '1px solid #3F3F46',
+          border: '1px solid var(--border-card)',
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
           marginBottom: 20,
         }}>
           <div>
-            <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-              CHỌN TÀI SẢN
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              {t.alerts.assetLabel}
             </label>
             <select
               value={assetId}
               onChange={(e) => handleAssetSelect(e.target.value)}
               style={{
                 width: '100%',
-                backgroundColor: '#18181B',
-                border: '1px solid #3F3F46',
-                color: '#FAFAFA',
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-card)',
+                color: 'var(--text-primary)',
                 padding: '10px 12px',
                 borderRadius: 8,
                 fontSize: '14px',
@@ -269,30 +271,30 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                ĐIỀU KIỆN
+              <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                {t.alerts.condition}
               </label>
               <select
                 value={condition}
                 onChange={(e) => setCondition(e.target.value as any)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#18181B',
-                  border: '1px solid #3F3F46',
-                  color: '#FAFAFA',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-card)',
+                  color: 'var(--text-primary)',
                   padding: '10px 12px',
                   borderRadius: 8,
                   fontSize: '14px',
                 }}
               >
-                <option value="ABOVE">VƯỢT LÊN TRÊN (&ge;)</option>
-                <option value="BELOW">GIẢM XUỐNG DƯỚI (&le;)</option>
+                <option value="ABOVE">{t.alerts.conditionAbove}</option>
+                <option value="BELOW">{t.alerts.conditionBelow}</option>
               </select>
             </div>
 
             <div>
-              <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                GIÁ MỤC TIÊU (VND)
+              <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                {t.alerts.targetPrice} (VND)
               </label>
               <input
                 type="number"
@@ -302,9 +304,9 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                 onChange={(e) => setTargetPrice(e.target.value)}
                 placeholder="VD: 86000000"
                 style={{
-                  backgroundColor: '#18181B',
-                  border: '1px solid #3F3F46',
-                  color: '#FAFAFA',
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-card)',
+                  color: 'var(--text-primary)',
                   padding: '10px 12px',
                   borderRadius: 8,
                   fontSize: '14px',
@@ -319,26 +321,26 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
             style={{ marginTop: 4, width: '100%' }}
           >
             <Plus size={16} />
-            <span>Thêm Cảnh Báo Mới</span>
+            <span>{t.alerts.createAlertBtn}</span>
           </button>
         </form>
 
         {/* Danh Sách Cảnh Báo Hiện Có */}
         <div>
-          <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#A1A1AA', marginBottom: 12 }}>
-            CÁC CẢNH BÁO ĐANG THEO DÕI ({alerts.length})
+          <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12 }}>
+            {t.alerts.activeTrackingCount} ({alerts.length})
           </h4>
 
           {alerts.length === 0 ? (
             <div style={{
               textAlign: 'center',
               padding: '24px 16px',
-              backgroundColor: '#09090B',
+              backgroundColor: 'var(--bg-body)',
               borderRadius: 8,
-              border: '1px solid #3F3F46',
+              border: '1px solid var(--border-card)',
             }}>
-              <p style={{ fontSize: '14px', color: '#71717A', margin: 0 }}>
-                Chưa có cảnh báo nào được kích hoạt.
+              <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0 }}>
+                {t.alerts.noAlerts}
               </p>
             </div>
           ) : (
@@ -352,13 +354,13 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                     justifyContent: 'space-between',
                     padding: '12px 16px',
                     borderRadius: 8,
-                    backgroundColor: '#09090B',
-                    border: '1px solid #3F3F46',
+                    backgroundColor: 'var(--bg-body)',
+                    border: '1px solid var(--border-card)',
                   }}
                 >
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#FAFAFA' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                         {alt.symbol}
                       </span>
                       <span style={{
@@ -370,11 +372,11 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                         color: alt.condition === 'ABOVE' ? '#10B981' : '#EF4444',
                         border: `1px solid ${alt.condition === 'ABOVE' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'}`,
                       }}>
-                        {alt.condition === 'ABOVE' ? '≥ TĂNG VƯỢT' : '≤ GIẢM DƯỚI'}
+                        {alt.condition === 'ABOVE' ? t.alerts.condCrossAbove : t.alerts.condCrossBelow}
                       </span>
                     </div>
-                    <div className="num-mono" style={{ fontSize: '14px', fontWeight: 600, color: '#00E5FF', marginTop: 4 }}>
-                      {alt.target_price.toLocaleString('vi-VN')} VND
+                    <div className="num-mono" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--brand-primary)', marginTop: 4 }}>
+                      {alt.target_price.toLocaleString()} VND
                     </div>
                   </div>
 
@@ -388,7 +390,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                       padding: 6,
                       borderRadius: 6,
                     }}
-                    title="Xóa cảnh báo"
+                    title={t.alerts.deleteTooltip}
                   >
                     <Trash2 size={16} />
                   </button>

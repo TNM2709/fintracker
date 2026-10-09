@@ -10,6 +10,7 @@ import {
   sendTestNotification,
 } from '../services/api';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import {
   X,
   Bell,
@@ -62,6 +63,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
   onUnreadCountChange,
 }) => {
   const { isAuthenticated, openAuthModal } = useAuth();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'inbox' | 'settings'>('inbox');
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -162,11 +164,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           >
             <Bell size={24} />
           </div>
-          <h3 style={{ fontSize: '17px', fontWeight: 600, color: '#FAFAFA', margin: '0 0 8px 0' }}>
-            Quản Lý & Tùy Biến Thông Báo
+          <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+            {t.notifications.title}
           </h3>
-          <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '0 0 20px 0', lineHeight: 1.5 }}>
-            Vui lòng đăng nhập để nhận thông báo chạm giá mục tiêu, biến động thị trường và tự tùy biến các loại cảnh báo tới bạn.
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+            {t.notifications.guestDesc}
           </p>
           <div style={{ display: 'flex', gap: 10 }}>
             <button
@@ -186,7 +188,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              Đăng Nhập Ngay
+              {t.auth.loginNow}
             </button>
             <button
               onClick={onClose}
@@ -200,7 +202,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              Đóng
+              {t.common.close}
             </button>
           </div>
         </div>
@@ -359,8 +361,8 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h2 style={{ fontSize: '15px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                  Trung Tâm Thông Báo
+                <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                  {t.notifications.centerTitle}
                 </h2>
                 {unreadCount > 0 && (
                   <span
@@ -373,12 +375,12 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                       borderRadius: 999,
                     }}
                   >
-                    {unreadCount} mới
+                    {unreadCount} {t.notifications.newBadge}
                   </span>
                 )}
               </div>
-              <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '2px 0 0 0' }}>
-                Hộp thư cảnh báo & Tùy biến thông báo cá nhân
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+                {t.notifications.centerSubtitle}
               </p>
             </div>
           </div>
@@ -423,7 +425,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             }}
           >
             <Bell size={14} />
-            <span>Thông Báo Gần Đây ({notifications.length})</span>
+            <span>{t.notifications.recentTab} ({notifications.length})</span>
           </button>
 
           <button
@@ -444,7 +446,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             }}
           >
             <Sliders size={14} />
-            <span>Tùy Biến Cảnh Báo (Cá nhân)</span>
+            <span>{t.notifications.customSettingsTab}</span>
           </button>
         </div>
 
@@ -476,7 +478,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                     fontWeight: 500,
                   }}
                 >
-                  Tất cả
+                  {t.notifications.tabAll}
                 </button>
                 <button
                   onClick={() => setFilterUnread(true)}
@@ -491,7 +493,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                     fontWeight: 500,
                   }}
                 >
-                  Chưa đọc ({unreadCount})
+                  {t.notifications.tabUnread} ({unreadCount})
                 </button>
               </div>
 
@@ -511,7 +513,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                   }}
                 >
                   <CheckCheck size={14} />
-                  <span>Đọc tất cả</span>
+                  <span>{t.notifications.markAllReadBtn}</span>
                 </button>
               )}
             </div>
@@ -530,18 +532,18 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             >
               {isLoading ? (
                 <div style={{ padding: 40, textAlign: 'center', color: '#A1A1AA', fontSize: '13px' }}>
-                  Đang tải thông báo...
+                  {t.common.loading}
                 </div>
               ) : filteredList.length === 0 ? (
                 <div style={{ padding: 40, textAlign: 'center' }}>
                   <Bell size={32} color="#3F3F46" style={{ margin: '0 auto 12px auto' }} />
-                  <p style={{ color: '#FAFAFA', fontSize: '14px', margin: '0 0 4px 0', fontWeight: 500 }}>
-                    Hộp thư trống
+                  <p style={{ color: 'var(--text-primary)', fontSize: '14px', margin: '0 0 4px 0', fontWeight: 500 }}>
+                    {t.notifications.emptyInboxTitle}
                   </p>
-                  <p style={{ color: '#71717A', fontSize: '12px', margin: 0 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', margin: 0 }}>
                     {filterUnread
-                      ? 'Bạn đã đọc hết tất cả thông báo!'
-                      : 'Chưa có thông báo nào. Các cảnh báo giá và biến động thị trường sẽ xuất hiện tại đây.'}
+                      ? t.notifications.emptyInboxAllRead
+                      : t.notifications.emptyInboxNone}
                   </p>
                 </div>
               ) : (
@@ -609,11 +611,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                       {!item.is_read && (
                         <button
                           onClick={() => handleMarkRead(item.id)}
-                          title="Đánh dấu đã đọc"
+                          title={t.notifications.markRead}
                           style={{
                             background: 'none',
                             border: 'none',
-                            color: '#00E5FF',
+                            color: 'var(--brand-primary)',
                             cursor: 'pointer',
                             padding: 4,
                           }}
@@ -623,11 +625,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                       )}
                       <button
                         onClick={() => handleDelete(item.id)}
-                        title="Xóa thông báo"
+                        title={t.common.delete}
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#71717A',
+                          color: 'var(--text-muted)',
                           cursor: 'pointer',
                           padding: 4,
                         }}
@@ -670,7 +672,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 }}
               >
                 <Check size={16} />
-                <span>Cấu hình thông báo đã được lưu thành công!</span>
+                <span>{t.notifications.settingsSaved}</span>
               </div>
             )}
 
@@ -689,7 +691,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 }}
               >
                 <Volume2 size={16} />
-                <span>Đã phát âm thanh chuông và gửi thông báo mẫu vào Hộp thư!</span>
+                <span>{t.notifications.testSent}</span>
               </div>
             )}
 
@@ -706,11 +708,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               }}
             >
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
-                  Cảnh báo giá chạm mục tiêu
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {t.notifications.priceAlertsSetting}
                 </div>
-                <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2 }}>
-                  Nhận thông báo khi vàng, cổ phiếu, crypto chạm ngưỡng trên/dưới bạn đã đặt.
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2 }}>
+                  {t.notifications.priceAlertsSettingDesc}
                 </div>
               </div>
               <input
@@ -734,11 +736,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               }}
             >
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
-                  Cảnh báo biến động mạnh thị trường
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {t.notifications.volatilityAlertsSetting}
                 </div>
-                <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2 }}>
-                  Tự động cảnh báo khi có tài sản tăng/giảm đột biến vượt ngưỡng bạn chọn.
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2 }}>
+                  {t.notifications.volatilityAlertsSettingDesc}
                 </div>
               </div>
               <input
@@ -759,8 +761,8 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                   borderRadius: 8,
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#D4D4D8' }}>
-                  <span>Ngưỡng biến động kích hoạt:</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  <span>{t.notifications.minChangeSetting}</span>
                   <span style={{ fontWeight: 600, color: '#00E5FF' }}>±{minChange}%</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
@@ -801,11 +803,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               }}
             >
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
-                  Thông báo phát sinh giao dịch mới
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {t.notifications.txAlertsSetting}
                 </div>
-                <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2 }}>
-                  Gửi xác nhận tức thì khi bạn ghi nhận giao dịch mua, bán hoặc cổ tức.
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2 }}>
+                  {t.notifications.txAlertsSettingDesc}
                 </div>
               </div>
               <input
@@ -831,11 +833,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {sound ? <Volume2 size={18} color="#00E5FF" /> : <VolumeX size={18} color="#71717A" />}
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#FAFAFA' }}>
-                    Âm thanh chuông báo
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {t.notifications.soundSetting}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#A1A1AA', marginTop: 2 }}>
-                    Phát tiếng 'Ding' nhẹ khi có thông báo chạm mốc giá quan trọng.
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: 2 }}>
+                    {t.notifications.soundSettingDesc}
                   </div>
                 </div>
               </div>
@@ -849,8 +851,8 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
 
             {/* Watched assets filter */}
             <div style={{ marginTop: 2 }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                Bộ lọc tài sản nhận thông báo:
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                {t.notifications.filterCategory}
               </label>
               <select
                 value={watchedAssets}
@@ -865,10 +867,10 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                   fontSize: '13px',
                 }}
               >
-                <option value="ALL">Tất cả tài sản thị trường (Vàng, Chứng khoán, Crypto)</option>
-                <option value="GOLD">Chỉ theo dõi Vàng SJC & Thế Giới</option>
-                <option value="STOCKS">Chỉ theo dõi Cổ phiếu VN (HOSE/HNX) & Mỹ</option>
-                <option value="CRYPTO">Chỉ theo dõi Crypto (BTC/ETH/SOL)</option>
+                <option value="ALL">{t.notifications.filterAllAssets}</option>
+                <option value="GOLD">{t.notifications.filterGoldOnly}</option>
+                <option value="STOCKS">{t.notifications.filterStocksOnly}</option>
+                <option value="CRYPTO">{t.notifications.filterCryptoOnly}</option>
               </select>
             </div>
 
@@ -893,7 +895,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 }}
               >
                 <Save size={15} />
-                <span>Lưu Cấu Hình Tùy Biến</span>
+                <span>{t.notifications.saveSettingsBtn}</span>
               </button>
 
               <button
@@ -912,10 +914,10 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                   alignItems: 'center',
                   gap: 6,
                 }}
-                title="Gửi thông báo thử nghiệm để kiểm tra âm thanh & thông báo"
+                title={t.notifications.testBtn}
               >
                 <Play size={14} color="#00E5FF" />
-                <span>Thử Nghiệm</span>
+                <span>{t.notifications.testBtn}</span>
               </button>
             </div>
           </form>

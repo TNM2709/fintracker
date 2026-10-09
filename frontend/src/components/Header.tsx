@@ -14,10 +14,13 @@ import {
   Sliders,
   Globe,
   Check,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useCurrency } from '../context/useCurrency';
 import { useAuth } from '../context/useAuth';
 import { useLanguage } from '../context/useLanguage';
+import { useTheme } from '../context/useTheme';
 
 interface HeaderProps {
   isConnected: boolean;
@@ -55,6 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { currency, setCurrency, goldUnit, setGoldUnit } = useCurrency();
   const { user, isAuthenticated, isAdmin, isGuest, openAuthModal, logout } = useAuth();
   const { language, setLanguage, currentLanguageMeta, supportedLanguages, t } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
@@ -76,8 +80,8 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header
       style={{
-        borderBottom: '1px solid #27272A',
-        backgroundColor: 'rgba(24, 24, 27, 0.85)',
+        borderBottom: '1px solid var(--border-card)',
+        backgroundColor: 'var(--bg-surface)',
         backdropFilter: 'blur(16px)',
         position: 'sticky',
         top: 0,
@@ -398,6 +402,27 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px 10px',
+              backgroundColor: isDark ? '#09090B' : '#F1F5F9',
+              border: isDark ? '1px solid #3F3F46' : '1px solid #CBD5E1',
+              borderRadius: 8,
+              cursor: 'pointer',
+              color: isDark ? '#F59E0B' : '#0284C7',
+              transition: 'all 0.15s ease',
+            }}
+            title={t.theme.toggle}
+            aria-label={t.theme.toggle}
+          >
+            {isDark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+
           {/* Search Box */}
           <div style={{ position: 'relative', width: 150 }} className="desktop-only">
             <Search size={14} color="#71717A" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
@@ -573,7 +598,7 @@ export const Header: React.FC<HeaderProps> = ({
               transition: 'all 0.2s ease',
               boxShadow: '0 0 16px rgba(0, 229, 255, 0.2)',
             }}
-            title={isGuest ? 'Đăng nhập để thêm giao dịch vào sổ cái' : t.header.addTransaction}
+            title={isGuest ? t.header.loginToAdd : t.header.addTransaction}
           >
             <PlusCircle size={15} />
             <span className="desktop-only">{t.header.addTransaction}</span>

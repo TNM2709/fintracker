@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Transaction, Asset } from '../types';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import { X, Check, Lock, LogIn } from 'lucide-react';
 
 interface TransactionModalProps {
@@ -17,6 +18,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   allAssets,
 }) => {
   const { isGuest, openAuthModal } = useAuth();
+  const { t } = useLanguage();
 
   const [assetId, setAssetId] = useState<string>('XAU-SJC');
   const [type, setType] = useState<'BUY' | 'SELL' | 'DIVIDEND'>('BUY');
@@ -70,11 +72,11 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           >
             <Lock size={22} />
           </div>
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: '0 0 8px 0' }}>
-            Đăng Nhập Để Thêm Giao Dịch
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+            {t.auth.needLoginNotice}
           </h3>
-          <p style={{ fontSize: '13px', color: '#A1A1AA', margin: '0 0 20px 0', lineHeight: 1.5 }}>
-            Sổ cái giao dịch được lưu trữ và tính toán lãi/lỗ theo tài khoản của bạn. Vui lòng đăng nhập để lưu trữ dữ liệu cá nhân.
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+            {t.auth.needLoginDesc}
           </p>
           <div style={{ display: 'flex', gap: 10 }}>
             <button
@@ -99,7 +101,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               }}
             >
               <LogIn size={15} />
-              <span>Đăng Nhập Ngay</span>
+              <span>{t.auth.loginNow}</span>
             </button>
             <button
               onClick={onClose}
@@ -113,7 +115,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                 cursor: 'pointer',
               }}
             >
-              Đóng
+              {t.common.close}
             </button>
           </div>
         </div>
@@ -171,13 +173,13 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         maxWidth: 500,
         width: '100%',
         padding: 24,
-        backgroundColor: '#18181B',
-        border: '1px solid #3F3F46',
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)',
         borderRadius: 12,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-            Thêm Giao Dịch Vào Danh Mục
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+            {t.transaction.title}
           </h3>
           <button
             onClick={onClose}
@@ -196,25 +198,25 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Loại giao dịch */}
           <div>
-            <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-              LOẠI GIAO DỊCH
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              {t.transaction.txType}
             </label>
             <div style={{ display: 'flex', gap: 8 }}>
               {[
-                { id: 'BUY', label: 'MUA VÀO' },
-                { id: 'SELL', label: 'BÁN RA' },
-                { id: 'DIVIDEND', label: 'NHẬN CỔ TỨC' },
-              ].map((t) => {
-                const isActive = type === t.id;
+                { id: 'BUY', label: t.transaction.assetTypeBuy },
+                { id: 'SELL', label: t.transaction.assetTypeSell },
+                { id: 'DIVIDEND', label: t.transaction.assetTypeDividend },
+              ].map((item) => {
+                const isActive = type === item.id;
                 let activeColor = '#00E5FF';
-                if (t.id === 'BUY') activeColor = '#10B981';
-                if (t.id === 'SELL') activeColor = '#EF4444';
+                if (item.id === 'BUY') activeColor = '#10B981';
+                if (item.id === 'SELL') activeColor = '#EF4444';
 
                 return (
-                  <button
-                    key={t.id}
+                    <button
+                    key={item.id}
                     type="button"
-                    onClick={() => setType(t.id as any)}
+                    onClick={() => setType(item.id as any)}
                     style={{
                       flex: 1,
                       padding: '8px 12px',
@@ -229,7 +231,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    {t.label}
+                    {item.label}
                   </button>
                 );
               })}
@@ -238,17 +240,17 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Chọn tài sản */}
           <div>
-            <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-              TÀI SẢN
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              {t.transaction.assetLabel}
             </label>
             <select
               value={assetId}
               onChange={(e) => handleAssetChange(e.target.value)}
               style={{
                 width: '100%',
-                backgroundColor: '#09090B',
-                border: '1px solid #3F3F46',
-                color: '#FAFAFA',
+                backgroundColor: 'var(--bg-body)',
+                border: '1px solid var(--border-card)',
+                color: 'var(--text-primary)',
                 padding: '12px',
                 borderRadius: 8,
                 fontSize: '14px',
@@ -265,8 +267,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           {/* Khối lượng & Giá */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                KHỐI LƯỢNG / SỐ LƯỢNG
+              <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                {t.transaction.quantity}
               </label>
               <input
                 type="number"
@@ -278,8 +280,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               />
             </div>
             <div>
-              <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-                GIÁ KHỚP LỆNH (VND)
+              <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                {t.transaction.orderPrice} (VND)
               </label>
               <input
                 type="number"
@@ -294,8 +296,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Phí giao dịch */}
           <div>
-            <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-              PHÍ GIAO DỊCH (VND)
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              {t.transaction.txFee} (VND)
             </label>
             <input
               type="number"
@@ -308,14 +310,14 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           {/* Ghi chú */}
           <div>
-            <label style={{ fontSize: '13px', color: '#A1A1AA', fontWeight: 500, display: 'block', marginBottom: 6 }}>
-              GHI CHÚ GIAO DỊCH
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500, display: 'block', marginBottom: 6 }}>
+              {t.portfolio.colNotes}
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="VD: Mua tích sản tháng 10..."
+              placeholder={t.transaction.notesPlaceholder}
             />
           </div>
 
@@ -327,7 +329,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               className="btn-secondary"
               style={{ flex: 1 }}
             >
-              Hủy
+              {t.common.cancel}
             </button>
             <button
               type="submit"
@@ -335,7 +337,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               style={{ flex: 2 }}
             >
               <Check size={16} />
-              <span>Ghi Nhận Giao Dịch</span>
+              <span>{t.transaction.recordTx}</span>
             </button>
           </div>
         </form>

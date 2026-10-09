@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
+import { useLanguage } from '../context/useLanguage';
 import { X, LogIn, UserPlus, Shield, User, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 interface AuthModalProps {
@@ -8,6 +9,7 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
   const { isAuthModalOpen, closeAuthModal, authModalTab, setAuthModalTab, login, register } = useAuth();
+  const { t } = useLanguage();
 
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +37,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
-        setErrorMessage('Đăng nhập thất bại');
+        setErrorMessage(t.auth.loginFailed);
       }
     } finally {
       setIsLoading(false);
@@ -58,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
-        setErrorMessage('Đăng ký thất bại');
+        setErrorMessage(t.auth.registerFailed);
       }
     } finally {
       setIsLoading(false);
@@ -75,7 +77,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
-        setErrorMessage('Đăng nhập thất bại');
+        setErrorMessage(t.auth.loginFailed);
       }
     } finally {
       setIsLoading(false);
@@ -139,13 +141,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
               {authModalTab === 'login' ? <LogIn size={18} /> : <UserPlus size={18} />}
             </div>
             <div>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#FAFAFA', margin: 0 }}>
-                {authModalTab === 'login' ? 'Đăng Nhập Tài Khoản' : 'Tạo Tài Khoản Mới'}
+              <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
+                {authModalTab === 'login' ? t.auth.loginTitle : t.auth.registerTitle}
               </h2>
-              <p style={{ fontSize: '12px', color: '#A1A1AA', margin: '2px 0 0 0' }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
                 {authModalTab === 'login'
-                  ? 'Quản lý sổ cái và thông báo cá nhân hóa'
-                  : 'Bắt đầu theo dõi tài sản và danh mục riêng'}
+                  ? t.auth.loginSubtitle
+                  : t.auth.registerSubtitle}
               </p>
             </div>
           </div>
@@ -196,7 +198,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
                 transition: 'all 0.15s',
               }}
             >
-              Đăng Nhập
+              {t.auth.loginTab}
             </button>
             <button
               type="button"
@@ -217,7 +219,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
                 transition: 'all 0.15s',
               }}
             >
-              Đăng Ký
+              {t.auth.registerTab}
             </button>
           </div>
         </div>
@@ -245,15 +247,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
           {authModalTab === 'login' ? (
             <form onSubmit={handleLoginSubmit}>
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Tên đăng nhập hoặc Email
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                  {t.auth.usernameOrEmail}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <User size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     required
-                    placeholder="admin hoặc email..."
+                    placeholder={t.auth.placeholderUserOrEmail}
                     value={usernameOrEmail}
                     onChange={(e) => setUsernameOrEmail(e.target.value)}
                     style={{
@@ -273,7 +275,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
 
               <div style={{ marginBottom: 18 }}>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Mật khẩu
+                  {t.auth.password}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
@@ -332,13 +334,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
                   boxShadow: '0 0 20px rgba(0, 229, 255, 0.25)',
                 }}
               >
-                {isLoading ? 'Đang xác thực...' : 'Đăng Nhập'}
+                  {isLoading ? t.auth.authenticating : t.auth.signInBtn}
               </button>
 
               {/* Quick Demo logins */}
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #27272A' }}>
-                <p style={{ fontSize: '11px', color: '#A1A1AA', margin: '0 0 10px 0', textAlign: 'center' }}>
-                  ⚡ Thử nghiệm nhanh 1 chạm:
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border-card)' }}>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: '0 0 10px 0', textAlign: 'center' }}>
+                  ⚡ {t.auth.quickDemo}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <button
@@ -391,13 +393,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
           ) : (
             <form onSubmit={handleRegisterSubmit}>
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Họ và tên
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                  {t.auth.fullName}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Nguyễn Văn A"
+                  placeholder={t.auth.placeholderFullName}
                   value={regFullName}
                   onChange={(e) => setRegFullName(e.target.value)}
                   style={{
@@ -415,8 +417,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
               </div>
 
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Tên đăng nhập
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                  {t.profile.username}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <User size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
@@ -469,8 +471,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
               </div>
 
               <div style={{ marginBottom: 18 }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#D4D4D8', marginBottom: 6 }}>
-                  Mật khẩu (tối thiểu 6 ký tự)
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>
+                  {t.auth.passwordMin6}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="#71717A" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
@@ -530,7 +532,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
                   boxShadow: '0 0 20px rgba(0, 229, 255, 0.25)',
                 }}
               >
-                {isLoading ? 'Đang đăng ký...' : 'Tạo Tài Khoản Ngay'}
+                {isLoading ? t.auth.registering : t.auth.signUpBtn}
               </button>
             </form>
           )}
