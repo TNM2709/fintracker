@@ -186,12 +186,12 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 	thresh := 7.5
 	watched := "SJC_HANOI,BTC"
 	updateSettings := model.UpdateNotificationSettingsRequest{
-		EnablePriceAlerts:        &enable,
-		EnableVolatilityAlerts:   &enable,
-		MinChangePercent:         &thresh,
-		EnableTransactionAlerts:  &falseVal,
-		EnableSound:              &falseVal,
-		WatchedAssets:            &watched,
+		EnablePriceAlerts:       &enable,
+		EnableVolatilityAlerts:  &enable,
+		MinChangePercent:        &thresh,
+		EnableTransactionAlerts: &falseVal,
+		EnableSound:             &falseVal,
+		WatchedAssets:           &watched,
 	}
 	body, _ = json.Marshal(updateSettings)
 	req = httptest.NewRequest("PUT", "/api/v1/notifications/settings", bytes.NewBuffer(body))
@@ -241,10 +241,10 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 
 	// 9. Data Isolation Test: Guest cannot create transaction (401 Unauthorized)
 	newTx := model.Transaction{
-		AssetID:         "SJC_HANOI",
-		Type:            "BUY",
-		Quantity:        1.5,
-		Price:           85000000,
+		AssetID:  "SJC_HANOI",
+		Type:     "BUY",
+		Quantity: 1.5,
+		Price:    85000000,
 	}
 	body, _ = json.Marshal(newTx)
 	req = httptest.NewRequest("POST", "/api/v1/portfolio/transactions", bytes.NewBuffer(body))
@@ -295,4 +295,3 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 		t.Fatalf("Data isolation violation! Admin saw %d transactions, expected 0", len(adminPortfolio.RecentTransactions))
 	}
 }
-

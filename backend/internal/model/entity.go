@@ -26,7 +26,7 @@ type UserNotificationSettingsEntity struct {
 	EnableVolatilityAlerts  bool      `gorm:"default:true" json:"enable_volatility_alerts"`
 	EnableTransactionAlerts bool      `gorm:"default:true" json:"enable_transaction_alerts"`
 	EnableSound             bool      `gorm:"default:true" json:"enable_sound"`
-	MinChangePercent        float64   `gorm:"default:2.0" json:"min_change_percent"` // Ngưỡng % biến động để kích hoạt cảnh báo
+	MinChangePercent        float64   `gorm:"default:2.0" json:"min_change_percent"`         // Ngưỡng % biến động để kích hoạt cảnh báo
 	WatchedAssets           string    `gorm:"type:text;default:'ALL'" json:"watched_assets"` // "ALL" hoặc danh sách ID/mã ngăn cách bởi dấu phẩy
 	UpdatedAt               time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -42,7 +42,7 @@ type NotificationEntity struct {
 	Title     string    `gorm:"size:256;not null" json:"title"`
 	Message   string    `gorm:"type:text;not null" json:"message"`
 	Type      string    `gorm:"size:32;not null;index" json:"type"` // "PRICE_ALERT", "VOLATILITY", "TRANSACTION", "SYSTEM"
-	Data      string    `gorm:"type:text" json:"data"` // JSON payload
+	Data      string    `gorm:"type:text" json:"data"`              // JSON payload
 	IsRead    bool      `gorm:"index;default:false" json:"is_read"`
 	CreatedAt time.Time `gorm:"autoCreateTime;index" json:"created_at"`
 }

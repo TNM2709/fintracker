@@ -194,4 +194,3 @@ func (c *GoldCollector) SetLiveWorldGold(usd float64, rate float64) {
 		c.goldDetails[i].UpdatedAt = now
 	}
 }
-

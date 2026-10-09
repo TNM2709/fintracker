@@ -12,7 +12,7 @@ cd "$ROOT_DIR" || exit 1
 echo "🎨 [Frontend] Đang kiểm tra linting (oxlint) & kiểu dữ liệu (tsc)..."
 cd "$ROOT_DIR/frontend" || exit 1
 
-if ! npm run lint; then
+if ! npm run lint:fix; then
   echo "❌ [Frontend] Lỗi Linting! Hãy sửa các lỗi trên trước khi commit."
   exit 1
 fi

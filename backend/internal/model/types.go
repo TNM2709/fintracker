@@ -45,7 +45,7 @@ type GoldDetail struct {
 
 // Candle represents an OHLCV candlestick point in time
 type Candle struct {
-	Timestamp int64   `json:"time"`   // Unix timestamp in seconds
+	Timestamp int64   `json:"time"` // Unix timestamp in seconds
 	Open      float64 `json:"open"`
 	High      float64 `json:"high"`
 	Low       float64 `json:"low"`
@@ -79,7 +79,7 @@ type Holding struct {
 	AssetType          string  `json:"asset_type"`
 	Currency           string  `json:"currency"`
 	TotalQuantity      float64 `json:"total_quantity"`
-	AvgBuyPrice        float64 `json:"avg_buy_price"`        // Giá vốn bình quân (DCA)
+	AvgBuyPrice        float64 `json:"avg_buy_price"`       // Giá vốn bình quân (DCA)
 	CurrentPrice       float64 `json:"current_price"`       // Giá thị trường hiện tại
 	TotalCost          float64 `json:"total_cost"`          // Tổng vốn đầu tư
 	CurrentValue       float64 `json:"current_value"`       // Giá trị thị trường hiện tại
@@ -93,13 +93,13 @@ type Holding struct {
 type PortfolioSummary struct {
 	IsGuest            bool               `json:"is_guest,omitempty"`
 	UserID             string             `json:"user_id,omitempty"`
-	TotalNetWorth      float64            `json:"total_net_worth"`       // Tổng tài sản ròng (quy đổi VND)
-	TotalCostBasis     float64            `json:"total_cost_basis"`      // Tổng giá vốn đầu tư
-	TotalUnrealizedPnL float64            `json:"total_unrealized_pnl"`  // Lãi/lỗ ròng
-	TotalPnLRate       float64            `json:"total_pnl_rate"`        // Tỷ suất sinh lời tổng (%)
-	TotalDividends     float64            `json:"total_dividends"`       // Tổng lợi tức/cổ tức thu về
-	EstimatedYield     float64            `json:"estimated_yield"`       // Tỷ suất cổ tức/lợi tức ước tính năm (%)
-	AssetAllocation    map[string]float64 `json:"asset_allocation"`      // Phân bổ tỷ trọng (GOLD, STOCK_VN, STOCK_US, CRYPTO, CASH)
+	TotalNetWorth      float64            `json:"total_net_worth"`      // Tổng tài sản ròng (quy đổi VND)
+	TotalCostBasis     float64            `json:"total_cost_basis"`     // Tổng giá vốn đầu tư
+	TotalUnrealizedPnL float64            `json:"total_unrealized_pnl"` // Lãi/lỗ ròng
+	TotalPnLRate       float64            `json:"total_pnl_rate"`       // Tỷ suất sinh lời tổng (%)
+	TotalDividends     float64            `json:"total_dividends"`      // Tổng lợi tức/cổ tức thu về
+	EstimatedYield     float64            `json:"estimated_yield"`      // Tỷ suất cổ tức/lợi tức ước tính năm (%)
+	AssetAllocation    map[string]float64 `json:"asset_allocation"`     // Phân bổ tỷ trọng (GOLD, STOCK_VN, STOCK_US, CRYPTO, CASH)
 	Holdings           []Holding          `json:"holdings"`
 	RecentTransactions []Transaction      `json:"recent_transactions"`
 	UpdatedAt          time.Time          `json:"updated_at"`
@@ -111,12 +111,12 @@ type ForecastResult struct {
 	Symbol               string      `json:"symbol"`
 	Name                 string      `json:"name"`
 	CurrentPrice         float64     `json:"current_price"`
-	HorizonDays          int         `json:"horizon_days"`           // 7 hoặc 30 ngày
-	ExpectedDrift        float64     `json:"expected_drift"`         // Tỷ lệ tăng trưởng kỳ vọng năm (%)
-	AnnualVolatility     float64     `json:"annual_volatility"`     // Độ biến động lịch sử (%)
-	BearTarget           float64     `json:"bear_target"`            // Kịch bản bi quan (10th percentile)
-	BaseTarget           float64     `json:"base_target"`            // Kịch bản trung tính (50th percentile)
-	BullTarget           float64     `json:"bull_target"`            // Kịch bản lạc quan (90th percentile)
+	HorizonDays          int         `json:"horizon_days"`      // 7 hoặc 30 ngày
+	ExpectedDrift        float64     `json:"expected_drift"`    // Tỷ lệ tăng trưởng kỳ vọng năm (%)
+	AnnualVolatility     float64     `json:"annual_volatility"` // Độ biến động lịch sử (%)
+	BearTarget           float64     `json:"bear_target"`       // Kịch bản bi quan (10th percentile)
+	BaseTarget           float64     `json:"base_target"`       // Kịch bản trung tính (50th percentile)
+	BullTarget           float64     `json:"bull_target"`       // Kịch bản lạc quan (90th percentile)
 	ConfidenceLow95      float64     `json:"confidence_low_95"`
 	ConfidenceHigh95     float64     `json:"confidence_high_95"`
 	TrendSignal          string      `json:"trend_signal"`           // "STRONG_BUY", "BUY", "NEUTRAL", "SELL"
@@ -131,18 +131,18 @@ type ForecastResult struct {
 
 // MarketSummary represents live ticker & highlighted metrics
 type MarketSummary struct {
-	GoldVNSpread      float64      `json:"gold_vn_spread"`       // Chênh lệch giá vàng VN so với TG (triệu VND/lượng)
-	WorldGoldUSD      float64      `json:"world_gold_usd"`       // Giá vàng thế giới XAU/USD
-	USDVNDExchange    float64      `json:"usd_vnd_exchange"`     // Tỷ giá USD/VND
-	VNIndex           float64      `json:"vn_index"`             // Điểm VN-Index
-	VNIndexChange     float64      `json:"vn_index_change"`
-	SP500             float64      `json:"sp500"`
-	SP500Change       float64      `json:"sp500_change"`
-	TopGainers        []Asset      `json:"top_gainers"`
-	TopLosers         []Asset      `json:"top_losers"`
-	FeaturedGold      []GoldDetail `json:"featured_gold"`
-	AllAssets         []Asset      `json:"all_assets"`
-	LastUpdated       time.Time    `json:"last_updated"`
+	GoldVNSpread   float64      `json:"gold_vn_spread"`   // Chênh lệch giá vàng VN so với TG (triệu VND/lượng)
+	WorldGoldUSD   float64      `json:"world_gold_usd"`   // Giá vàng thế giới XAU/USD
+	USDVNDExchange float64      `json:"usd_vnd_exchange"` // Tỷ giá USD/VND
+	VNIndex        float64      `json:"vn_index"`         // Điểm VN-Index
+	VNIndexChange  float64      `json:"vn_index_change"`
+	SP500          float64      `json:"sp500"`
+	SP500Change    float64      `json:"sp500_change"`
+	TopGainers     []Asset      `json:"top_gainers"`
+	TopLosers      []Asset      `json:"top_losers"`
+	FeaturedGold   []GoldDetail `json:"featured_gold"`
+	AllAssets      []Asset      `json:"all_assets"`
+	LastUpdated    time.Time    `json:"last_updated"`
 }
 
 // PriceAlert represents a user alert condition for an asset
@@ -161,16 +161,16 @@ type PriceAlert struct {
 
 // DividendEvent represents scheduled or historical dividend distribution
 type DividendEvent struct {
-	ID             string    `json:"id"`
-	AssetID        string    `json:"asset_id"`
-	Symbol         string    `json:"symbol"`
-	Name           string    `json:"name"`
-	ExDate         string    `json:"ex_date"`         // Ngày giao dịch không hưởng quyền
-	PayDate        string    `json:"pay_date"`        // Ngày thanh toán
-	DividendAmount float64   `json:"dividend_amount"` // Số tiền/CP hoặc % cổ tức
-	DividendType   string    `json:"dividend_type"`   // "TIỀN MẶT" | "CỔ PHIẾU"
-	YieldPct       float64   `json:"yield_pct"`       // Tỷ suất cổ tức %
-	EstimatedCash  float64   `json:"estimated_cash"`  // Ước tính số tiền nhận về dựa trên số lượng CP đang nắm giữ
+	ID             string  `json:"id"`
+	AssetID        string  `json:"asset_id"`
+	Symbol         string  `json:"symbol"`
+	Name           string  `json:"name"`
+	ExDate         string  `json:"ex_date"`         // Ngày giao dịch không hưởng quyền
+	PayDate        string  `json:"pay_date"`        // Ngày thanh toán
+	DividendAmount float64 `json:"dividend_amount"` // Số tiền/CP hoặc % cổ tức
+	DividendType   string  `json:"dividend_type"`   // "TIỀN MẶT" | "CỔ PHIẾU"
+	YieldPct       float64 `json:"yield_pct"`       // Tỷ suất cổ tức %
+	EstimatedCash  float64 `json:"estimated_cash"`  // Ước tính số tiền nhận về dựa trên số lượng CP đang nắm giữ
 }
 
 // BenchmarkPoint represents a historical normalized performance point
